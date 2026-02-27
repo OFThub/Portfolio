@@ -1,0 +1,46 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Custom Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dc2626;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
+}
+
+/* Selection color */
+::selection {
+  background-color: #dc2626;
+  color: white;
+}
+
+/* Glow effect for cards */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.2);
+  }
+}
