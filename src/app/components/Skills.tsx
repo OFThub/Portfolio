@@ -19,25 +19,25 @@ export function Skills() {
       icon: Code2,
       color: "from-red-600 to-red-800",
       skills: [
-        { name: "React", level: 95 },
-        { name: "TypeScript", level: 90 },
-        { name: "Next.js", level: 88 },
-        { name: "Tailwind CSS", level: 92 },
-        { name: "Vue.js", level: 85 },
-        { name: "HTML/CSS", level: 95 },
+        { name: "React" },
+        { name: "TypeScript" },
+        { name: "Next.js" },
+        { name: "Tailwind CSS" },
+        { name: "Vue.js" },
+        { name: "HTML/CSS" },
       ],
     },
     {
       category: "Backend",
       icon: Server,
-      color: "from-red-700 to-red-900",
+      color: "from-red-700 to-red-0",
       skills: [
-        { name: "Node.js", level: 92 },
-        { name: "Express.js", level: 90 },
-        { name: "Python", level: 85 },
-        { name: "Django", level: 82 },
-        { name: "REST APIs", level: 93 },
-        { name: "GraphQL", level: 87 },
+        { name: "Node.js" },
+        { name: "Express.js" },
+        { name: "Python" },
+        { name: "Django" },
+        { name: "REST APIs" },
+        { name: "GraphQL"},
       ],
     },
     {
@@ -45,12 +45,12 @@ export function Skills() {
       icon: Database,
       color: "from-red-800 to-black",
       skills: [
-        { name: "MongoDB", level: 90 },
-        { name: "PostgreSQL", level: 88 },
-        { name: "MySQL", level: 85 },
-        { name: "Redis", level: 82 },
-        { name: "Firebase", level: 87 },
-        { name: "Prisma", level: 85 },
+        { name: "MongoDB" },
+        { name: "PostgreSQL" },
+        { name: "MySQL" },
+        { name: "Redis" },
+        { name: "Firebase"},
+        { name: "Prisma" },
       ],
     },
     {
@@ -58,23 +58,23 @@ export function Skills() {
       icon: Cloud,
       color: "from-red-600 to-red-800",
       skills: [
-        { name: "AWS", level: 88 },
-        { name: "Google Cloud", level: 85 },
-        { name: "Docker", level: 90 },
-        { name: "Kubernetes", level: 80 },
-        { name: "CI/CD", level: 87 },
-        { name: "Vercel", level: 92 },
+        { name: "AWS" },
+        { name: "Google Cloud" },
+        { name: "Docker" },
+        { name: "Kubernetes" },
+        { name: "CI/CD"},
+        { name: "Vercel" },
       ],
     },
     {
       category: "Mobile",
       icon: Smartphone,
-      color: "from-red-700 to-red-900",
+      color: "from-red-700 to-red-0",
       skills: [
-        { name: "React Native", level: 88 },
-        { name: "Expo", level: 85 },
-        { name: "Flutter", level: 75 },
-        { name: "PWA", level: 90 },
+        { name: "React Native" },
+        { name: "Expo" },
+        { name: "Flutter" },
+        { name: "PWA" },
       ],
     },
     {
@@ -82,12 +82,12 @@ export function Skills() {
       icon: Terminal,
       color: "from-red-800 to-black",
       skills: [
-        { name: "Git", level: 95 },
-        { name: "VS Code", level: 95 },
-        { name: "Figma", level: 87 },
-        { name: "Webpack", level: 83 },
-        { name: "Jest", level: 88 },
-        { name: "Postman", level: 90 },
+        { name: "Git" },
+        { name: "VS Code" },
+        { name: "Figma"},
+        { name: "Webpack" },
+        { name: "Jest" },
+        { name: "Postman" },
       ],
     },
   ];
@@ -147,16 +147,6 @@ export function Skills() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-gray-300">{skill.name}</span>
-                      <span className="text-primary text-sm font-medium">{skill.level}%</span>
-                    </div>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        transition={{ delay: skillIndex * 0.05 + 0.2, duration: 0.8, ease: "easeOut" }}
-                        viewport={{ once: true }}
-                        className="h-full bg-gradient-to-r from-primary to-red-700 rounded-full"
-                      />
                     </div>
                   </motion.div>
                 ))}

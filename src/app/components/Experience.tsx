@@ -4,64 +4,24 @@ import { Calendar, MapPin, Briefcase } from "lucide-react";
 export function Experience() {
   const experiences = [
     {
-      title: "Senior Full Stack Developer",
-      company: "Tech Innovations Inc.",
-      location: "San Francisco, CA",
-      period: "Jan 2023 - Present",
-      type: "Full-time",
-      description: "Leading the development of enterprise-level web applications using React, Node.js, and AWS. Mentoring junior developers and establishing best practices for the team.",
+      title: "Software Developer Intern",
+      company: "Software Persona",
+      location: "İstanbul, Turkey",
+      period: "Jan 2026 - Present",
+      type: "Internship",
+      description: "Completed a multidisciplinary software internship at SoftwarePersona, focusing on UI/UX design, web development, database systems, and mobile application development. Actively participated in project design and production processes within a collaborative development environment.",
       achievements: [
-        "Architected and deployed microservices architecture serving 500K+ users",
-        "Improved application performance by 60% through optimization",
-        "Led team of 5 developers in agile environment",
-        "Implemented CI/CD pipeline reducing deployment time by 75%",
+        "Contributed to end-to-end project workflows from design to deployment",
+
+        "Designed and implemented database structures using SQL principles",
+
+        "Developed responsive web interfaces aligned with UI/UX best practices",
+
+        "Participated in mobile application development processes",
+
+        "Collaborated within a structured team-based development environment",  
       ],
       technologies: ["React", "Node.js", "AWS", "MongoDB", "TypeScript", "Docker"],
-    },
-    {
-      title: "Full Stack Developer",
-      company: "Digital Solutions Ltd.",
-      location: "New York, NY",
-      period: "Jun 2021 - Dec 2022",
-      type: "Full-time",
-      description: "Developed and maintained full-stack web applications for various clients across different industries. Collaborated with designers and product managers to deliver high-quality solutions.",
-      achievements: [
-        "Built 15+ responsive web applications from scratch",
-        "Reduced API response time by 40% through database optimization",
-        "Implemented real-time features using WebSockets",
-        "Contributed to 20+ open-source projects",
-      ],
-      technologies: ["React", "Express.js", "PostgreSQL", "Next.js", "GraphQL"],
-    },
-    {
-      title: "Frontend Developer",
-      company: "Creative Web Studio",
-      location: "Remote",
-      period: "Jan 2020 - May 2021",
-      type: "Contract",
-      description: "Focused on creating beautiful, responsive user interfaces and implementing complex frontend features. Worked closely with UX designers to bring designs to life.",
-      achievements: [
-        "Developed pixel-perfect UI components library used across 10+ projects",
-        "Improved website load time by 50% through code splitting",
-        "Implemented accessibility features meeting WCAG 2.1 standards",
-        "Mentored 3 junior developers in React best practices",
-      ],
-      technologies: ["React", "Vue.js", "Tailwind CSS", "JavaScript", "Figma"],
-    },
-    {
-      title: "Junior Web Developer",
-      company: "StartUp Hub",
-      location: "Austin, TX",
-      period: "Jun 2019 - Dec 2019",
-      type: "Internship",
-      description: "Assisted in the development of web applications and learned modern web development practices. Participated in code reviews and team meetings.",
-      achievements: [
-        "Contributed to 5+ production-ready features",
-        "Fixed 50+ bugs and improved code quality",
-        "Participated in daily stand-ups and sprint planning",
-        "Completed comprehensive training in full-stack development",
-      ],
-      technologies: ["HTML/CSS", "JavaScript", "Node.js", "MySQL"],
     },
   ];
 
@@ -166,7 +126,7 @@ export function Experience() {
           </div>
         </div>
 
-        {/* Summary Stats */}
+        {/* Summary Stats */}{/*
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -191,7 +151,7 @@ export function Experience() {
               <div className="text-gray-400">{stat.label}</div>
             </motion.div>
           ))}
-        </motion.div>
+        </motion.div>*/}
       </div>
     </section>
   );

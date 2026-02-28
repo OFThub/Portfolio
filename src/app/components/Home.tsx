@@ -42,23 +42,12 @@ export function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-block mb-6"
-            >
-              <div className="px-4 py-2 bg-primary/10 border border-primary/30 rounded-full backdrop-blur-sm">
-                <span className="text-primary text-sm">Full Stack Developer</span>
-              </div>
-            </motion.div>
-
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-primary">
-                Building Digital
+                Full Stack
               </span>
               <br />
-              <span className="text-primary">Experiences</span>
+              <span className="text-primary">Developer</span>
             </h1>
 
             <p className="text-xl sm:text-2xl text-gray-400 max-w-3xl mx-auto mb-12">

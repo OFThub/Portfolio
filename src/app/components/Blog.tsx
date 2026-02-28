@@ -5,6 +5,17 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 export function Blog() {
   const blogPosts = [
     {
+      id: "",
+      title: "",
+      excerpt: "",
+      image: "",
+      date: "",
+      readTime: "",
+      tags: ["React", "JavaScript", "Web Development"],
+      featured: true,
+    },
+    {/*
+    {
       id: "1",
       title: "Building Scalable React Applications: Best Practices for 2026",
       excerpt: "Learn the essential patterns and practices for building large-scale React applications that are maintainable, performant, and easy to scale.",
@@ -13,58 +24,23 @@ export function Blog() {
       readTime: "8 min read",
       tags: ["React", "Best Practices", "Architecture"],
       featured: true,
-    },
-    {
-      id: "2",
-      title: "Mastering TypeScript: Advanced Types and Patterns",
-      excerpt: "Dive deep into TypeScript's advanced type system and learn how to leverage it for better code quality and developer experience.",
-      image: "https://images.unsplash.com/photo-1565229284535-2cbbe3049123?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2RpbmclMjBibG9nJTIwYXJ0aWNsZXxlbnwxfHx8fDE3NzIxOTI3NTl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      date: "Feb 15, 2026",
-      readTime: "12 min read",
-      tags: ["TypeScript", "Advanced", "Tutorial"],
-      featured: true,
-    },
-    {
-      id: "3",
-      title: "Modern Web Design Trends You Should Know",
-      excerpt: "Explore the latest design trends shaping the web in 2026, from minimalism to immersive 3D experiences.",
-      image: "https://images.unsplash.com/photo-1760008486593-a85315610136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWIlMjBkZXNpZ24lMjB0cmVuZHN8ZW58MXx8fHwxNzcyMTkyNzYwfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      date: "Feb 10, 2026",
-      readTime: "6 min read",
-      tags: ["Design", "UX/UI", "Trends"],
-      featured: false,
-    },
-    {
-      id: "4",
-      title: "Optimizing Node.js Performance: Tips and Tricks",
-      excerpt: "Practical strategies for improving the performance of your Node.js applications in production environments.",
-      image: "https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9ncmFtbWluZyUyMGNvZGUlMjBzY3JlZW58ZW58MXx8fHwxNzcyMTQzMTk4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      date: "Feb 5, 2026",
-      readTime: "10 min read",
-      tags: ["Node.js", "Performance", "Backend"],
-      featured: false,
-    },
-    {
-      id: "5",
-      title: "Getting Started with Microservices Architecture",
-      excerpt: "A comprehensive guide to understanding and implementing microservices architecture in modern applications.",
-      image: "https://images.unsplash.com/photo-1627634771121-fa3db5779f60?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWIlMjBkZXZlbG9wbWVudCUyMHByb2plY3R8ZW58MXx8fHwxNzcyMTA2MzM3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      date: "Jan 28, 2026",
-      readTime: "15 min read",
-      tags: ["Architecture", "Microservices", "Backend"],
-      featured: false,
-    },
-    {
-      id: "6",
-      title: "CSS Grid vs Flexbox: When to Use Which",
-      excerpt: "Understanding the differences between CSS Grid and Flexbox and choosing the right tool for your layout needs.",
-      image: "https://images.unsplash.com/photo-1708457753320-02e52a276a80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMDNkJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MXx8fHwxNzcyMTkyNjM3fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      date: "Jan 20, 2026",
-      readTime: "7 min read",
-      tags: ["CSS", "Frontend", "Tutorial"],
-      featured: false,
-    },
+    }*/}
   ];
+  
+  if (blogPosts.length === 2) {
+    return (
+      <section id="blog" className="min-h-screen pt-24 pb-16 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Blog Coming Soon
+          </h1>
+          <p className="text-gray-400">
+            I’ll be sharing insights and technical articles here soon.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="blog" className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
@@ -141,7 +117,7 @@ export function Blog() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex flex-wrap gap-2">
-                        {post.tags.slice(0, 2).map((tag) => (
+                        {post.tags?.slice(0, 2).map((tag) => (
                           <span
                             key={tag}
                             className="text-xs px-2 py-1 bg-secondary border border-primary/10 text-gray-300 rounded"
@@ -182,7 +158,7 @@ export function Blog() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1, duration: 0.6 }}
                   viewport={{ once: true }}
-                  className="group block bg-card border border-primary/20 rounded-lg overflow-hidden hover:border-primary/50 transition-all duration-300 h-full flex flex-col cursor-pointer"
+                  className="group block bg-card border border-primary/20 rounded-lg overflow-hidden hover:border-primary/50 transition-all duration-300 h-full flex-col cursor-pointer"
                 >
                   <div className="relative h-48 overflow-hidden">
                     <ImageWithFallback
@@ -214,7 +190,7 @@ export function Blog() {
                     </p>
 
                     <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
+                      {post.tags?.map((tag) => (
                         <span
                           key={tag}
                           className="text-xs px-2 py-1 bg-secondary border border-primary/10 text-gray-300 rounded"
@@ -229,7 +205,7 @@ export function Blog() {
           </div>
         </div>
 
-        {/* Newsletter CTA */}
+       {/* Newsletter CTA */}{/*
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -253,7 +229,7 @@ export function Blog() {
               Subscribe
             </button>
           </div>
-        </motion.div>
+        </motion.div>*/}
       </div>
     </section>
   );

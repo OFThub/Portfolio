@@ -5,24 +5,15 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 export function About() {
   const education = [
     {
-      degree: "Bachelor of Science in Computer Science",
-      institution: "University Name",
-      year: "2018 - 2022",
-      description: "Graduated with honors. Specialized in Software Engineering and Web Technologies.",
-    },
-    {
-      degree: "Full Stack Web Development Bootcamp",
-      institution: "Coding Academy",
-      year: "2022",
-      description: "Intensive program covering modern web development practices and frameworks.",
+      degree: "Bachelor of Science in Computer Engineering",
+      institution: "Sakarya University",
+      year: "2023 - 2027",
+      description: "Focused on software development, algorithms, and system design. Graduating with a strong foundation in both hardware and software principles, ready to tackle real-world challenges in the tech industry.",
     },
   ];
 
   const certifications = [
-    "AWS Certified Solutions Architect",
-    "Google Cloud Professional Developer",
-    "Meta React Professional Certificate",
-    "MongoDB Certified Developer",
+    "1"
   ];
 
   return (
@@ -68,20 +59,26 @@ export function About() {
             <div className="space-y-4 text-gray-400">
               <p>
                 I'm a passionate full-stack developer with a love for creating beautiful, 
-                functional, and user-friendly applications. My journey in software development 
+                functional, and user-friendly applications. My journey in Computer Engineering
                 began with a curiosity for how things work and evolved into a career focused 
                 on building solutions that make a difference.
               </p>
               <p>
-                With expertise spanning both frontend and backend technologies, I enjoy 
-                tackling complex challenges and transforming ideas into reality. I believe 
-                in writing clean, maintainable code and staying current with the latest 
-                industry trends and best practices.
+                With a strong curiosity across all areas of technology, 
+                I continuously strive to expand my knowledge and push my boundaries. 
+                I enjoy exploring diverse domains, understanding how systems work end-to-end, 
+                and turning ideas into structured, practical solutions. I value clean, 
+                maintainable code and consistently refine my skills by following evolving 
+                industry standards and best practices.
               </p>
               <p>
-                When I'm not coding, you can find me contributing to open-source projects, 
-                writing technical blog posts, or exploring new technologies that push the 
-                boundaries of what's possible on the web.
+                Passionate about transforming theoretical
+                knowledge into practical applications,
+                consistently exceeding expectations and
+                contributing to team success.Proficient in
+                adapting to evolving technologies, driving
+                efficiency and productivity through strategic
+                i mplementation of cutting-edge software.
               </p>
             </div>
           </div>
@@ -165,13 +162,11 @@ export function About() {
           </div>
           <div className="space-y-4 text-gray-400">
             <p className="text-lg">
-              "Code is poetry, and every line tells a story. I strive to write code that is 
-              not just functional, but elegant, maintainable, and a joy to work with."
+              "Coding, like invention, starts with careful observation of the world and turns insight into technology that improves human life."
             </p>
+            <br />
             <p>
-              I believe in continuous learning, collaboration, and the power of technology 
-              to solve real-world problems. My approach combines technical excellence with 
-              a deep understanding of user needs and business goals.
+              As an engineer, I am driven by the desire to solve real-world problems and make a meaningful impact. As a computer engineer, I focus on building solutions that reduce repetitive and demanding work, enabling people to dedicate more time to their passions and lead more fulfilling lives. I believe technology should empower people—not replace them—helping them work more efficiently, create greater value, and ultimately gain more time and financial freedom rather than eliminating opportunities.
             </p>
           </div>
         </motion.div>

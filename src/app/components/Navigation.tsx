@@ -60,10 +60,10 @@ export function Navigation() {
             onClick={() => scrollToSection("home")}
             className="flex items-center space-x-2 cursor-pointer"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-red-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
+            <div className="w-11 h-10 bg-gradient-to-br from-primary to-red-700 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">OFT</span>
             </div>
-            <span className="text-white text-xl font-bold">Developer</span>
+            <span className="text-white text-xl font-bold">Ömer Faruk TÜRKDOĞDU</span>
           </button>
 
           {/* Desktop Navigation */}
