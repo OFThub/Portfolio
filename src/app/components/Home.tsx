@@ -19,18 +19,6 @@ export function Home() {
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-red-950/20" />
-        
-        {/* Spline 3D Container - Adaptable for your Spline integration */}
-        <div className="absolute inset-0 z-0" id="spline-container">
-          {/* This is where you'll integrate your Spline 3D scene */}
-          <div className="w-full h-full bg-black/50 flex items-center justify-center">
-            <div className="text-center text-gray-600 p-8">
-              <Globe className="w-20 h-20 mx-auto mb-4 opacity-20" />
-              <p className="text-sm">Spline 3D Integration Area</p>
-              <p className="text-xs mt-2">Add your Spline embed code here</p>
-            </div>
-          </div>
-        </div>
 
         {/* Animated Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(220,38,38,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(220,38,38,0.05)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
