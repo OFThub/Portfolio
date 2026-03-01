@@ -19,6 +19,7 @@ interface ParticleData {
   x: number;
   y: number;
   ringAngle: number;
+  wobbleSeed: number;
 }
 
 interface ExplosionParticle {
@@ -30,63 +31,73 @@ interface ExplosionParticle {
   color: string;
   life: number;
   decay: number;
+  spin: number;
+  rot: number;
   shape: "circle" | "rect";
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const TECHS: Tech[] = [
-  { label: "Re", color: "#61dafb" },  // React
-  { label: "TS", color: "#3178c6" },  // TypeScript
-  { label: "Nx", color: "#ffffff" },  // Next.js
-  { label: "Tw", color: "#38bdf8" },  // Tailwind
-  { label: "Vu", color: "#42b883" },  // Vue.js
-  { label: "Nd", color: "#68a063" },  // Node.js
-  { label: "Ex", color: "#ffffff" },  // Express
-  { label: "Py", color: "#ffd43b" },  // Python
-  { label: "Dj", color: "#44b78b" },  // Django
-  { label: "Mg", color: "#13aa52" },  // MongoDB
-  { label: "Pg", color: "#336791" },  // PostgreSQL
-  { label: "Rd", color: "#dc382d" },  // Redis
-  { label: "Fb", color: "#ffca28" },  // Firebase
-  { label: "Aw", color: "#ff9900" },  // AWS
-  { label: "Dk", color: "#2496ed" },  // Docker
-  { label: "Ku", color: "#326ce5" },  // Kubernetes
-  { label: "Vc", color: "#ffffff" },  // Vercel
-  { label: "Rn", color: "#61dafb" },  // React Native
-  { label: "Fl", color: "#54c5f8" },  // Flutter
-  { label: "Gi", color: "#f05032" },  // Git
-  { label: "Fg", color: "#a259ff" },  // Figma
-  { label: "Pm", color: "#ff6c37" },  // Postman
-  { label: "Gq", color: "#e10098" },  // GraphQL
-  { label: "My", color: "#4479a1" },  // MySQL
+  { label: "Re", color: "#61dafb" }, // React
+  { label: "TS", color: "#3178c6" }, // TypeScript
+  { label: "Nx", color: "#ffffff" }, // Next.js
+  { label: "Tw", color: "#38bdf8" }, // Tailwind
+  { label: "Vu", color: "#42b883" }, // Vue.js
+  { label: "Nd", color: "#68a063" }, // Node.js
+  { label: "Ex", color: "#ffffff" }, // Express
+  { label: "Py", color: "#ffd43b" }, // Python
+  { label: "Dj", color: "#44b78b" }, // Django
+  { label: "Mg", color: "#13aa52" }, // MongoDB
+  { label: "Pg", color: "#336791" }, // PostgreSQL
+  { label: "Rd", color: "#dc382d" }, // Redis
+  { label: "Fb", color: "#ffca28" }, // Firebase
+  { label: "Aw", color: "#ff9900" }, // AWS
+  { label: "Dk", color: "#2496ed" }, // Docker
+  { label: "Ku", color: "#326ce5" }, // Kubernetes
+  { label: "Vc", color: "#ffffff" }, // Vercel
+  { label: "Rn", color: "#61dafb" }, // React Native
+  { label: "Fl", color: "#54c5f8" }, // Flutter
+  { label: "Gi", color: "#f05032" }, // Git
+  { label: "Fg", color: "#a259ff" }, // Figma
+  { label: "Pm", color: "#ff6c37" }, // Postman
+  { label: "Gq", color: "#e10098" }, // GraphQL
+  { label: "My", color: "#4479a1" }, // MySQL
 ];
 
-// Animation phase timings (seconds)
+// Animation phase timings (seconds) — daha “cinematic”
 const PHASE = {
-  CONVERGE: { start: 0, end: 2.5 },
-  SPIN:     { start: 2.5, end: 5.0 },
-  WRITE:    { start: 3.5, end: 5.5 },
-  EXPLODE:  { start: 5.6, end: 7.0 },
-  DONE:     7.0,
+  CONVERGE: { start: 0.0, end: 2.2 },
+  SPIN: { start: 2.0, end: 5.1 },
+  WRITE: { start: 2.7, end: 5.2 }, // signature biraz daha erken
+  EXPLODE: { start: 5.35, end: 7.1 },
+  DONE: 7.1,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function easeInOut(t: number): number {
-  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+function clamp01(t: number): number {
+  return Math.max(0, Math.min(1, t));
 }
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
-function clamp01(t: number): number {
-  return Math.max(0, Math.min(1, t));
-}
-
 function phaseT(t: number, start: number, end: number): number {
   return clamp01((t - start) / (end - start));
+}
+
+// Smoothstep-ish
+function easeInOut(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+// Slight overshoot for converge
+function easeOutBack(t: number): number {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
 }
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -100,7 +111,11 @@ function hexToRgba(hex: string, alpha: number): string {
 
 function drawRoundedRect(
   ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number, r: number
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
 ) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -126,11 +141,14 @@ export default function Loading({ onComplete }: LoadingProps) {
   const expCanvasRef = useRef<HTMLCanvasElement>(null);
   const sigContainerRef = useRef<HTMLDivElement>(null);
   const sigSubtitleRef = useRef<HTMLDivElement>(null);
-  const expCanvasWrapRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
 
   const [fadeOut, setFadeOut] = useState(false);
   const [hidden, setHidden] = useState(false);
+
+  // prevent setState spam in rAF
+  const fadeTriggeredRef = useRef(false);
+  const doneTriggeredRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -138,12 +156,30 @@ export default function Loading({ onComplete }: LoadingProps) {
     const ctx = canvas.getContext("2d")!;
     const expCtx = expCanvas.getContext("2d")!;
 
-    let W = 0, H = 0;
+    let W = 0,
+      H = 0,
+      DPR = 1;
 
     function resize() {
-      W = canvas.width = expCanvas.width = window.innerWidth;
-      H = canvas.height = expCanvas.height = window.innerHeight;
+      DPR = Math.min(2, window.devicePixelRatio || 1);
+
+      W = window.innerWidth;
+      H = window.innerHeight;
+
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+
+      expCanvas.width = Math.floor(W * DPR);
+      expCanvas.height = Math.floor(H * DPR);
+      expCanvas.style.width = `${W}px`;
+      expCanvas.style.height = `${H}px`;
+
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      expCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
+
     resize();
     window.addEventListener("resize", resize);
 
@@ -154,39 +190,45 @@ export default function Loading({ onComplete }: LoadingProps) {
         index: i,
         total: TECHS.length,
         tech,
-        startX: Math.random() * window.innerWidth,
-        startY: Math.random() * window.innerHeight,
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
+        startX: Math.random() * W,
+        startY: Math.random() * H,
+        x: Math.random() * W,
+        y: Math.random() * H,
         ringAngle: angle,
+        wobbleSeed: Math.random() * 1000,
       };
     });
 
     let expParticles: ExplosionParticle[] = [];
-    let startTime: number | null = null;
-    let explosionTriggered = false;
     let signatureShown = false;
+    let explosionTriggered = false;
 
     function triggerExplosion() {
-      expParticles = Array.from({ length: 200 }, () => {
+      expParticles = Array.from({ length: 240 }, () => {
         const angle = Math.random() * Math.PI * 2;
-        const speed = 3 + Math.random() * 15;
+        // softer speeds (çok agresif olmasın)
+        const speed = 4 + Math.random() * 12;
         return {
-          x: W / 2, y: H / 2,
+          x: W / 2,
+          y: H / 2,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          size: 2 + Math.random() * 8,
+          size: 2 + Math.random() * 9,
           color:
-            Math.random() > 0.5
+            Math.random() > 0.6
               ? "#e53e3e"
               : Math.random() > 0.5
               ? "#ffffff"
               : "#9b1c1c",
           life: 1,
-          decay: 0.02 + Math.random() * 0.04,
-          shape: Math.random() > 0.5 ? "circle" : "rect",
+          decay: 0.018 + Math.random() * 0.03,
+          spin: (Math.random() - 0.5) * 0.35,
+          rot: Math.random() * Math.PI * 2,
+          shape: Math.random() > 0.55 ? "circle" : "rect",
         };
       });
+
+      expCanvas.classList.add("active");
     }
 
     function showSignature() {
@@ -196,103 +238,143 @@ export default function Loading({ onComplete }: LoadingProps) {
 
       const paths = container.querySelectorAll<SVGPathElement>(".sig-path");
       let delay = 0;
+
       paths.forEach((path) => {
-        const len = path.getTotalLength?.() ?? 200;
+        const len = path.getTotalLength?.() ?? 220;
         path.style.strokeDasharray = String(len);
         path.style.strokeDashoffset = String(len);
-        path.style.transition = `stroke-dashoffset ${0.15 + Math.random() * 0.1}s ease ${delay}s`;
-        const d = delay;
-        setTimeout(() => { path.style.strokeDashoffset = "0"; }, d * 1000 + 100);
-        delay += 0.08;
+
+        // daha smooth + biraz uzun
+        const dur = 0.22 + Math.random() * 0.12;
+        path.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(.22,1,.36,1) ${delay}s`;
+
+        const localDelay = delay;
+        setTimeout(() => {
+          path.style.strokeDashoffset = "0";
+        }, localDelay * 1000 + 60);
+
+        delay += 0.075;
       });
 
+      // subtitle timing
       setTimeout(() => {
         const sub = sigSubtitleRef.current;
         if (sub) sub.classList.add("visible");
-      }, delay * 1000);
+      }, (delay + 0.10) * 1000);
     }
 
     function hideSignature() {
       const container = sigContainerRef.current;
       if (container) container.classList.remove("visible");
+      const sub = sigSubtitleRef.current;
+      if (sub) sub.classList.remove("visible");
     }
 
-    function animate(timestamp: number) {
-      if (!startTime) startTime = timestamp;
-      const t = (timestamp - startTime) / 1000;
+    // Time
+    let t = 0;
+    let last = performance.now();
 
-      ctx.clearRect(0, 0, W, H);
+    function animate(now: number) {
+      const dt = Math.min(0.033, (now - last) / 1000);
+      last = now;
+      t += dt;
 
-      // Background
-      ctx.fillStyle = "#0a0a0a";
+      // ----- Background with trail (smooth) -----
+      // slight alpha fill => motion blur / buttery feel
+      ctx.fillStyle = "rgba(10,10,10,0.22)";
       ctx.fillRect(0, 0, W, H);
 
-      // Subtle grid
-      ctx.strokeStyle = "rgba(229,62,62,0.03)";
+      // subtle grid (daha low key)
+      ctx.strokeStyle = "rgba(229,62,62,0.018)";
       ctx.lineWidth = 1;
-      for (let x = 0; x < W; x += 60) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      for (let x = 0; x < W; x += 70) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
       }
-      for (let y = 0; y < H; y += 60) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      for (let y = 0; y < H; y += 70) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
       }
 
-      const convergeT = easeInOut(phaseT(t, PHASE.CONVERGE.start, PHASE.CONVERGE.end));
-      const spinT = phaseT(t, PHASE.SPIN.start, PHASE.SPIN.end);
-      const spinAngleOffset = spinT * Math.PI;
+      // phases
+      const convergeRaw = phaseT(t, PHASE.CONVERGE.start, PHASE.CONVERGE.end);
+      const convergeT = easeOutBack(convergeRaw);
+
+      const spinRaw = phaseT(t, PHASE.SPIN.start, PHASE.SPIN.end);
+      // spin easing: accelerate then decelerate
+      const spinEase = easeInOut(spinRaw);
+
+      // angle curve (daha “smooth”)
+      const spinAngleOffset = spinEase * Math.PI * 1.6;
+
       const radius = Math.min(W, H) * 0.28;
+
+      // particle morph to circle
+      const circleT = clamp01((spinRaw - 0.08) * 3);
+      const circleEase = easeInOut(circleT);
 
       // Draw particles
       particles.forEach((p) => {
         const currentAngle = p.ringAngle + spinAngleOffset;
-        const targetX = W / 2 + Math.cos(currentAngle) * radius;
-        const targetY = H / 2 + Math.sin(currentAngle) * radius;
 
-        if (convergeT < 1) {
+        // micro wobble for life (noise-like)
+        const wobble =
+          Math.sin(t * 2.2 + p.wobbleSeed) * 2.2 +
+          Math.cos(t * 1.6 + p.wobbleSeed * 0.7) * 1.6;
+
+        const ringX = W / 2 + Math.cos(currentAngle) * radius;
+        const ringY = H / 2 + Math.sin(currentAngle) * radius;
+
+        if (convergeRaw < 1) {
           p.x = lerp(p.startX, W / 2 + Math.cos(p.ringAngle) * radius, convergeT);
           p.y = lerp(p.startY, H / 2 + Math.sin(p.ringAngle) * radius, convergeT);
         } else {
-          p.x = targetX;
-          p.y = targetY;
+          p.x = ringX;
+          p.y = ringY;
         }
 
+        // explode push out
         if (t >= PHASE.EXPLODE.start) {
-          const ex = phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.5);
-          const flyDist = easeInOut(ex) * 600;
-          p.x = targetX + Math.cos(currentAngle) * flyDist;
-          p.y = targetY + Math.sin(currentAngle) * flyDist;
+          const ex = phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.75);
+          const flyDist = easeInOut(ex) * (560 + wobble * 2);
+          p.x = ringX + Math.cos(currentAngle) * flyDist;
+          p.y = ringY + Math.sin(currentAngle) * flyDist;
         }
 
         const opacity =
           t >= PHASE.EXPLODE.start
-            ? Math.max(0, 1 - phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.6))
-            : Math.min(1, convergeT * 2);
+            ? Math.max(0, 1 - phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.65))
+            : Math.min(1, convergeRaw * 2);
 
         if (opacity <= 0) return;
 
-        const circleT = easeInOut(clamp01((spinT - 0.1) * 3));
         const size = 28;
-        const cornerRadius = (size / 2) * circleT;
+        const cornerRadius = (size / 2) * circleEase;
 
         ctx.save();
         ctx.globalAlpha = opacity;
-        ctx.translate(p.x, p.y);
+        ctx.translate(p.x + wobble, p.y);
 
-        if (circleT > 0.3) {
-          const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, size);
-          glowGrad.addColorStop(0, hexToRgba(p.tech.color, 0.25));
-          glowGrad.addColorStop(1, "transparent");
-          ctx.fillStyle = glowGrad;
-          ctx.beginPath();
-          ctx.arc(0, 0, size * 1.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
+        // outer glow (nicer)
+        const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.2);
+        glowGrad.addColorStop(0, hexToRgba(p.tech.color, 0.22 * (0.35 + circleEase)));
+        glowGrad.addColorStop(0.55, hexToRgba(p.tech.color, 0.08));
+        glowGrad.addColorStop(1, "transparent");
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 2.2, 0, Math.PI * 2);
+        ctx.fill();
 
-        ctx.fillStyle = "#1a1a1a";
-        ctx.strokeStyle = p.tech.color;
-        ctx.lineWidth = 1.5;
+        // body
+        ctx.fillStyle = "rgba(18,18,18,0.95)";
+        ctx.strokeStyle = hexToRgba(p.tech.color, 0.9);
+        ctx.lineWidth = 1.6;
 
-        if (circleT > 0.99) {
+        if (circleEase > 0.985) {
           ctx.beginPath();
           ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
         } else {
@@ -301,8 +383,9 @@ export default function Loading({ onComplete }: LoadingProps) {
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = p.tech.color;
-        ctx.font = `bold ${Math.round(9 + circleT * 2)}px 'Space Grotesk', monospace`;
+        // label
+        ctx.fillStyle = hexToRgba(p.tech.color, 1);
+        ctx.font = `700 ${Math.round(9 + circleEase * 2)}px 'Space Grotesk', monospace`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(p.tech.label, 0, 0);
@@ -312,15 +395,16 @@ export default function Loading({ onComplete }: LoadingProps) {
 
       // Center glow during spin
       if (t >= PHASE.SPIN.start && t < PHASE.EXPLODE.start) {
-        const gIntensity = Math.sin(spinT * Math.PI) * 0.3;
-        const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, radius * 0.6);
+        const gIntensity = Math.sin(spinEase * Math.PI) * 0.22;
+        const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, radius * 0.9);
         grad.addColorStop(0, `rgba(229,62,62,${gIntensity})`);
+        grad.addColorStop(0.7, `rgba(229,62,62,${gIntensity * 0.35})`);
         grad.addColorStop(1, "transparent");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
       }
 
-      // Signature write trigger
+      // Signature trigger
       if (t >= PHASE.WRITE.start && !signatureShown) {
         signatureShown = true;
         showSignature();
@@ -333,17 +417,23 @@ export default function Loading({ onComplete }: LoadingProps) {
         hideSignature();
       }
 
-      // Draw explosion particles
+      // Explosion particles
       if (expParticles.length > 0) {
-        expCtx.clearRect(0, 0, W, H);
-        if (expCanvasWrapRef.current) expCanvasWrapRef.current.classList.add("active");
+        // motion blur style
+        expCtx.fillStyle = "rgba(0,0,0,0.18)";
+        expCtx.fillRect(0, 0, W, H);
 
         expParticles.forEach((p) => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vx *= 0.95;
-          p.vy *= 0.95;
-          p.life -= p.decay;
+          p.x += p.vx * (dt * 60);
+          p.y += p.vy * (dt * 60);
+
+          // drag
+          const drag = Math.pow(0.92, dt * 60);
+          p.vx *= drag;
+          p.vy *= drag;
+
+          p.rot += p.spin * (dt * 60);
+          p.life -= p.decay * (dt * 60);
           p.life = Math.max(0, p.life);
 
           if (p.life <= 0) return;
@@ -354,32 +444,43 @@ export default function Loading({ onComplete }: LoadingProps) {
 
           if (p.shape === "circle") {
             expCtx.beginPath();
-            expCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+            expCtx.arc(p.x, p.y, p.size * (0.3 + p.life), 0, Math.PI * 2);
             expCtx.fill();
           } else {
-            const s = p.size * p.life;
-            expCtx.fillRect(p.x - s / 2, p.y - s / 2, s, s);
+            const s = p.size * (0.35 + p.life);
+            expCtx.translate(p.x, p.y);
+            expCtx.rotate(p.rot);
+            expCtx.fillRect(-s / 2, -s / 2, s, s);
           }
           expCtx.restore();
         });
 
         expParticles = expParticles.filter((p) => p.life > 0);
+
+        // when done, remove active
+        if (expParticles.length === 0) {
+          expCanvas.classList.remove("active");
+          expCtx.clearRect(0, 0, W, H);
+        }
       }
 
-      // White flash
-      if (t >= PHASE.EXPLODE.start && t < PHASE.EXPLODE.start + 0.3) {
-        const flashT = phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.3);
-        const flashOpacity = Math.sin(flashT * Math.PI) * 0.9;
+      // White flash (softer, shorter)
+      if (t >= PHASE.EXPLODE.start && t < PHASE.EXPLODE.start + 0.22) {
+        const flashT = phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.22);
+        const flashOpacity = Math.sin(flashT * Math.PI) * 0.75;
         ctx.fillStyle = `rgba(255,255,255,${flashOpacity})`;
         ctx.fillRect(0, 0, W, H);
       }
 
-      // Fade out & call onComplete
-      if (t >= PHASE.DONE - 0.8) {
+      // Fade out (trigger once)
+      if (t >= PHASE.DONE - 0.85 && !fadeTriggeredRef.current) {
+        fadeTriggeredRef.current = true;
         setFadeOut(true);
       }
 
-      if (t >= PHASE.DONE) {
+      // Done (trigger once)
+      if (t >= PHASE.DONE && !doneTriggeredRef.current) {
+        doneTriggeredRef.current = true;
         setHidden(true);
         onComplete?.();
         return;
@@ -387,6 +488,10 @@ export default function Loading({ onComplete }: LoadingProps) {
 
       rafRef.current = requestAnimationFrame(animate);
     }
+
+    // init background once (avoid initial black frame)
+    ctx.fillStyle = "#0a0a0a";
+    ctx.fillRect(0, 0, W, H);
 
     rafRef.current = requestAnimationFrame(animate);
 
@@ -400,16 +505,9 @@ export default function Loading({ onComplete }: LoadingProps) {
 
   return (
     <div className={`loader-wrapper${fadeOut ? " fade-out" : ""}`}>
-      {/* Main animation canvas */}
       <canvas ref={canvasRef} className="loader-canvas" />
-
-      {/* Signature */}
       <div ref={sigContainerRef} className="signature-container">
-        <svg
-          className="signature-svg"
-          viewBox="0 0 420 90"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg className="signature-svg" viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg">
           {/* Ö */}
           <path className="sig-path" d="M18,20 C12,20 8,26 8,36 C8,46 12,52 18,52 C24,52 28,46 28,36 C28,26 24,20 18,20 Z M14,16 L22,10" />
           {/* m */}
@@ -447,12 +545,12 @@ export default function Loading({ onComplete }: LoadingProps) {
           {/* u */}
           <path className="sig-path" d="M392,25 L392,43 C392,49 395,52 400,52 C405,52 408,49 408,43 L408,25" />
         </svg>
+
         <div ref={sigSubtitleRef} className="sig-subtitle">
           Full Stack Developer
         </div>
       </div>
 
-      {/* Explosion canvas */}
       <canvas ref={expCanvasRef} className="explosion-canvas" />
     </div>
   );

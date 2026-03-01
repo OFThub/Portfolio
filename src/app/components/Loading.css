@@ -18,7 +18,7 @@
   z-index: 9999;
   overflow: hidden;
   font-family: 'Space Grotesk', sans-serif;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.85s cubic-bezier(.22,1,.36,1);
 }
 
 .loader-wrapper.fade-out {
@@ -41,7 +41,7 @@
   height: 100%;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.1s;
+  transition: opacity 0.18s ease;
 }
 
 .explosion-canvas.active {
@@ -57,30 +57,31 @@
   gap: 10px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s ease;
   z-index: 10;
+  transform: translateY(6px) scale(0.99);
+  filter: blur(0px);
 }
 
 .signature-container.visible {
   opacity: 1;
-}
-
-.signature-container.hidden {
-  opacity: 0;
+  transform: translateY(0px) scale(1);
 }
 
 .signature-svg {
   width: 420px;
   max-width: 90vw;
-  filter: drop-shadow(0 0 20px rgba(229, 62, 62, 0.8));
+  filter: drop-shadow(0 0 26px rgba(229, 62, 62, 0.55));
 }
 
 .sig-path {
   fill: none;
   stroke: var(--loader-white);
-  stroke-width: 2.5;
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+  /* “ink” feel */
+  filter: drop-shadow(0 0 6px rgba(245,245,240,0.22));
 }
 
 .sig-subtitle {
@@ -90,7 +91,8 @@
   opacity: 0;
   letter-spacing: 4px;
   text-transform: uppercase;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.55s ease;
+  transform: translateY(2px);
 }
 
 .sig-subtitle.visible {
