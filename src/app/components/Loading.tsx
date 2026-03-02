@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import "./loading.css";
+import "../../styles/Loading.css";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -65,11 +65,11 @@ const TECHS: Tech[] = [
   { label: "My", color: "#4479a1" }, // MySQL
 ];
 
-// Animation phase timings (seconds) — daha “cinematic”
+// Animation phase timings (seconds)
 const PHASE = {
   CONVERGE: { start: 0.0, end: 2.2 },
   SPIN: { start: 2.0, end: 5.1 },
-  WRITE: { start: 2.7, end: 5.2 }, // signature biraz daha erken
+  WRITE: { start: 2.7, end: 5.2 },
   EXPLODE: { start: 5.35, end: 7.1 },
   DONE: 7.1,
 };
@@ -88,12 +88,10 @@ function phaseT(t: number, start: number, end: number): number {
   return clamp01((t - start) / (end - start));
 }
 
-// Smoothstep-ish
 function easeInOut(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-// Slight overshoot for converge
 function easeOutBack(t: number): number {
   const c1 = 1.70158;
   const c3 = c1 + 1;
@@ -206,7 +204,6 @@ export default function Loading({ onComplete }: LoadingProps) {
     function triggerExplosion() {
       expParticles = Array.from({ length: 240 }, () => {
         const angle = Math.random() * Math.PI * 2;
-        // softer speeds (çok agresif olmasın)
         const speed = 4 + Math.random() * 12;
         return {
           x: W / 2,
@@ -231,36 +228,17 @@ export default function Loading({ onComplete }: LoadingProps) {
       expCanvas.classList.add("active");
     }
 
+    // ✅ NEW: Professional signature animation (fade + blur -> crisp)
     function showSignature() {
       const container = sigContainerRef.current;
       if (!container) return;
+
       container.classList.add("visible");
 
-      const paths = container.querySelectorAll<SVGPathElement>(".sig-path");
-      let delay = 0;
-
-      paths.forEach((path) => {
-        const len = path.getTotalLength?.() ?? 220;
-        path.style.strokeDasharray = String(len);
-        path.style.strokeDashoffset = String(len);
-
-        // daha smooth + biraz uzun
-        const dur = 0.22 + Math.random() * 0.12;
-        path.style.transition = `stroke-dashoffset ${dur}s cubic-bezier(.22,1,.36,1) ${delay}s`;
-
-        const localDelay = delay;
-        setTimeout(() => {
-          path.style.strokeDashoffset = "0";
-        }, localDelay * 1000 + 60);
-
-        delay += 0.075;
-      });
-
-      // subtitle timing
       setTimeout(() => {
         const sub = sigSubtitleRef.current;
         if (sub) sub.classList.add("visible");
-      }, (delay + 0.10) * 1000);
+      }, 240);
     }
 
     function hideSignature() {
@@ -279,12 +257,11 @@ export default function Loading({ onComplete }: LoadingProps) {
       last = now;
       t += dt;
 
-      // ----- Background with trail (smooth) -----
-      // slight alpha fill => motion blur / buttery feel
+      // ----- Background with trail -----
       ctx.fillStyle = "rgba(10,10,10,0.22)";
       ctx.fillRect(0, 0, W, H);
 
-      // subtle grid (daha low key)
+      // subtle grid
       ctx.strokeStyle = "rgba(229,62,62,0.018)";
       ctx.lineWidth = 1;
       for (let x = 0; x < W; x += 70) {
@@ -305,23 +282,17 @@ export default function Loading({ onComplete }: LoadingProps) {
       const convergeT = easeOutBack(convergeRaw);
 
       const spinRaw = phaseT(t, PHASE.SPIN.start, PHASE.SPIN.end);
-      // spin easing: accelerate then decelerate
       const spinEase = easeInOut(spinRaw);
 
-      // angle curve (daha “smooth”)
       const spinAngleOffset = spinEase * Math.PI * 1.6;
-
       const radius = Math.min(W, H) * 0.28;
 
-      // particle morph to circle
       const circleT = clamp01((spinRaw - 0.08) * 3);
       const circleEase = easeInOut(circleT);
 
-      // Draw particles
       particles.forEach((p) => {
         const currentAngle = p.ringAngle + spinAngleOffset;
 
-        // micro wobble for life (noise-like)
         const wobble =
           Math.sin(t * 2.2 + p.wobbleSeed) * 2.2 +
           Math.cos(t * 1.6 + p.wobbleSeed * 0.7) * 1.6;
@@ -337,7 +308,6 @@ export default function Loading({ onComplete }: LoadingProps) {
           p.y = ringY;
         }
 
-        // explode push out
         if (t >= PHASE.EXPLODE.start) {
           const ex = phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.75);
           const flyDist = easeInOut(ex) * (560 + wobble * 2);
@@ -359,7 +329,6 @@ export default function Loading({ onComplete }: LoadingProps) {
         ctx.globalAlpha = opacity;
         ctx.translate(p.x + wobble, p.y);
 
-        // outer glow (nicer)
         const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.2);
         glowGrad.addColorStop(0, hexToRgba(p.tech.color, 0.22 * (0.35 + circleEase)));
         glowGrad.addColorStop(0.55, hexToRgba(p.tech.color, 0.08));
@@ -369,7 +338,6 @@ export default function Loading({ onComplete }: LoadingProps) {
         ctx.arc(0, 0, size * 2.2, 0, Math.PI * 2);
         ctx.fill();
 
-        // body
         ctx.fillStyle = "rgba(18,18,18,0.95)";
         ctx.strokeStyle = hexToRgba(p.tech.color, 0.9);
         ctx.lineWidth = 1.6;
@@ -383,7 +351,6 @@ export default function Loading({ onComplete }: LoadingProps) {
         ctx.fill();
         ctx.stroke();
 
-        // label
         ctx.fillStyle = hexToRgba(p.tech.color, 1);
         ctx.font = `700 ${Math.round(9 + circleEase * 2)}px 'Space Grotesk', monospace`;
         ctx.textAlign = "center";
@@ -419,7 +386,6 @@ export default function Loading({ onComplete }: LoadingProps) {
 
       // Explosion particles
       if (expParticles.length > 0) {
-        // motion blur style
         expCtx.fillStyle = "rgba(0,0,0,0.18)";
         expCtx.fillRect(0, 0, W, H);
 
@@ -427,7 +393,6 @@ export default function Loading({ onComplete }: LoadingProps) {
           p.x += p.vx * (dt * 60);
           p.y += p.vy * (dt * 60);
 
-          // drag
           const drag = Math.pow(0.92, dt * 60);
           p.vx *= drag;
           p.vy *= drag;
@@ -457,14 +422,13 @@ export default function Loading({ onComplete }: LoadingProps) {
 
         expParticles = expParticles.filter((p) => p.life > 0);
 
-        // when done, remove active
         if (expParticles.length === 0) {
           expCanvas.classList.remove("active");
           expCtx.clearRect(0, 0, W, H);
         }
       }
 
-      // White flash (softer, shorter)
+      // White flash
       if (t >= PHASE.EXPLODE.start && t < PHASE.EXPLODE.start + 0.22) {
         const flashT = phaseT(t, PHASE.EXPLODE.start, PHASE.EXPLODE.start + 0.22);
         const flashOpacity = Math.sin(flashT * Math.PI) * 0.75;
@@ -489,7 +453,6 @@ export default function Loading({ onComplete }: LoadingProps) {
       rafRef.current = requestAnimationFrame(animate);
     }
 
-    // init background once (avoid initial black frame)
     ctx.fillStyle = "#0a0a0a";
     ctx.fillRect(0, 0, W, H);
 
@@ -506,45 +469,12 @@ export default function Loading({ onComplete }: LoadingProps) {
   return (
     <div className={`loader-wrapper${fadeOut ? " fade-out" : ""}`}>
       <canvas ref={canvasRef} className="loader-canvas" />
-      <div ref={sigContainerRef} className="signature-container">
-        <svg className="signature-svg" viewBox="0 0 420 90" xmlns="http://www.w3.org/2000/svg">
-          {/* Ö */}
-          <path className="sig-path" d="M18,20 C12,20 8,26 8,36 C8,46 12,52 18,52 C24,52 28,46 28,36 C28,26 24,20 18,20 Z M14,16 L22,10" />
-          {/* m */}
-          <path className="sig-path" d="M32,35 C32,28 35,25 39,25 C43,25 45,28 45,33 L45,52 M45,33 C45,28 48,25 52,25 C56,25 58,28 58,33 L58,52" />
-          {/* e */}
-          <path className="sig-path" d="M64,38 C64,32 67,25 74,25 C80,25 83,30 83,36 C83,36 83,38 80,38 L64,38 C64,42 66,52 74,52 C78,52 81,50 83,47" />
-          {/* r */}
-          <path className="sig-path" d="M88,52 L88,25 M88,33 C90,27 94,25 98,26" />
-          {/* F */}
-          <path className="sig-path" d="M112,20 L112,52 M112,20 L130,20 M112,36 L126,36" />
-          {/* a */}
-          <path className="sig-path" d="M148,28 C144,25 135,25 135,36 C135,47 144,52 150,50 C154,48 155,44 155,40 L155,25 L155,52" />
-          {/* r */}
-          <path className="sig-path" d="M162,52 L162,25 M162,33 C164,27 168,25 172,26" />
-          {/* u */}
-          <path className="sig-path" d="M176,25 L176,43 C176,49 179,52 184,52 C189,52 192,49 192,43 L192,25" />
-          {/* k */}
-          <path className="sig-path" d="M198,20 L198,52 M208,25 L198,38 M200,36 L210,52" />
-          {/* T */}
-          <path className="sig-path" d="M224,20 L244,20 M234,20 L234,52" />
-          {/* ü */}
-          <path className="sig-path" d="M249,25 L249,43 C249,49 252,52 257,52 C262,52 265,49 265,43 L265,25 M253,18 L253,14 M261,18 L261,14" />
-          {/* r */}
-          <path className="sig-path" d="M271,52 L271,25 M271,33 C273,27 277,25 281,26" />
-          {/* k */}
-          <path className="sig-path" d="M286,20 L286,52 M296,25 L286,38 M288,36 L298,52" />
-          {/* d */}
-          <path className="sig-path" d="M316,20 L316,52 M316,42 C314,48 310,52 305,52 C299,52 303,46 303,36 C303,26 308,24 312,25 C315,26 316,30 316,34" />
-          {/* o */}
-          <path className="sig-path" d="M322,36 C322,28 326,25 332,25 C338,25 342,28 342,36 C342,44 338,52 332,52 C326,52 322,44 322,36 Z" />
-          {/* ğ */}
-          <path className="sig-path" d="M348,36 C348,28 352,25 358,25 C364,25 368,28 368,36 C368,44 364,54 358,58 C354,60 350,58 348,56 M356,18 C356,15 360,13 364,15 C364,15 366,17 364,19 C362,21 358,21 356,18" />
-          {/* d */}
-          <path className="sig-path" d="M386,20 L386,52 M386,42 C384,48 380,52 375,52 C369,52 373,46 373,36 C373,26 378,24 382,25 C385,26 386,30 386,34" />
-          {/* u */}
-          <path className="sig-path" d="M392,25 L392,43 C392,49 395,52 400,52 C405,52 408,49 408,43 L408,25" />
-        </svg>
+
+      {/* ✅ NEW: Professional name block (no SVG handwriting) */}
+      <div ref={sigContainerRef} className="signature-container signature-pro">
+        <div className="sig-name" aria-label="Name">
+          Ömer Faruk <span className="sig-surname">Türkdoğdu</span>
+        </div>
 
         <div ref={sigSubtitleRef} className="sig-subtitle">
           Full Stack Developer
