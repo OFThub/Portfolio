@@ -70,8 +70,8 @@ const PHASE = {
   CONVERGE: { start: 0.0, end: 2.2 },
   SPIN: { start: 2.0, end: 5.1 },
   WRITE: { start: 2.7, end: 5.2 },
-  EXPLODE: { start: 5.35, end: 7.1 },
-  DONE: 7.1,
+  EXPLODE: { start: 5.35, end: 6.0 },
+  DONE: 6.0,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
