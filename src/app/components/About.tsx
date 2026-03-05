@@ -275,7 +275,7 @@ export function About() {
     },
   ];
 
-  const certifications = ["Software Persona - Software Development Intern"];
+  const certifications = ["Software Persona - Software Development Intern", "KOSGEB - KOSGEB Entrepreneurship Training Certificate of Participation","Borusan Technology School Certificate","Borusan School of Equality","Borusan School of Sustainability"];
 
   const particles = Array.from({ length: 14 }, (_, i) => ({
     id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5,
