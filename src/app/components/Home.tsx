@@ -1,6 +1,8 @@
 import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
 import { ArrowRight, Code2, Database, Globe, Server } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { lazy, Suspense } from "react";
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -186,43 +188,36 @@ function OrbitRing({ radius, duration, delay = 0, dotColor = "bg-primary" }: {
 function HeroVisual() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Central glow core */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <motion.div
-          className="w-2 h-2 rounded-full bg-primary"
-          style={{ boxShadow: "0 0 20px 6px rgba(239,68,68,0.4)" }}
-          animate={{ scale: [1, 1.6, 1], opacity: [0.8, 1, 0.8] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
-        {/* Pulse rings */}
-        {[80, 160, 260, 380].map((r, i) => (
-          <motion.div
-            key={r}
-            className="absolute rounded-full border border-primary/10"
-            style={{
-              width: r * 2, height: r * 2,
-              top: -r, left: -r,
-            }}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 3, delay: i * 0.4, repeat: Infinity }}
-          />
-        ))}
-
-        {/* Orbits */}
-        <OrbitRing radius={120} duration={12} dotColor="bg-primary" />
-        <OrbitRing radius={200} duration={20} delay={3} dotColor="bg-cyan-400" />
-        <OrbitRing radius={300} duration={30} delay={7} dotColor="bg-primary" />
-
-        {/* Counter-rotating */}
-        <motion.div
-          className="absolute rounded-full border border-primary/8"
-          style={{ width: 340, height: 340, top: -170, left: -170 }}
-          animate={{ rotate: -360 }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        >
-          <div className="absolute w-1.5 h-1.5 rounded-full bg-cyan-400/70 bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2" />
-        </motion.div>
+      <div className="absolute inset-0 pointer-events-auto">
+        <Suspense fallback={<SplineFallback />}>
+          <Spline scene="https://draft.spline.design/zMVIkYQRvnlLDUVA/scene.splinecode" />
+        </Suspense>
       </div>
+    </div>
+  );
+}
+
+// Spline yüklenene kadar gösterilecek placeholder
+function SplineFallback() {
+  return (
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <motion.div
+        className="w-2 h-2 rounded-full bg-primary"
+        style={{ boxShadow: "0 0 20px 6px rgba(239,68,68,0.4)" }}
+        animate={{ scale: [1, 1.6, 1], opacity: [0.8, 1, 0.8] }}
+        transition={{ duration: 3, repeat: Infinity }}
+      />
+      {[80, 160, 260, 380].map((r, i) => (
+        <motion.div
+          key={r}
+          className="absolute rounded-full border border-primary/10"
+          style={{ width: r * 2, height: r * 2, top: -r, left: -r }}
+          animate={{ opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 3, delay: i * 0.4, repeat: Infinity }}
+        />
+      ))}
+      <OrbitRing radius={120} duration={12} dotColor="bg-primary" />
+      <OrbitRing radius={200} duration={20} delay={3} dotColor="bg-cyan-400" />
     </div>
   );
 }
@@ -330,7 +325,7 @@ export function Home() {
 
           {/* Sub */}
           <motion.p
-            className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-mono min-h-[56px]"
+            className="text-lg sm:text-xl text-white max-w-2xl mx-auto mb-12 font-mono min-h-[56px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
@@ -367,7 +362,7 @@ export function Home() {
             {/* Outline */}
             <MagneticBtn
               onClick={() => scrollToSection("contact")}
-              className="group relative px-8 py-4 bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-lg transition-all duration-300 overflow-hidden"
+              className="group relative px-8 py-4 bg-transparent border-2 border-card-foreground text-card-foreground hover:bg-primary hover:text-white rounded-lg transition-all duration-300 overflow-hidden"
             >
               <motion.div
                 className="absolute inset-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"

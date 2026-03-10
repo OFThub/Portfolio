@@ -9,6 +9,19 @@ html {
 
 body {
   overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+/* scrollbar gizle ama scroll çalışsın */
+
+html, body {
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* IE / Edge eski */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;              /* Chrome / Safari / Edge */
 }
 
 /* Custom scrollbar */

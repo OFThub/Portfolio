@@ -20,6 +20,7 @@ export default function App() {
 
       {loaded && (
         <>
+        
           <EmberBackground />
           <div className="min-h-screen relative z-10 bg-transparent">
             <Navigation />
