@@ -96,6 +96,61 @@ function TechBadge({ label, delay }: { label: string; delay: number }) {
   );
 }
 
+/* ─── Image Carousel ────────────────────────────────────────────────── */
+function ImageCarousel({ images, title, category }: { images: string[]; title: string; category: string }) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Otomatik slayıt
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    }, 4000); // 4 saniyede bir
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <div className="relative h-52 overflow-hidden group">
+      {/* Image Slider */}
+      <motion.div
+        className="w-full h-full flex"
+        animate={{ x: `-${currentImageIndex * 100}%` }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+      >
+        {images.map((img, idx) => (
+          <div key={idx} className="w-full h-full flex-shrink-0 relative">
+            <ImageWithFallback
+              src={img}
+              alt={`${title} - Image ${idx + 1}`}
+              className="w-full h-full object-cover"
+            />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Navigation Buttons - REMOVED */}
+
+      {/* Dots Indicator - REMOVED */}
+
+      {/* Bottom Image Label */}
+      <motion.div
+        className="absolute bottom-2 left-3 z-30"
+        initial={{ opacity: 0, x: -8 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+      >
+        <span className="text-xs font-mono text-primary/70 bg-black/60 px-2 py-0.5 rounded border border-primary/20">
+          {category}
+        </span>
+      </motion.div>
+
+      {/* Image Counter - REMOVED */}
+    </div>
+  );
+}
+
 /* ─── Project Card ───────────────────────────────────────────────────── */
 function ProjectCard({ project, index }: { project: any; index: number }) {
   const [hovered, setHovered] = useState(false);
@@ -151,22 +206,14 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
         </motion.div>
       )}
 
-      {/* Image Area */}
-      <div className="relative h-52 overflow-hidden">
+      {/* Image Carousel Area */}
+      <div className="relative">
         <motion.div
-          className="w-full h-full"
-          animate={{ scale: hovered ? 1.06 : 1 }}
+          animate={{ scale: hovered ? 1.04 : 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <ImageWithFallback
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover"
-          />
+          <ImageCarousel images={project.images} title={project.title} category={project.category} />
         </motion.div>
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
         {/* Hover overlay with links */}
         <AnimatePresence>
@@ -204,19 +251,6 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Bottom image label */}
-        <motion.div
-          className="absolute bottom-2 left-3 z-20"
-          initial={{ opacity: 0, x: -8 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.12 + 0.4 }}
-          viewport={{ once: true }}
-        >
-          <span className="text-xs font-mono text-primary/70 bg-black/60 px-2 py-0.5 rounded border border-primary/20">
-            {project.category}
-          </span>
-        </motion.div>
       </div>
 
       {/* Content */}
@@ -308,15 +342,18 @@ export function Projects() {
 
   const projects = [
     {
-      title: "E-Commerce Platform",
+      title: "Sportify",
       category: "All",
       description:
-        "A complete e-commerce solution with shopping cart, payment integration, and admin dashboard. Built with modern technologies for optimal performance.",
-      image:
-        "https://images.unsplash.com/photo-1694599048261-a1de00f0117e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlY29tbWVyY2UlMjB3ZWJzaXRlJTIwZGVzaWdufGVufDF8fHx8MTc3MjE0NjE5NHww&ixlib=rb-4.1.0&q=80&w=1080",
-      technologies: ["React", "Node.js", "MongoDB", "Stripe", "Tailwind CSS"],
-      github: "https://github.com/OFThub/",
-      live: "https://example.com",
+        "Fitness Center Management and Appointment System",
+      images: [
+        "images/Sportify-1.png",
+        "images/Sportify-2.png",
+        "images/Sportify-3.png",
+      ],
+      technologies: ["C#", "ASP.NET Core MVC", "EF Core", "LINQ", "SQL Server/PostgreSQL", "Bootstrap 5", "JavaScript", "jQuery"],
+      github: "https://github.com/OFThub/Sportify",
+      live: "",
       featured: true,
     },
   ];

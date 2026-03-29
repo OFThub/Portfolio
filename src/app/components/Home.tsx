@@ -184,7 +184,7 @@ function OrbitRing({ radius, duration, delay = 0, dotColor = "bg-primary" }: {
   );
 }
 
-/* ─── Hero Visual (replaces Spline) ─────────────────────────────────── */
+/* ─── Hero Visual (replaces Spline) ─────────────────────────────────── 
 function HeroVisual() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -221,7 +221,7 @@ function SplineFallback() {
     </div>
   );
 }
-
+*/
 /* ═══════════════════════════════════════════════════════════════════════
    MAIN HOME COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
@@ -277,7 +277,7 @@ export function Home() {
         </div>
 
         {/* Orbital visual */}
-        <HeroVisual />
+        {/*<HeroVisual />*/}
 
         {/* Scan line across hero */}
         <ScanLine duration={8} />
