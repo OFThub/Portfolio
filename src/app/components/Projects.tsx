@@ -356,6 +356,21 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "AI Content Platform",
+      category: "All",
+      description:
+        "All-in-one platform for AI-driven content creation and management",
+      images: [
+        "images/AIContentPlatform-1.png",
+        "images/AIContentPlatform-2.png",
+        "images/AIContentPlatform-3.png",
+      ],
+      technologies: ["Next.js", "React", "TypeScript", "Node.js", "Express", "MongoDB", "Tailwind CSS v4", "Docker", "JWT", "PostCSS"],
+      github: "https://github.com/OFThub/AIContentPlatform",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
