@@ -242,7 +242,6 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
                   whileHover={{ scale: 1.12 }}
                   whileTap={{ scale: 0.95 }}
                   className="relative p-3 bg-black/80 hover:bg-primary border border-primary/30 hover:border-primary rounded-full transition-colors duration-200 overflow-hidden group/btn"
-                  onClick={(e) => e.preventDefault()}
                 >
                   <CornerDeco position="tl" />
                   <Icon className="w-5 h-5 text-white relative z-10" />
@@ -369,6 +368,21 @@ export function Projects() {
       technologies: ["Next.js", "React", "TypeScript", "Node.js", "Express", "MongoDB", "Tailwind CSS v4", "Docker", "JWT", "PostCSS"],
       github: "https://github.com/OFThub/AIContentPlatform",
       live: "",
+      featured: true,
+    },
+    {
+      title: "Real-Time Task Management System",
+      category: "Full-Stack",
+      description:
+        "A collaborative project management platform featuring real-time synchronization, role-based access control, and interactive Kanban boards.",
+      images: [
+        "images/todolist-1.png",
+        "images/todolist-2.png",
+        "images/todolist-3.png",
+      ],
+      technologies: ["React","Node.js","Express","MongoDB","Socket.IO","JWT","Tailwind CSS","Mongoose"],
+      github: "https://github.com/OFThub/ToDoList",
+      live: "https://todotoflow.netlify.app/",
       featured: true,
     },
   ];
