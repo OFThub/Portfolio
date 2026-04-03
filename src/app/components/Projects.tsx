@@ -385,6 +385,32 @@ export function Projects() {
       live: "https://todotoflow.netlify.app/",
       featured: true,
     },
+    {
+      title: "EventFlowCommerce",
+      category: "Microservices",
+      description:
+        "A production-ready reference implementation of event-driven microservices architecture utilizing DDD, Event Sourcing, CQRS, and the Saga Pattern.",
+      images: [
+        "images/eventflow-1.png",
+        "images/eventflow-2.png",
+        "images/eventflow-3.png",
+      ],
+      technologies: [
+        "Node.js",
+        "TypeScript",
+        "AWS (Lambda, EventBridge, DynamoDB)",
+        "Kubernetes",
+        "Istio",
+        "Docker",
+        "Fastify",
+        "AWS CDK",
+        "CQRS",
+        "Event Sourcing"
+      ],
+      github: "https://github.com/OFThub/EventFlowCommerce",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
