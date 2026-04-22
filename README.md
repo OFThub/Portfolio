@@ -56,6 +56,10 @@ The portfolio uses smooth scrolling navigation:
   /styles
     - index.css (Custom styles + scrollbar)
     - theme.css (Color variables)
+    - Background.css
+    - fonts.css
+    - Loading.css
+    - tailwind.css
 ```
 
 ## Features Details
