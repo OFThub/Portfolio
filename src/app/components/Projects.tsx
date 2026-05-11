@@ -411,6 +411,30 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "AI Destekli Hukuki Belge Sadeleştirici",
+      category: "Artificial Intelligence",
+      description:
+        "It is a fully functional system with a multi-agent architecture designed to solve real-world legal document analysis problems; it simplifies complex texts and performs risk analysis.",
+      images: [
+        "images/legal-simplifier-1.png",
+        "images/legal-simplifier-2.png",
+        "images/legal-simplifier-3.png",
+      ],
+      technologies: [
+        "Python",
+        "FastAPI",
+        "Llama 3 (Ollama)",
+        "Multi-Agent Architecture",
+        "Vanilla JS",
+        "pdfplumber & PyMuPDF",
+        "SQLite & JSON Memory",
+        "Hybrid Risk Engine (Rule-based + LLM)",
+      ],
+      github: "https://github.com/OFThub/AIDocumentSimplifier",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
