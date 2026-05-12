@@ -435,6 +435,30 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "Online Kütüphane Uygulaması",
+      category: "Full Stack Development",
+      description:
+      "Kullanıcı, Yazar ve Admin rollerine sahip; kitap yükleme, onay mekanizması, kategori filtreleme ve etkileşim sistemlerini (yorum, beğeni, puanlama) barındıran kapsamlı bir dijital kütüphane platformudur.",
+      images: [
+      "images/online-library-1.png",
+      "images/online-library-2.png",
+      "images/online-library-3.png",
+      ],
+      technologies: [
+      "Node.js",
+      "Express",
+      "MongoDB & Mongoose",
+      "JWT (JSON Web Token)",
+      "Bcryptjs",
+      "Multer",
+      "Vanilla JS",
+      "CSS3 (Responsive Design)",
+      ],
+      github: "https://github.com/OFThub/OnlineLibrary",
+      live: "",
+      featured: true,
+      },
   ];
 
   const categories = ["All"];
