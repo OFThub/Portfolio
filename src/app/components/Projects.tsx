@@ -459,6 +459,31 @@ export function Projects() {
       live: "",
       featured: true,
       },
+      {
+      title: "Limited-Stock Product Drop System",
+      category: "Full Stack Development / Backend Engineering",
+      description:
+      "Yüksek trafikli ürün lansmanları için tasarlanmış, eşzamanlı isteklerde stok hatasını (race condition) engelleyen gelişmiş bir rezervasyon sistemidir. PostgreSQL 'SELECT FOR UPDATE' kilitleme mekanizması ile %100 stok doğruluğu, otomatik rezervasyon süresi yönetimi ve detaylı envanter denetim günlüğü (audit trail) özelliklerini barındırır.",
+      images: [
+      "images/drop-system-1.png",
+      "images/drop-system-2.png",
+      "images/drop-system-3.png",
+      ],
+      technologies: [
+      "Node.js",
+      "TypeScript",
+      "Express",
+      "Prisma ORM",
+      "PostgreSQL (Pessimistic Locking)",
+      "JWT (JSON Web Token)",
+      "Node-cron",
+      "Winston (Structured Logging)",
+      "Vite & React",
+      ],
+      github: "https://github.com/OFThub/DropSystem",
+      live: "https://drop-system.pxxl.app",
+      featured: true,
+      },
   ];
 
   const categories = ["All"];
