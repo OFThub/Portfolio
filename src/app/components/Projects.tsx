@@ -484,6 +484,19 @@ export function Projects() {
       live: "https://drop-system.pxxl.app",
       featured: true,
       },
+      {
+        title: "tarsau - Dosya Arşivleme Aracı",
+        category: "Sistem Programlama / Dosya Yönetimi",
+        description:
+        "tar, rar, zip benzeri çalışan ancak sıkıştırma yapmayan bir arşivleme programıdır. Metin dosyalarını tek bir .sau arşiv dosyasında birleştirir ve geri açar. 'make' komutu ile derlenir. Birleştirme işlemi 'tarsau -b dosya1 dosya2 ... -o arsiv.sau', açma işlemi ise 'tarsau -a arsiv.sau [hedef_dizin]' komutuyla gerçekleştirilir. Arşiv dosyası; ilk 10 byte'ı toplam boyutu içeren ve pipe (|) karakteriyle ayrılmış dosya adı, izinleri, boyutu bilgilerini barındıran organizasyon bölümü ile dosya içeriklerinin sırayla yer aldığı içerik bölümünden oluşur. Bir arşivde en fazla 32 dosya bulunabilir, toplam boyut 200 MB'ı aşamaz ve yalnızca ASCII metin dosyaları desteklenir. Geliştirme aşamaları commit geçmişinden takip edilebilir.",
+        images: [],
+        technologies: [
+        "Make",
+        ],
+        github: "",
+        live: "",
+        featured: true,
+      },
   ];
 
   const categories = ["All"];
