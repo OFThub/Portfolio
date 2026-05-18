@@ -412,7 +412,7 @@ export function Projects() {
       featured: true,
     },
     {
-      title: "AI Destekli Hukuki Belge Sadeleştirici",
+      title: "AI Document Simplifier",
       category: "Artificial Intelligence",
       description:
         "It is a fully functional system with a multi-agent architecture designed to solve real-world legal document analysis problems; it simplifies complex texts and performs risk analysis.",
@@ -436,10 +436,10 @@ export function Projects() {
       featured: true,
     },
     {
-      title: "Online Kütüphane Uygulaması",
+      title: "Online Library Application",
       category: "Full Stack Development",
       description:
-      "Kullanıcı, Yazar ve Admin rollerine sahip; kitap yükleme, onay mekanizması, kategori filtreleme ve etkileşim sistemlerini (yorum, beğeni, puanlama) barındıran kapsamlı bir dijital kütüphane platformudur.",
+      "A comprehensive digital library platform with user, author, and admin roles; featuring book uploading, approval mechanisms, category filtering, and interaction systems (comments, likes, ratings).",
       images: [
       "images/online-library-1.png",
       "images/online-library-2.png",
@@ -463,7 +463,7 @@ export function Projects() {
       title: "Limited-Stock Product Drop System",
       category: "Full Stack Development / Backend Engineering",
       description:
-      "Yüksek trafikli ürün lansmanları için tasarlanmış, eşzamanlı isteklerde stok hatasını (race condition) engelleyen gelişmiş bir rezervasyon sistemidir. PostgreSQL 'SELECT FOR UPDATE' kilitleme mekanizması ile %100 stok doğruluğu, otomatik rezervasyon süresi yönetimi ve detaylı envanter denetim günlüğü (audit trail) özelliklerini barındırır.",
+      "A sophisticated reservation system designed for high-traffic product launches, preventing stock errors (race conditions) with PostgreSQL's 'SELECT FOR UPDATE' locking mechanism. It ensures 100% stock accuracy, automatic reservation time management, and detailed inventory audit trails.",
       images: [
       "images/drop-system-1.png",
       "images/drop-system-2.png",
@@ -485,10 +485,10 @@ export function Projects() {
       featured: true,
       },
       {
-        title: "tarsau - Dosya Arşivleme Aracı",
-        category: "Sistem Programlama / Dosya Yönetimi",
+        title: "tarsau - File Archiving Tool",
+        category: "System Programming / File Management",
         description:
-        "tar, rar, zip benzeri çalışan ancak sıkıştırma yapmayan bir arşivleme programıdır. Metin dosyalarını tek bir .sau arşiv dosyasında birleştirir ve geri açar. 'make' komutu ile derlenir. Birleştirme işlemi 'tarsau -b dosya1 dosya2 ... -o arsiv.sau', açma işlemi ise 'tarsau -a arsiv.sau [hedef_dizin]' komutuyla gerçekleştirilir. Arşiv dosyası; ilk 10 byte'ı toplam boyutu içeren ve pipe (|) karakteriyle ayrılmış dosya adı, izinleri, boyutu bilgilerini barındıran organizasyon bölümü ile dosya içeriklerinin sırayla yer aldığı içerik bölümünden oluşur. Bir arşivde en fazla 32 dosya bulunabilir, toplam boyut 200 MB'ı aşamaz ve yalnızca ASCII metin dosyaları desteklenir. Geliştirme aşamaları commit geçmişinden takip edilebilir.",
+        "A file archiving program that works like tar, rar, and zip but does not compress files. It concatenates text files into a single .sau archive file and extracts them. Compiled with the 'make' command. The concatenation process is performed with 'tarsau -b file1 file2 ... -o archive.sau', and the extraction process is done with 'tarsau -a archive.sau [target_directory]'. The archive file consists of an organization section containing the total size and pipe (|) separated file names, permissions, and sizes, followed by the content sections of the files in order. A single archive can contain up to 32 files, with a total size not exceeding 200 MB, and only ASCII text files are supported. Development stages can be tracked through the commit history.",
         images: [],
         technologies: [
         "Make",
