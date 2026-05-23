@@ -497,6 +497,21 @@ export function Projects() {
         live: "",
         featured: true,
       },
+      {
+      title: "Algan AI Chatbot",
+      category: "All",
+      description:
+        "Modular AI Chatbot system with dynamic mode switching that operates via voice commands.",
+      images: [
+        "images/AlganAIChatbot-1.png",
+        "images/AlganAIChatbot-2.png",
+        "images/AlganAIChatbot-3.png",
+      ],
+      technologies: ["Python", "Claude API", "OpenAI Whisper", "OpenAI TTS", "Pydantic", "asyncio", "MongoDB", "PostgreSQL", "Web Speech API", "Faster-Whisper", "Docker"],
+      github: "https://github.com/OFThub/Project-Algan",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
