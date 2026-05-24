@@ -458,8 +458,8 @@ export function Projects() {
       github: "https://github.com/OFThub/OnlineLibrary",
       live: "",
       featured: true,
-      },
-      {
+    },
+    {
       title: "Limited-Stock Product Drop System",
       category: "Full Stack Development / Backend Engineering",
       description:
@@ -483,21 +483,21 @@ export function Projects() {
       github: "https://github.com/OFThub/DropSystem",
       live: "https://drop-system.pxxl.app",
       featured: true,
-      },
-      {
-        title: "tarsau - File Archiving Tool",
-        category: "System Programming / File Management",
-        description:
-        "A file archiving program that works like tar, rar, and zip but does not compress files. It concatenates text files into a single .sau archive file and extracts them. Compiled with the 'make' command. The concatenation process is performed with 'tarsau -b file1 file2 ... -o archive.sau', and the extraction process is done with 'tarsau -a archive.sau [target_directory]'. The archive file consists of an organization section containing the total size and pipe (|) separated file names, permissions, and sizes, followed by the content sections of the files in order. A single archive can contain up to 32 files, with a total size not exceeding 200 MB, and only ASCII text files are supported. Development stages can be tracked through the commit history.",
-        images: [],
-        technologies: [
-        "Make",
-        ],
-        github: "",
-        live: "",
-        featured: true,
-      },
-      {
+    },
+    {
+      title: "tarsau - File Archiving Tool",
+      category: "System Programming / File Management",
+      description:
+      "A file archiving program that works like tar, rar, and zip but does not compress files. It concatenates text files into a single .sau archive file and extracts them. Compiled with the 'make' command. The concatenation process is performed with 'tarsau -b file1 file2 ... -o archive.sau', and the extraction process is done with 'tarsau -a archive.sau [target_directory]'. The archive file consists of an organization section containing the total size and pipe (|) separated file names, permissions, and sizes, followed by the content sections of the files in order. A single archive can contain up to 32 files, with a total size not exceeding 200 MB, and only ASCII text files are supported. Development stages can be tracked through the commit history.",
+      images: [],
+      technologies: [
+      "Make",
+      ],
+      github: "",
+      live: "",
+      featured: true,
+    },
+    {
       title: "Algan AI Chatbot",
       category: "All",
       description:
