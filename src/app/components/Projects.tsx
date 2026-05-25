@@ -512,6 +512,21 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "Sudoku Game",
+      category: "All",
+      description:
+        "Cross-platform Sudoku game running seamlessly on both web browsers and as a standalone desktop application (.exe) with real-time cell validation and instant completion feedback.",
+      images: [
+        "images/Sudoku-1.png",
+        "images/Sudoku-2.png",
+        "images/Sudoku-3.png",
+      ],
+      technologies: ["Python", "Pygame", "Pyinstaller", "WebAssembly"],
+      github: "https://github.com/OFThub/Sudoku",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
