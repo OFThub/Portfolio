@@ -527,6 +527,28 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "SmashMate — Minesweeper Edition",
+      category: "Mobile",
+      description:
+        "A fully-featured, expertly-crafted Minesweeper game built with React Native and Expo (SDK 52), using Expo Router for seamless navigation. Features first-click safety, BFS chain-reveal, light/dark themes, haptic feedback, and smooth Reanimated animations.",
+      images: [
+        "images/Minesweeper-1.png",
+        "images/Minesweeper-2.png",
+        "images/Minesweeper-3.png",
+      ],
+      technologies: [
+        "React Native",
+        "Expo",
+        "Expo Router",
+        "TypeScript",
+        "React Native Reanimated",
+        "AsyncStorage"
+      ],
+      github: "https://github.com/OFThub/SmashMate-Mobile",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
