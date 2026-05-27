@@ -549,6 +549,28 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "Full Stack Developer Portfolio",
+      category: "Web",
+      description:
+        "A breathtaking single-page portfolio website built with React, TypeScript, and Tailwind CSS featuring a stunning black and red color scheme with smooth scrolling navigation. Features a dark theme, Motion animations, fully responsive design, and comprehensive sections including a Hero section with Spline 3D integration area, About, Skills, Experience, Projects, Blog, and a Contact form.",
+      images: [
+        "images/Portfolio-1.png",
+        "images/Portfolio-2.png",
+        "images/Portfolio-3.png",
+      ],
+      technologies: [
+        "React 18",
+        "TypeScript",
+        "Tailwind CSS v4",
+        "Motion (Framer Motion)",
+        "Lucide React Icons",
+        "Vite"
+      ],
+      github: "https://github.com/OFThub/Full-Stack-Developer-Portfolio",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
