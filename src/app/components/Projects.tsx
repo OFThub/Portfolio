@@ -571,6 +571,33 @@ export function Projects() {
       live: "",
       featured: true,
     },
+    {
+      title: "SmashMate File Manager — REST Service",
+      category: "Backend",
+      description:
+        "A RESTful file management service built with Java 21 and Spring Boot 3.4.4 that stores files in Cloudflare R2 object storage, manages metadata in H2, and provides image thumbnail previews. Features single & batch file upload via multipart form data, file download with correct content-type/content-disposition headers, auto-generated 200×200 JPEG thumbnail previews via Thumbnailator (with R2 caching), and structured JSON metadata previews for non-image files. Includes paginated file listing, file validation, global error handling, and Swagger/OpenAPI documentation.",
+      images: [
+        "images/SmashMate-1.png",
+        "images/SmashMate-2.png",
+        "images/SmashMate-3.png"
+      ],
+      technologies: [
+        "Java 21",
+        "Spring Boot 3.4.4",
+        "Maven",
+        "Cloudflare R2 (AWS SDK v2)",
+        "H2 Database",
+        "Spring Data JPA",
+        "Thumbnailator 0.4.21",
+        "SpringDoc OpenAPI 2.8.6",
+        "JUnit 5",
+        "Mockito",
+        "Docker"
+      ],
+      github: "https://github.com/YOUR_USERNAME/SmashMate-Backend.git",
+      live: "",
+      featured: true
+    },
   ];
 
   const categories = ["All"];
