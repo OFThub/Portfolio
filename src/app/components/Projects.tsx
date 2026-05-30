@@ -594,7 +594,7 @@ export function Projects() {
         "Mockito",
         "Docker"
       ],
-      github: "https://github.com/YOUR_USERNAME/SmashMate-Backend.git",
+      github: "https://github.com/OFThub/SmashMate-Backend",
       live: "",
       featured: true
     },
