@@ -618,6 +618,26 @@ export function Projects() {
       "live": "",
       "featured": true
     },
+    {
+      "title": "Gezegenler Arası Yaşam ve Seyahat Simülasyonu",
+      "category": "Desktop / System",
+      "description": "MinGW C Dili kullanılarak Nesne Yönelimli Programlama (NDP) benzetimi prensiplerine göre tasarlanmış, modüler ve kapsamlı bir gezegenler arası seyahat konsol simülasyonu. Proje; structlar ve fonksiyon işaretçileri kullanılarak kalıtım ile polimorfizm kavramlarının C dilinde simüle edilmesi esasına dayanır. Zaman, Kişi, UzayAracı, Simülasyon, DosyaOkuma yapıları ile Gezegen (Üst Yapı) altındaki KayacGezegen, GazDevi, BuzDevi ve CuceGezegen türetilmiş yapılarını içeren bir hiyerarşiye sahiptir. Gerçek takvim kurallarına (ayların gün sayıları vb.) göre işleyen bir zaman döngüsü barındırır ve her döngü iterasyonunda 1 simülasyon saati ilerlenir. Kişilerin kalan ömürleri; bulundukları gezegenin türüne göre dinamik olarak değişen yaşlanma faktörlerine (Kayaç ve Yolda: 1.0, Gaz Devi: 0.1, Buz Devi: 0.5, Cüce Gezegen: 0.01) bağlı olarak düşer. Uzay araçları, bulundukları gezegenin tarihi kendi çıkış tarihlerine eşitlendiğinde seyahate başlar; kalan ömrü sıfırlanan kişiler ölür ve araçtaki tüm yolcular öldüğünde araç 'İMHA' durumuna geçer. Nüfus takibi gerçek zamanlı yapılarak yoldaki araçların yolcuları gezegen nüfuslarına dahil edilmez. Büyük veri dosyalarından (Kisiler.txt, Araclar.txt, Gezegenler.txt) okuma yapabilen performans odaklı mimaride thread sleep kullanılmamış, konsol sürekli temizlenerek akıcı bir simülasyon sağlanmıştır. Başlık (.h) ve kaynak (.c) dosyalarının ayrı tasarlandığı modüler yapı, Makefile hiyerarşisine uygun şekilde derlenmektedir.",
+      "images": [
+        "images/GezegenSimulasyon-1.png",
+        "images/GezegenSimulasyon-2.png",
+        "images/GezegenSimulasyon-3.png"
+      ],
+      "technologies": [
+        "C Dili",
+        "MinGW GCC Compiler",
+        "Makefile",
+        "Object-Oriented C (OOP Simulation)",
+        "File I/O (Data Parsing)"
+      ],
+      "github": "https://github.com/OFThub/UzayProgramC",
+      "live": "",
+      "featured": true
+    },
   ];
 
   const categories = ["All"];
