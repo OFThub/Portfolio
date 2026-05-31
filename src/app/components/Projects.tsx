@@ -598,6 +598,26 @@ export function Projects() {
       live: "",
       featured: true
     },
+    {
+      "title": "Mini Katalog - Flutter Uygulaması",
+      "category": "Mobile",
+      "description": "Flutter ile geliştirilmiş, eğitim amaçlı mini e-ticaret katalog uygulaması. Splash Screen, Ürün Grid + Arama, Detay + Sepete Ekle ve Sepet Yönetimi ekranlarından oluşur. Gerçek zamanlı ürün arama, Chip'lerle kategori filtresi, ürün ekleme/çıkarma ve miktar güncelleme özellikli sepet yönetimi sunar. FakeStore API entegrasyonu ve internet bağlantısı olmadığında çalışan offline fallback yapısı içerir. Renkli ve modern UI için özel tema, açılış ve geçiş animasyonları ile Navigator.push ve Route Arguments kullanan sayfa geçişleri barındırır. Proje; veri servisleri, modeller (product, cart_item, cart), ekranlar ve modüler widget'lar (product_card, category_filter, search_bar_widget) şeklinde katmanlı mimariye sahiptir. Eğitim kapsamında Widget ağacı (Stateless/Stateful), setState ve ChangeNotifier ile State yönetimi, http paketiyle async/await ağ istekleri, model sınıflarında fromJson/toJson dönüşümleri, dinamik GridView/ListView listeleme, ThemeData ve AnimationController/Tween kullanımı pratik edilmiştir.",
+      "images": [
+        "images/MiniKatalog-1.png",
+        "images/MiniKatalog-2.png",
+        "images/MiniKatalog-3.png"
+      ],
+      "technologies": [
+        "Flutter SDK 3.x",
+        "Dart SDK 3.x",
+        "http ^1.1.0",
+        "material.dart",
+        "FakeStore API"
+      ],
+      "github": "https://github.com/OFThub/SoftwarePersona-Mobil",
+      "live": "",
+      "featured": true
+    },
   ];
 
   const categories = ["All"];
