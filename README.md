@@ -40,9 +40,12 @@ The portfolio uses smooth scrolling navigation:
 ## Structure
 
 ```
+/images
 /src
   /app
     /components
+      /figma
+      /ui
       - Navigation.tsx (Fixed navbar)
       - Home.tsx (Hero + Spline 3D area)
       - About.tsx (Bio + Education)
@@ -52,6 +55,8 @@ The portfolio uses smooth scrolling navigation:
       - Blog.tsx (Articles)
       - Contact.tsx (Contact form)
       - Footer.tsx (Footer + back to top)
+      - Background.tsx (Background animations)
+      - Loading (Loading animations)
     - App.tsx (Main component)
   /styles
     - index.css (Custom styles + scrollbar)
