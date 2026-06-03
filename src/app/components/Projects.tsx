@@ -638,6 +638,42 @@ export function Projects() {
       "live": "",
       "featured": true
     },
+    {
+      title: "Handwritten Number Recognition (MNIST)",
+      category: "Artificial Intelligence",
+      description:
+        "The first step in the Artificial Intelligence Learning Journey focusing on the basics of artificial intelligence and essential libraries, featuring an introductory program that performs handwritten digit recognition, later transferred to an HTML interface.",
+      images: [
+        "images/mnist-1.png",
+        "images/mnist-2.png",
+      ],
+      technologies: [
+        "Python",
+        "HTML",
+        "JavaScript",
+      ],
+      github: "",
+      live: "",
+      featured: false,
+    },
+    {
+      title: "Traffic Flow Analysis and Vehicle Counter",
+      category: "Artificial Intelligence",
+      description:
+        "The second project of the learning journey involving the development of a computer vision–based application that analyzes traffic flow by detecting and counting vehicles according to the lanes they use.",
+      images: [
+        "images/traffic-1.png",
+        "images/traffic-2.png",
+      ],
+      technologies: [
+        "Python",
+        "OpenCV",
+        "YOLO",
+      ],
+      github: "",
+      live: "",
+      featured: false,
+    },
   ];
 
   const categories = ["All"];
