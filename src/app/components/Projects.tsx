@@ -674,6 +674,23 @@ export function Projects() {
       live: "",
       featured: false,
     },
+    {
+      title: "Dinamik 2B Matris Üzerinde İşaretçi Aritmetiği ve Özel Toplam",
+      category: "System Programming",
+      description:
+        "Yalnızca işaretçi aritmetiği kullanarak dinamik olarak ayrılmış 2 boyutlu bir matris üzerinde işlemler gerçekleştiren, ana ve ikincil köşegen elemanlarının toplamını merkez elemanı mükerrer saymadan hesaplayan bir C programı.",
+      images: [
+        "images/matrix-1.png",
+      ],
+      technologies: [
+        "C",
+        "Pointer Arithmetic",
+        "Dynamic Memory Allocation (malloc)",
+      ],
+      github: "https://github.com/OFThub/SisProg",
+      live: "",
+      featured: false,
+    },
   ];
 
   const categories = ["All"];
