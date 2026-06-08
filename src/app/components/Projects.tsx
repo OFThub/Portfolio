@@ -691,6 +691,26 @@ export function Projects() {
       live: "",
       featured: false,
     },
+    {
+      title: "OFTify",
+      category: "Mobile Application",
+      description:
+        "Spotify benzeri, tam teşekküllü yerel müzik çalar uygulaması. Cihaz hafızasındaki müzik dosyalarını otomatik tarayarak çalma listeleri, kategoriler, sanatçı ve albüm bazlı gruplandırma sunar. Arka planda oynatma desteği, Fisher-Yates algoritmalı rastgele karıştırma ve özel vinil disk animasyonlu modern bir koyu tema arayüzüne sahiptir.",
+      images: [
+        "images/sarkievreni-1.png",
+      ],
+      technologies: [
+        "React Native",
+        "Zustand",
+        "react-native-track-player",
+        "react-native-fs",
+        "react-native-reanimated",
+        "AsyncStorage",
+      ],
+      github: "https://github.com/OFThub/OFTify",
+      live: "",
+      featured: true,
+    },
   ];
 
   const categories = ["All"];
