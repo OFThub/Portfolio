@@ -65,6 +65,8 @@ export default function EmberBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
 

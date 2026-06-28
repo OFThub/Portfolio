@@ -10,17 +10,17 @@ import { Footer } from './components/Footer';
 import Loading from './components/Loading';
 import EmberBackground from './components/Background';
 import { useState } from "react";
+import { MotionConfig } from "motion/react";
 
 export default function App() {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       {!loaded && <Loading onComplete={() => setLoaded(true)} />}
 
       {loaded && (
         <>
-        
           <EmberBackground />
           <div className="min-h-screen relative z-10 bg-transparent">
             <Navigation />
@@ -35,6 +35,6 @@ export default function App() {
           </div>
         </>
       )}
-    </>
+    </MotionConfig>
   );
 }
