@@ -1,7 +1,9 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
-import { ExternalLink, Github, Filter } from "lucide-react";
+import { ExternalLink, Github, Filter, Star } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useGitHubRepos } from "../../hooks/useGitHubRepos";
+import type { GitHubRepo } from "../../services/github";
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -262,6 +264,12 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           viewport={{ once: true }}
         >
           <h3 className="text-xl font-bold text-white">{project.title}</h3>
+          {project.stars > 0 && (
+            <span className="flex items-center gap-1 text-xs text-yellow-400 shrink-0 mt-1">
+              <Star className="w-3 h-3 fill-current" />
+              {project.stars}
+            </span>
+          )}
         </motion.div>
 
         {/* Animated divider */}
@@ -333,13 +341,85 @@ function MagneticBtn({ children, href, className }: { children: React.ReactNode;
   );
 }
 
+/* ─── GitHub helpers ─────────────────────────────────────────────────── */
+type RawProject = {
+  title: string;
+  category: string;
+  description: string;
+  images: string[];
+  technologies: string[];
+  github: string;
+  live: string;
+  featured: boolean;
+};
+
+type EnrichedProject = RawProject & {
+  stars: number;
+  forks: number;
+  updatedAt: string | null;
+};
+
+function extractRepoName(githubUrl: string): string | null {
+  if (!githubUrl) return null;
+  const parts = githubUrl.split("/").filter(Boolean);
+  return parts[parts.length - 1] ?? null;
+}
+
+function enrichProject(project: RawProject, githubRepos: GitHubRepo[]): EnrichedProject {
+  const repoName = extractRepoName(project.github);
+  const match = repoName
+    ? githubRepos.find((r) => r.name.toLowerCase() === repoName.toLowerCase())
+    : null;
+  return {
+    ...project,
+    stars: match?.stargazers_count ?? 0,
+    forks: match?.forks_count ?? 0,
+    updatedAt: match?.updated_at ?? null,
+    live: project.live || match?.homepage || "",
+  };
+}
+
+function buildAutoDiscoveredProjects(
+  githubRepos: GitHubRepo[],
+  portfolioProjects: RawProject[]
+): EnrichedProject[] {
+  const portfolioRepoNames = new Set(
+    portfolioProjects
+      .map((p) => extractRepoName(p.github)?.toLowerCase())
+      .filter(Boolean)
+  );
+
+  return githubRepos
+    .filter(
+      (repo) =>
+        !repo.fork &&
+        !repo.archived &&
+        repo.language !== null &&
+        !portfolioRepoNames.has(repo.name.toLowerCase())
+    )
+    .map((repo) => ({
+      title: repo.name.replace(/-/g, " ").replace(/_/g, " "),
+      category: "Other",
+      description: repo.description ?? "",
+      images: [] as string[],
+      technologies: ([repo.language!, ...repo.topics]).filter(Boolean),
+      github: repo.html_url,
+      live: repo.homepage ?? "",
+      featured: false,
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
+      updatedAt: repo.updated_at,
+    }));
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    MAIN PROJECTS COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
 export function Projects() {
   const [filter, setFilter] = useState("All");
+  const { repos: githubRepos } = useGitHubRepos();
 
-  const projects = [
+  const RAW_PROJECTS = [
     {
       title: "Sportify",
       category: "All",
@@ -715,12 +795,31 @@ export function Projects() {
 
   const categories = ["All"];
 
-  const filteredProjects =
-    filter === "All" ? projects : projects.filter((p) => p.category === filter);
+  const enrichedProjects = useMemo(
+    () =>
+      RAW_PROJECTS.map((p) => enrichProject(p, githubRepos)).sort((a, b) => {
+        if (b.stars !== a.stars) return b.stars - a.stars;
+        const dateA = new Date(a.updatedAt ?? 0).getTime();
+        const dateB = new Date(b.updatedAt ?? 0).getTime();
+        return dateB - dateA;
+      }),
+    [githubRepos]
+  );
 
-  const particles = Array.from({ length: 14 }, (_, i) => ({
-    id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5,
-  }));
+  const autoDiscovered = useMemo(
+    () => buildAutoDiscoveredProjects(githubRepos, RAW_PROJECTS),
+    [githubRepos]
+  );
+
+  const filteredProjects =
+    filter === "All" ? enrichedProjects : enrichedProjects.filter((p) => p.category === filter);
+
+  const particles = useMemo(
+    () => Array.from({ length: 14 }, (_, i) => ({
+      id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5,
+    })),
+    []
+  );
 
   return (
     <section id="projects" className="relative min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -832,6 +931,55 @@ export function Projects() {
             ))}
           </motion.div>
         </AnimatePresence>
+
+        {/* ── More on GitHub ── */}
+        {autoDiscovered.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mt-16"
+          >
+            <h3 className="text-xl font-semibold text-white/50 mb-6 text-center font-mono tracking-widest uppercase text-sm">
+              More on GitHub
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {autoDiscovered.map((repo) => (
+                <a
+                  key={repo.github}
+                  href={repo.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border border-white/10 rounded-lg p-4 hover:border-red-600/40 transition-colors group bg-white/[0.02]"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="font-medium text-white/80 group-hover:text-red-400 transition-colors text-sm capitalize">
+                      {repo.title}
+                    </h4>
+                    {repo.stars > 0 && (
+                      <span className="text-xs text-yellow-400 flex items-center gap-1 shrink-0">
+                        <Star className="w-3 h-3 fill-current" /> {repo.stars}
+                      </span>
+                    )}
+                  </div>
+                  {repo.description && (
+                    <p className="text-xs text-white/40 mt-1 line-clamp-2 leading-relaxed">
+                      {repo.description}
+                    </p>
+                  )}
+                  <div className="flex gap-1.5 mt-3 flex-wrap">
+                    {repo.technologies.slice(0, 3).map((tech) => (
+                      <span key={tech} className="text-xs px-2 py-0.5 rounded bg-white/5 text-white/40 border border-white/10">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* ── CTA ── */}
         <motion.div
