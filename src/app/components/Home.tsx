@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
 import { ArrowRight, Code2, Database, Globe, Server } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { lazy, Suspense } from "react";
 const Spline = lazy(() => import("@splinetool/react-spline"));
 
@@ -234,9 +234,12 @@ export function Home() {
     }
   };
 
-  const particles = Array.from({ length: 22 }, (_, i) => ({
-    id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5, size: Math.random() > 0.5 ? 2 : 1,
-  }));
+  const particles = useMemo(
+    () => Array.from({ length: 22 }, (_, i) => ({
+      id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5, size: Math.random() > 0.5 ? 2 : 1,
+    })),
+    []
+  );
 
   const techItems = [
     { icon: Code2,    label: "Frontend",  desc: "React · TypeScript · Tailwind" },
