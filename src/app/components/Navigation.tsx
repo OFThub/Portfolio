@@ -157,6 +157,7 @@ export function Navigation() {
   return (
     <>
       <motion.nav
+        aria-label="Main navigation"
         className="fixed top-0 left-0 right-0 z-50 border-b border-primary/20 overflow-hidden"
         style={{
           background: scrolled
@@ -270,7 +271,8 @@ export function Navigation() {
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden relative p-2 text-white overflow-hidden"
-              aria-label="Toggle menu"
+              aria-label="Toggle navigation menu"
+              aria-expanded={isOpen}
               whileTap={{ scale: 0.92 }}
             >
               {/* Corner decos on hamburger */}
