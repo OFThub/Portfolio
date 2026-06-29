@@ -67,3 +67,26 @@ body::-webkit-scrollbar {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Keyboard focus — visible only for keyboard users, hidden for mouse */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid #dc2626;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Button pressed state */
+button:active,
+[role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* Bare link hover */
+a:not([class]):hover {
+  color: #ef4444;
+  text-decoration: underline;
+}
