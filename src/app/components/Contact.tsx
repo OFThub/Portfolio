@@ -320,7 +320,7 @@ export function Contact() {
   /* Particles */
   const particles = useMemo(
     () =>
-      Array.from({ length: 20 }, (_, i) => ({
+      Array.from({ length: 10 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -819,10 +819,12 @@ export function Contact() {
 
           {/* Subtle scan */}
           <motion.div
-            className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
-            animate={{ top: ["0%", "100%"] }}
+            className="absolute inset-0 pointer-events-none"
+            animate={{ y: ["-100%", "0%"] }}
             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          />
+          >
+            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          </motion.div>
 
           <motion.h2
             className="text-3xl font-bold text-white mb-4"

@@ -56,10 +56,20 @@ function GlitchText({ children }: { children: string }) {
 
 /* ─── Scan Line ──────────────────────────────────────────────────────── */
 function ScanLine() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [h, setH] = useState(0);
+  useEffect(() => {
+    const parent = ref.current?.parentElement;
+    if (!parent) return;
+    const ro = new ResizeObserver(() => setH(parent.clientHeight));
+    ro.observe(parent);
+    return () => ro.disconnect();
+  }, []);
   return (
     <motion.div
-      className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none z-10"
-      animate={{ top: ["0%", "100%"] }}
+      ref={ref}
+      className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none z-10"
+      animate={h > 0 ? { y: [0, h] } : {}}
       transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
     />
   );
@@ -248,7 +258,7 @@ export function Experience() {
   ];
 
   /* Particles */
-  const particles = Array.from({ length: 16 }, (_, i) => ({
+  const particles = Array.from({ length: 8 }, (_, i) => ({
     id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5,
   }));
 

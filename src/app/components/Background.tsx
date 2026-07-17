@@ -75,8 +75,10 @@ export default function EmberBackground() {
     let rafId = 0;
     let frame = 0;
 
-    const TARGET_COUNT = 120;
-    const SPAWN_RATE = 3;
+    // Mobil / düşük çekirdekli cihazlarda parçacık bütçesini düşür
+    const lowPower = window.innerWidth < 768 || (navigator.hardwareConcurrency ?? 8) <= 4;
+    const TARGET_COUNT = lowPower ? 60 : 120;
+    const SPAWN_RATE = lowPower ? 2 : 3;
 
     // İmleç takibi
     const cursor = { x: -200, y: -200, vx: 0, vy: 0, prevX: -200, prevY: -200 };
@@ -130,6 +132,36 @@ export default function EmberBackground() {
       e.life = Math.random() * 0.8;
       embers.push(e);
     }
+
+    // Ember sprite önbelleği: her karede gradyan üretmek yerine hue başına bir kez çiz
+    const SPRITE_SIZE = 64;
+    const spriteCache = new Map<number, HTMLCanvasElement>();
+    function emberSprite(hue: number): HTMLCanvasElement {
+      let s = spriteCache.get(hue);
+      if (s) return s;
+      s = document.createElement("canvas");
+      s.width = s.height = SPRITE_SIZE;
+      const sctx = s.getContext("2d")!;
+      const half = SPRITE_SIZE / 2;
+      const glow = sctx.createRadialGradient(half, half, 0, half, half, half);
+      glow.addColorStop(0, `hsla(${hue}, 100%, 65%, 0.3)`);
+      glow.addColorStop(0.4, `hsla(${hue}, 100%, 50%, 0.12)`);
+      glow.addColorStop(1, `hsla(${hue}, 100%, 40%, 0)`);
+      sctx.fillStyle = glow;
+      sctx.fillRect(0, 0, SPRITE_SIZE, SPRITE_SIZE);
+      const coreR = half / 5; // core, glow yarıçapının ~1/5'i (eski glowMult oranı)
+      const core = sctx.createRadialGradient(half, half, 0, half, half, coreR);
+      core.addColorStop(0, `hsla(${hue + 30}, 100%, 90%, 1)`);
+      core.addColorStop(0.5, `hsla(${hue + 10}, 100%, 65%, 1)`);
+      core.addColorStop(1, `hsla(${hue}, 100%, 45%, 0.6)`);
+      sctx.fillStyle = core;
+      sctx.beginPath();
+      sctx.arc(half, half, coreR, 0, Math.PI * 2);
+      sctx.fill();
+      spriteCache.set(hue, s);
+      return s;
+    }
+    [0, 15, 20, 30, 40].forEach(emberSprite);
 
     let flickerT = 0;
     function flicker(amp: number) {
@@ -236,25 +268,12 @@ export default function EmberBackground() {
 
         // Cursor embers biraz daha parlak ve büyük
         const glowMult = e.isCursor ? 6 : 5;
+        const d = e.size * glowMult * 2;
 
-        const glow = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.size * glowMult);
-        glow.addColorStop(0,   `hsla(${e.hue}, 100%, 65%, ${alpha * (e.isCursor ? 0.35 : 0.25)})`);
-        glow.addColorStop(0.4, `hsla(${e.hue}, 100%, 50%, ${alpha * 0.12})`);
-        glow.addColorStop(1,   `hsla(${e.hue}, 100%, 40%, 0)`);
-        ctx.beginPath();
-        ctx.arc(e.x, e.y, e.size * glowMult, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
-
-        const core = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.size);
-        core.addColorStop(0,   `hsla(${e.hue + 30}, 100%, 90%, ${alpha})`);
-        core.addColorStop(0.5, `hsla(${e.hue + 10}, 100%, 65%, ${alpha})`);
-        core.addColorStop(1,   `hsla(${e.hue},      100%, 45%, ${alpha * 0.6})`);
-        ctx.beginPath();
-        ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
-        ctx.fillStyle = core;
-        ctx.fill();
+        ctx.globalAlpha = e.isCursor ? Math.min(1, alpha * 1.3) : alpha;
+        ctx.drawImage(emberSprite(e.hue), e.x - d / 2, e.y - d / 2, d, d);
       });
+      ctx.globalAlpha = 1;
 
       // İmleç alevini en üste çiz
       drawCursorFlame();

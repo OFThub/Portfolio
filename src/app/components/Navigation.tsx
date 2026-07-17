@@ -160,10 +160,11 @@ export function Navigation() {
         aria-label="Main navigation"
         className="fixed top-0 left-0 right-0 z-50 border-b border-primary/20 overflow-hidden"
         style={{
+          // backdrop-filter kaldırıldı: altındaki canvas her karede değiştiği için
+          // entegre GPU'larda sürekli re-blur ~15fps'e mal oluyordu
           background: scrolled
-            ? "rgba(0,0,0,0.92)"
-            : "rgba(0,0,0,0.75)",
-          backdropFilter: "blur(16px)",
+            ? "rgba(0,0,0,0.95)"
+            : "rgba(0,0,0,0.85)",
           transition: "background 0.3s",
         }}
         initial={{ y: -80, opacity: 0 }}

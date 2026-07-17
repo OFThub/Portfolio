@@ -4,6 +4,7 @@ import { ExternalLink, Github, Filter, Star } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useGitHubRepos } from "../../hooks/useGitHubRepos";
 import type { GitHubRepo } from "../../services/github";
+import { CountUp } from "./Kinetic";
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -59,10 +60,20 @@ function GlitchText({ children }: { children: string }) {
 
 /* ─── Scan Line ──────────────────────────────────────────────────────── */
 function ScanLine({ duration = 6 }: { duration?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [h, setH] = useState(0);
+  useEffect(() => {
+    const parent = ref.current?.parentElement;
+    if (!parent) return;
+    const ro = new ResizeObserver(() => setH(parent.clientHeight));
+    ro.observe(parent);
+    return () => ro.disconnect();
+  }, []);
   return (
     <motion.div
-      className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none z-20"
-      animate={{ top: ["0%", "100%"] }}
+      ref={ref}
+      className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none z-20"
+      animate={h > 0 ? { y: [0, h] } : {}}
       transition={{ duration, repeat: Infinity, ease: "linear" }}
     />
   );
@@ -101,18 +112,33 @@ function TechBadge({ label, delay }: { label: string; delay: number }) {
 /* ─── Image Carousel ────────────────────────────────────────────────── */
 function ImageCarousel({ images, title, category }: { images: string[]; title: string; category: string }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inViewRef = useRef(false);
 
-  // Otomatik slayıt
+  // Otomatik slayt — yalnızca kart görünürken ve birden fazla resim varken
   useEffect(() => {
+    if (images.length <= 1) return;
+    const el = rootRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inViewRef.current = entry.isIntersecting;
+    });
+    observer.observe(el);
+
     const interval = setInterval(() => {
+      if (!inViewRef.current || document.hidden) return;
       setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     }, 4000); // 4 saniyede bir
 
-    return () => clearInterval(interval);
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+    };
   }, [images.length]);
 
   return (
-    <div className="relative h-52 overflow-hidden group">
+    <div ref={rootRef} className="relative h-52 overflow-hidden group">
       {/* Image Slider */}
       <motion.div
         className="w-full h-full flex"
@@ -267,7 +293,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           {project.stars > 0 && (
             <span className="flex items-center gap-1 text-xs text-yellow-400 shrink-0 mt-1">
               <Star className="w-3 h-3 fill-current" />
-              {project.stars}
+              <CountUp value={project.stars} />
             </span>
           )}
         </motion.div>
@@ -815,7 +841,7 @@ export function Projects() {
     filter === "All" ? enrichedProjects : enrichedProjects.filter((p) => p.category === filter);
 
   const particles = useMemo(
-    () => Array.from({ length: 14 }, (_, i) => ({
+    () => Array.from({ length: 8 }, (_, i) => ({
       id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5,
     })),
     []
@@ -959,7 +985,7 @@ export function Projects() {
                     </h4>
                     {repo.stars > 0 && (
                       <span className="text-xs text-yellow-400 flex items-center gap-1 shrink-0">
-                        <Star className="w-3 h-3 fill-current" /> {repo.stars}
+                        <Star className="w-3 h-3 fill-current" /> <CountUp value={repo.stars} />
                       </span>
                     )}
                   </div>

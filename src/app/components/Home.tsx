@@ -2,7 +2,8 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react
 import { ArrowRight, Code2, Database, Globe, Server } from "lucide-react";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { lazy, Suspense } from "react";
-const Spline = lazy(() => import("@splinetool/react-spline"));
+import { KineticLetters } from "./Kinetic";
+const Hero3D = lazy(() => import("./Hero3D"));
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -35,8 +36,9 @@ function Particle({ x, y, delay, size = 1 }: { x: number; y: number; delay: numb
 }
 
 /* ─── Glitch Text ────────────────────────────────────────────────────── */
-function GlitchText({ children, className = "" }: { children: string; className?: string }) {
+function GlitchText({ children, text, className = "" }: { children: React.ReactNode; text?: string; className?: string }) {
   const [glitching, setGlitching] = useState(false);
+  const str = text ?? (typeof children === "string" ? children : "");
   useEffect(() => {
     const run = () => { setGlitching(true); setTimeout(() => setGlitching(false), 200); };
     const id = setInterval(run, 4000 + Math.random() * 3000);
@@ -45,10 +47,10 @@ function GlitchText({ children, className = "" }: { children: string; className?
   return (
     <span className={`relative inline-block ${className}`}>
       {children}
-      {glitching && (
+      {glitching && str && (
         <>
-          <span className="absolute inset-0 text-red-400 opacity-70" style={{ clipPath: "inset(0 0 55% 0)", transform: "translateX(-4px)" }}>{children}</span>
-          <span className="absolute inset-0 text-cyan-400 opacity-70" style={{ clipPath: "inset(55% 0 0 0)", transform: "translateX(4px)" }}>{children}</span>
+          <span className="absolute inset-0 text-red-400 opacity-70" aria-hidden="true" style={{ clipPath: "inset(0 0 55% 0)", transform: "translateX(-4px)" }}>{str}</span>
+          <span className="absolute inset-0 text-cyan-400 opacity-70" aria-hidden="true" style={{ clipPath: "inset(55% 0 0 0)", transform: "translateX(4px)" }}>{str}</span>
         </>
       )}
     </span>
@@ -158,70 +160,27 @@ function GlowCard({ children, className = "", delay = 0, once = true }: {
 
 /* ─── Scan Line ──────────────────────────────────────────────────────── */
 function ScanLine({ duration = 6 }: { duration?: number }) {
+  // 1px'lik çizgi piksel bazlı translateY ile taşınır: kompozitör katmanı
+  // kart boyutunda değil genişlik×1px olur (entegre GPU'larda kritik)
+  const ref = useRef<HTMLDivElement>(null);
+  const [h, setH] = useState(0);
+  useEffect(() => {
+    const parent = ref.current?.parentElement;
+    if (!parent) return;
+    const ro = new ResizeObserver(() => setH(parent.clientHeight));
+    ro.observe(parent);
+    return () => ro.disconnect();
+  }, []);
   return (
     <motion.div
-      className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none z-10"
-      animate={{ top: ["0%", "100%"] }}
+      ref={ref}
+      className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none z-10"
+      animate={h > 0 ? { y: [0, h] } : {}}
       transition={{ duration, repeat: Infinity, ease: "linear" }}
     />
   );
 }
 
-/* ─── Orbiting Ring ──────────────────────────────────────────────────── */
-function OrbitRing({ radius, duration, delay = 0, dotColor = "bg-primary" }: {
-  radius: number; duration: number; delay?: number; dotColor?: string;
-}) {
-  return (
-    <motion.div
-      className="absolute rounded-full border border-primary/10"
-      style={{ width: radius * 2, height: radius * 2, top: `calc(50% - ${radius}px)`, left: `calc(50% - ${radius}px)` }}
-      animate={{ rotate: 360 }}
-      transition={{ duration, repeat: Infinity, ease: "linear", delay }}
-    >
-      <div className={`absolute w-2 h-2 rounded-full ${dotColor} top-0 left-1/2 -translate-x-1/2 -translate-y-1/2`}
-        style={{ boxShadow: "0 0 8px rgba(239,68,68,0.8)" }} />
-    </motion.div>
-  );
-}
-
-/* ─── Hero Visual (replaces Spline) ─────────────────────────────────── 
-function HeroVisual() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 pointer-events-auto">
-        <Suspense fallback={<SplineFallback />}>
-          <Spline scene="https://draft.spline.design/zMVIkYQRvnlLDUVA/scene.splinecode" />
-        </Suspense>
-      </div>
-    </div>
-  );
-}
-
-// Spline yüklenene kadar gösterilecek placeholder
-function SplineFallback() {
-  return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <motion.div
-        className="w-2 h-2 rounded-full bg-primary"
-        style={{ boxShadow: "0 0 20px 6px rgba(239,68,68,0.4)" }}
-        animate={{ scale: [1, 1.6, 1], opacity: [0.8, 1, 0.8] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      />
-      {[80, 160, 260, 380].map((r, i) => (
-        <motion.div
-          key={r}
-          className="absolute rounded-full border border-primary/10"
-          style={{ width: r * 2, height: r * 2, top: -r, left: -r }}
-          animate={{ opacity: [0.3, 0.7, 0.3] }}
-          transition={{ duration: 3, delay: i * 0.4, repeat: Infinity }}
-        />
-      ))}
-      <OrbitRing radius={120} duration={12} dotColor="bg-primary" />
-      <OrbitRing radius={200} duration={20} delay={3} dotColor="bg-cyan-400" />
-    </div>
-  );
-}
-*/
 /* ═══════════════════════════════════════════════════════════════════════
    MAIN HOME COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
@@ -235,7 +194,7 @@ export function Home() {
   };
 
   const particles = useMemo(
-    () => Array.from({ length: 22 }, (_, i) => ({
+    () => Array.from({ length: 14 }, (_, i) => ({
       id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5, size: Math.random() > 0.5 ? 2 : 1,
     })),
     []
@@ -274,13 +233,21 @@ export function Home() {
           }}
         />
 
+        {/* 3D Digital Core (three.js — lazy chunk) */}
+        <Suspense fallback={null}>
+          <Hero3D />
+        </Suspense>
+
+        {/* Merkezde metin okunurluğu için hafif vinyet */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 46% 38% at 50% 46%, rgba(0,0,0,0.5), transparent 72%)" }}
+        />
+
         {/* Particles */}
         <div className="absolute inset-0 pointer-events-none">
           {particles.map((p) => <Particle key={p.id} x={p.x} y={p.y} delay={p.delay} size={p.size} />)}
         </div>
-
-        {/* Orbital visual */}
-        {/*<HeroVisual />*/}
 
         {/* Scan line across hero */}
         <ScanLine duration={8} />
@@ -307,23 +274,13 @@ export function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.span
-              className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-primary"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-            >
-              Full Stack
-            </motion.span>
+            <KineticLetters text="Full Stack" gradient startDelay={350} />
             <br />
-            <motion.span
-              className="text-primary inline-block"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.45, duration: 0.7 }}
-            >
-              <GlitchText>Developer</GlitchText>
-            </motion.span>
+            <span className="text-primary inline-block">
+              <GlitchText text="Developer">
+                <KineticLetters text="Developer" startDelay={750} />
+              </GlitchText>
+            </span>
           </motion.h1>
 
           {/* Sub */}
