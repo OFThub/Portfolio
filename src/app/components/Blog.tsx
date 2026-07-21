@@ -128,13 +128,6 @@ function SectionTitle({ children, delay = 0 }: { children: string; delay?: numbe
 /* ─── Featured Article Card ──────────────────────────────────────────── */
 function FeaturedCard({ post, index }: { post: any; index: number }) {
   const [hovered, setHovered] = useState(false);
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    spotX.set(e.clientX - rect.left);
-    spotY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.article
@@ -142,22 +135,15 @@ function FeaturedCard({ post, index }: { post: any; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: 0.3 + index * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative group bg-card border border-primary/20 rounded-lg overflow-hidden cursor-pointer"
+      className="spotlight relative group bg-card border border-primary/20 rounded-lg overflow-hidden cursor-pointer"
       style={{
         borderColor: hovered ? "rgba(239,68,68,0.45)" : "rgba(239,68,68,0.2)",
         boxShadow: hovered ? "0 0 40px rgba(239,68,68,0.09)" : "none",
         transition: "border-color 0.3s, box-shadow 0.3s",
       }}
     >
-      {hovered && (
-        <div
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{ background: `radial-gradient(220px circle at ${spotX.get()}px ${spotY.get()}px, rgba(239,68,68,0.07) 0%, transparent 70%)` }}
-        />
-      )}
       <ScanLine duration={7 + index} />
       <CornerDeco position="tl" />
       <CornerDeco position="tr" />
@@ -281,13 +267,6 @@ function FeaturedCard({ post, index }: { post: any; index: number }) {
 /* ─── Regular Article Card ───────────────────────────────────────────── */
 function ArticleCard({ post, index }: { post: any; index: number }) {
   const [hovered, setHovered] = useState(false);
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    spotX.set(e.clientX - rect.left);
-    spotY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.article
@@ -295,23 +274,16 @@ function ArticleCard({ post, index }: { post: any; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       whileHover={{ y: -4 }}
-      className="relative group bg-card border border-primary/20 rounded-lg overflow-hidden cursor-pointer flex flex-col h-full"
+      className="spotlight relative group bg-card border border-primary/20 rounded-lg overflow-hidden cursor-pointer flex flex-col h-full"
       style={{
         borderColor: hovered ? "rgba(239,68,68,0.4)" : "rgba(239,68,68,0.2)",
         boxShadow: hovered ? "0 0 30px rgba(239,68,68,0.07)" : "none",
         transition: "border-color 0.3s, box-shadow 0.3s",
       }}
     >
-      {hovered && (
-        <div
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{ background: `radial-gradient(180px circle at ${spotX.get()}px ${spotY.get()}px, rgba(239,68,68,0.06) 0%, transparent 70%)` }}
-        />
-      )}
       <CornerDeco position="tl" />
       <CornerDeco position="br" />
       <ScanLine duration={8 + index} />
@@ -419,7 +391,7 @@ function ComingSoon() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="relative text-center max-w-lg px-8 py-12 bg-card border border-primary/20 rounded-lg overflow-hidden"
+        className="spotlight relative text-center max-w-lg px-8 py-12 bg-card border border-primary/20 rounded-lg overflow-hidden"
         style={{ boxShadow: "0 0 80px rgba(239,68,68,0.07)" }}
       >
         <ScanLine duration={5} />

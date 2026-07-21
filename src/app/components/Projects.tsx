@@ -5,6 +5,7 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useGitHubRepos } from "../../hooks/useGitHubRepos";
 import type { GitHubRepo } from "../../services/github";
 import { CountUp } from "./Kinetic";
+import { MatrixRain } from "./ui/matrix-rain";
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -182,13 +183,6 @@ function ImageCarousel({ images, title, category }: { images: string[]; title: s
 /* ─── Project Card ───────────────────────────────────────────────────── */
 function ProjectCard({ project, index }: { project: any; index: number }) {
   const [hovered, setHovered] = useState(false);
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    spotX.set(e.clientX - rect.left);
-    spotY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.div
@@ -197,24 +191,15 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative bg-card border border-primary/20 rounded-lg overflow-hidden"
+      className="spotlight group relative bg-card border border-primary/20 rounded-lg overflow-hidden"
       style={{
         borderColor: hovered ? "rgba(239,68,68,0.45)" : "rgba(239,68,68,0.2)",
         boxShadow: hovered ? "0 0 40px rgba(239,68,68,0.09)" : "none",
         transition: "border-color 0.3s, box-shadow 0.3s",
       }}
     >
-      {/* Mouse spotlight */}
-      {hovered && (
-        <div
-          className="absolute inset-0 pointer-events-none z-10"
-          style={{ background: `radial-gradient(200px circle at ${spotX.get()}px ${spotY.get()}px, rgba(239,68,68,0.06) 0%, transparent 70%)` }}
-        />
-      )}
-
       <ScanLine duration={7 + index} />
       <CornerDeco position="tl" />
       <CornerDeco position="tr" />
@@ -269,7 +254,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
                   transition={{ delay: i * 0.07, type: "spring", stiffness: 400 }}
                   whileHover={{ scale: 1.12 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative p-3 bg-black/80 hover:bg-primary border border-primary/30 hover:border-primary rounded-full transition-colors duration-200 overflow-hidden group/btn"
+                  className="spotlight relative p-3 bg-black/80 hover:bg-primary border border-primary/30 hover:border-primary rounded-full transition-colors duration-200 overflow-hidden group/btn"
                 >
                   <CornerDeco position="tl" />
                   <Icon className="w-5 h-5 text-white relative z-10" />
@@ -337,30 +322,14 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
 
 /* ─── Magnetic Button ────────────────────────────────────────────────── */
 function MagneticBtn({ children, href, className }: { children: React.ReactNode; href: string; className?: string }) {
-  const ref = useRef<HTMLAnchorElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 200, damping: 20 });
-  const sy = useSpring(y, { stiffness: 200, damping: 20 });
-
-  const handleMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.25);
-    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.25);
-  };
-
   return (
     <motion.a
-      ref={ref}
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ x: sx, y: sy }}
-      onMouseMove={handleMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
+      whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.96 }}
-      className={className}
+      className={`spotlight ${className}`}
     >
       {children}
     </motion.a>
@@ -852,6 +821,8 @@ export function Projects() {
 
       {/* ── Background ── */}
       <div className="absolute inset-0 pointer-events-none">
+        {/* Kırmızı Matrix yağmuru (yukarıdan düşen rastgele karakterler) */}
+        <MatrixRain />
         {particles.map((p) => <Particle key={p.id} x={p.x} y={p.y} delay={p.delay} />)}
         <div
           className="absolute inset-0 opacity-[0.025]"
@@ -925,9 +896,9 @@ export function Projects() {
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.55 + i * 0.07, type: "spring", stiffness: 300 }}
-              whileHover={{ scale: 1.05, y: -2 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.96 }}
-              className={`relative px-5 py-2 rounded-lg text-sm font-mono transition-colors duration-200 overflow-hidden`}
+              className={`spotlight relative px-5 py-2 rounded-lg text-sm font-mono transition-colors duration-200 overflow-hidden`}
               style={{
                 background: filter === category ? "rgb(239,68,68)" : "transparent",
                 color: filter === category ? "white" : "rgb(156,163,175)",
@@ -977,7 +948,7 @@ export function Projects() {
                   href={repo.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border border-white/10 rounded-lg p-4 hover:border-red-600/40 transition-colors group bg-white/[0.02]"
+                  className="spotlight relative border border-white/10 rounded-lg p-4 hover:border-red-600/40 transition-colors group bg-white/[0.02]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h4 className="font-medium text-white/80 group-hover:text-red-400 transition-colors text-sm capitalize">
@@ -1013,7 +984,7 @@ export function Projects() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true }}
-          className="relative mt-16 p-8 bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 rounded-lg text-center overflow-hidden"
+          className="spotlight relative mt-16 p-8 bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 rounded-lg text-center overflow-hidden"
         >
           <CornerDeco position="tl" />
           <CornerDeco position="tr" />
@@ -1051,7 +1022,7 @@ export function Projects() {
             >
               <MagneticBtn
                 href="https://github.com/OFThub/"
-                className="relative inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-red-700 text-white rounded-lg transition-colors duration-300 overflow-hidden group font-mono text-sm"
+                className="relative inline-flex items-center gap-2 px-6 py-3 glass-red text-white rounded-lg overflow-hidden group font-mono text-sm"
               >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"

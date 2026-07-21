@@ -82,13 +82,6 @@ function GlowCard({ children, className = "", delay = 0 }: {
   delay?: number;
 }) {
   const [hovered, setHovered] = useState(false);
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    spotX.set(e.clientX - rect.left);
-    spotY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.div
@@ -96,22 +89,15 @@ function GlowCard({ children, className = "", delay = 0 }: {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden ${className}`}
+      className={`spotlight relative overflow-hidden ${className}`}
       style={{ boxShadow: hovered ? "0 0 50px rgba(239,68,68,0.08)" : "none", transition: "box-shadow 0.3s" }}
     >
       <CornerDeco position="tl" />
       <CornerDeco position="tr" />
       <CornerDeco position="bl" />
       <CornerDeco position="br" />
-      {hovered && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(220px circle at ${spotX.get()}px ${spotY.get()}px, rgba(239,68,68,0.07) 0%, transparent 70%)` }}
-        />
-      )}
       {children}
     </motion.div>
   );
@@ -176,7 +162,7 @@ function CodeTerminal() {
       whileInView={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true }}
-      className="relative rounded-xl overflow-hidden border border-primary/20 bg-[#0d0d0d]"
+      className="spotlight relative rounded-xl overflow-hidden border border-primary/20 bg-[#0d0d0d]"
       style={{ boxShadow: "0 0 60px rgba(239,68,68,0.06), inset 0 0 40px rgba(0,0,0,0.4)" }}
     >
       {/* Terminal Header */}
@@ -405,7 +391,7 @@ export function About() {
                   transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
                   viewport={{ once: true }}
                   whileHover={{ x: 4 }}
-                  className="flex items-center gap-3 p-3 bg-secondary/50 border border-primary/10 rounded-lg group cursor-default"
+                  className="spotlight relative flex items-center gap-3 p-3 bg-secondary/50 border border-primary/10 rounded-lg group cursor-default"
                   style={{ transition: "border-color 0.2s" }}
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)")}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.1)")}
@@ -500,7 +486,7 @@ export function About() {
                 transition={{ delay: index * 0.1, duration: 0.4, type: "spring", stiffness: 300 }}
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.02, y: -2 }}
-                className="relative p-4 bg-card border border-primary/20 rounded-lg flex items-center gap-3 overflow-hidden group cursor-default"
+                className="spotlight relative p-4 bg-card border border-primary/20 rounded-lg flex items-center gap-3 overflow-hidden group cursor-default"
                 style={{ transition: "border-color 0.2s" }}
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)")}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)")}

@@ -43,32 +43,14 @@ function MagneticButton({
   type?: "submit" | "button";
   onClick?: () => void;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 200, damping: 20 });
-  const sy = useSpring(y, { stiffness: 200, damping: 20 });
-
-  const handleMove = (e: React.MouseEvent) => {
-    if (disabled || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    x.set((e.clientX - cx) * 0.25);
-    y.set((e.clientY - cy) * 0.25);
-  };
-
   return (
     <motion.button
-      ref={ref}
       type={type}
       disabled={disabled}
-      className={className}
-      style={{ x: sx, y: sy }}
-      onMouseMove={handleMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
+      className={`spotlight ${className}`}
       onClick={onClick}
-      whileTap={{ scale: 0.97 }}
+      whileHover={disabled ? undefined : { scale: 1.02 }}
+      whileTap={disabled ? undefined : { scale: 0.97 }}
     >
       {children}
     </motion.button>
@@ -257,24 +239,15 @@ function GlowCard({ children, className = "", delay = 0 }: {
   delay?: number;
 }) {
   const [hovered, setHovered] = useState(false);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden p-8 bg-card border border-primary/20 rounded-lg ${className}`}
+      className={`spotlight relative overflow-hidden p-8 bg-card border border-primary/20 rounded-lg ${className}`}
       style={{
         boxShadow: hovered ? "0 0 40px rgba(239,68,68,0.08)" : "none",
         transition: "box-shadow 0.3s",
@@ -284,14 +257,6 @@ function GlowCard({ children, className = "", delay = 0 }: {
       <CornerDeco position="tr" />
       <CornerDeco position="bl" />
       <CornerDeco position="br" />
-      {hovered && (
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(200px circle at ${mouseX.get()}px ${mouseY.get()}px, rgba(239,68,68,0.06) 0%, transparent 70%)`,
-          }}
-        />
-      )}
       {children}
     </motion.div>
   );
@@ -629,7 +594,7 @@ export function Contact() {
                 <MagneticButton
                   type="submit"
                   disabled={sending || status === "loading"}
-                  className="relative w-full px-6 py-4 bg-primary hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group overflow-hidden"
+                  className="relative w-full px-6 py-4 glass-red disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center gap-2 group overflow-hidden"
                 >
                   {/* Shimmer */}
                   <motion.div
@@ -740,9 +705,9 @@ export function Contact() {
                     initial={{ opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.65 + i * 0.08, duration: 0.4, type: "spring", stiffness: 300 }}
-                    whileHover={{ scale: 1.04, y: -2 }}
+                    whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.97 }}
-                    className={`relative p-4 bg-secondary border border-primary/20 rounded-lg transition-all duration-300 flex items-center gap-3 group overflow-hidden ${social.color}`}
+                    className={`spotlight relative p-4 bg-secondary border border-primary/20 rounded-lg transition-all duration-300 flex items-center gap-3 group overflow-hidden ${social.color}`}
                     style={{ "--glow": social.glow } as React.CSSProperties}
                   >
                     {/* Hover glow */}
@@ -770,7 +735,7 @@ export function Contact() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="relative p-8 bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 rounded-lg overflow-hidden"
+              className="spotlight relative p-8 bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 rounded-lg overflow-hidden"
             >
               <CornerDeco position="tl" />
               <CornerDeco position="tr" />
@@ -810,7 +775,7 @@ export function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           viewport={{ once: true }}
-          className="relative mt-12 p-8 bg-card border border-primary/20 rounded-lg text-center overflow-hidden"
+          className="spotlight relative mt-12 p-8 bg-card border border-primary/20 rounded-lg text-center overflow-hidden"
         >
           <CornerDeco position="tl" />
           <CornerDeco position="tr" />

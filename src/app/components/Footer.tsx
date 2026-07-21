@@ -42,28 +42,12 @@ function MagneticBtn({
   onClick?: () => void;
   className?: string;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 200, damping: 20 });
-  const sy = useSpring(y, { stiffness: 200, damping: 20 });
-
-  const handleMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.3);
-    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.3);
-  };
-
   return (
     <motion.button
-      ref={ref}
-      style={{ x: sx, y: sy }}
-      onMouseMove={handleMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
       onClick={onClick}
+      whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.94 }}
-      className={className}
+      className={`spotlight ${className}`}
     >
       {children}
     </motion.button>
@@ -110,7 +94,7 @@ function AnimLink({ label, onClick, delay }: { label: string; onClick: () => voi
         onClick={onClick}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative text-gray-400 hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group"
+        className="spotlight relative text-gray-400 hover:text-primary transition-colors duration-300 text-sm flex items-center gap-2 group"
       >
         {/* Animated dash */}
         <motion.span
@@ -391,7 +375,7 @@ export function Footer() {
           >
             <MagneticBtn
               onClick={() => scrollToSection("home")}
-              className="relative p-3.5 bg-primary hover:bg-red-700 text-white rounded-full shadow-lg shadow-primary/20 transition-colors duration-300 overflow-hidden group"
+              className="relative p-3.5 glass-red text-white rounded-full overflow-hidden group"
             >
               {/* Shimmer */}
               <motion.div

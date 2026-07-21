@@ -44,28 +44,12 @@ function MagneticNavBtn({
   onClick: () => void;
   isActive: boolean;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 300, damping: 25 });
-  const sy = useSpring(y, { stiffness: 300, damping: 25 });
-
-  const handleMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.2);
-    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.2);
-  };
-
   return (
     <motion.button
-      ref={ref}
-      style={{ x: sx, y: sy }}
-      onMouseMove={handleMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
       onClick={onClick}
+      whileHover={{ scale: 1.06 }}
       whileTap={{ scale: 0.95 }}
-      className="relative px-4 py-2 text-sm group"
+      className="spotlight glass-hover relative px-4 py-2 text-sm group"
     >
       {children}
       {/* Active underline with layoutId */}
@@ -188,8 +172,8 @@ export function Navigation() {
               onClick={() => scrollToSection("home")}
               onMouseEnter={() => setLogoHovered(true)}
               onMouseLeave={() => setLogoHovered(false)}
-              className="flex items-center space-x-2.5 cursor-pointer group"
-              whileHover={{ x: 3 }}
+              className="spotlight relative flex items-center space-x-2.5 cursor-pointer group"
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
             >
@@ -271,7 +255,7 @@ export function Navigation() {
             {/* ── Mobile Hamburger ── */}
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden relative p-2 text-white overflow-hidden"
+              className="spotlight md:hidden relative p-2 text-white overflow-hidden"
               aria-label="Toggle navigation menu"
               aria-expanded={isOpen}
               whileTap={{ scale: 0.92 }}
@@ -325,7 +309,7 @@ export function Navigation() {
                     exit={{ opacity: 0, x: -10 }}
                     transition={{ delay: i * 0.05, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     onClick={() => scrollToSection(link.id)}
-                    className="relative block w-full text-left px-4 py-3 rounded-lg overflow-hidden group"
+                    className="spotlight relative block w-full text-left px-4 py-3 rounded-lg overflow-hidden group"
                     style={{
                       background: activeSection === link.id ? "rgba(239,68,68,0.15)" : "transparent",
                       borderColor: activeSection === link.id ? "rgba(239,68,68,0.4)" : "transparent",

@@ -1,4 +1,4 @@
-import{r as wr,j as Ca}from"./index-dwtTmImm.js";/**
+import{r as wr,j as Ca}from"./index-vciBSiDS.js";/**
  * @license
  * Copyright 2010-2026 Three.js Authors
  * SPDX-License-Identifier: MIT

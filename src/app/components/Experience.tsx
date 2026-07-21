@@ -82,18 +82,6 @@ function GlowCard({ children, className = "", delay = 0 }: {
   delay?: number;
 }) {
   const [hovered, setHovered] = useState(false);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
-
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-    spotX.set(e.clientX - rect.left);
-    spotY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.div
@@ -101,10 +89,9 @@ function GlowCard({ children, className = "", delay = 0 }: {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once: true }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden ${className}`}
+      className={`spotlight relative overflow-hidden ${className}`}
       style={{
         boxShadow: hovered ? "0 0 50px rgba(239,68,68,0.08)" : "none",
         transition: "box-shadow 0.3s",
@@ -114,14 +101,6 @@ function GlowCard({ children, className = "", delay = 0 }: {
       <CornerDeco position="tr" />
       <CornerDeco position="bl" />
       <CornerDeco position="br" />
-      {hovered && (
-        <div
-          className="absolute inset-0 pointer-events-none rounded-lg"
-          style={{
-            background: `radial-gradient(220px circle at ${spotX.get()}px ${spotY.get()}px, rgba(239,68,68,0.07) 0%, transparent 70%)`,
-          }}
-        />
-      )}
       {children}
     </motion.div>
   );
@@ -501,7 +480,7 @@ export function Experience() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                     viewport={{ once: true }}
-                    className="relative px-4 py-2 border border-primary/30 rounded-lg bg-primary/5 font-mono text-sm text-primary/80"
+                    className="spotlight relative px-4 py-2 border border-primary/30 rounded-lg bg-primary/5 font-mono text-sm text-primary/80"
                   >
                     <CornerDeco position="tl" />
                     <CornerDeco position="br" />

@@ -3,6 +3,7 @@ import { ArrowRight, Code2, Database, Globe, Server } from "lucide-react";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { lazy, Suspense } from "react";
 import { KineticLetters } from "./Kinetic";
+import { FloatingPaths } from "./ui/background-paths";
 const Hero3D = lazy(() => import("./Hero3D"));
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
@@ -87,28 +88,12 @@ function MagneticBtn({ children, onClick, className, variant = "primary" }: {
   className?: string;
   variant?: "primary" | "outline";
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 200, damping: 20 });
-  const sy = useSpring(y, { stiffness: 200, damping: 20 });
-
-  const handleMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.25);
-    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.25);
-  };
-
   return (
     <motion.button
-      ref={ref}
-      style={{ x: sx, y: sy }}
-      onMouseMove={handleMove}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
       onClick={onClick}
+      whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.96 }}
-      className={className}
+      className={`spotlight ${className}`}
     >
       {children}
     </motion.button>
@@ -123,13 +108,6 @@ function GlowCard({ children, className = "", delay = 0, once = true }: {
   once?: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
-  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    spotX.set(e.clientX - rect.left);
-    spotY.set(e.clientY - rect.top);
-  }, []);
 
   return (
     <motion.div
@@ -137,22 +115,15 @@ function GlowCard({ children, className = "", delay = 0, once = true }: {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       viewport={{ once }}
-      onMouseMove={handleMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden ${className}`}
+      className={`spotlight relative overflow-hidden ${className}`}
       style={{ boxShadow: hovered ? "0 0 50px rgba(239,68,68,0.09)" : "none", transition: "box-shadow 0.3s" }}
     >
       <CornerDeco position="tl" />
       <CornerDeco position="tr" />
       <CornerDeco position="bl" />
       <CornerDeco position="br" />
-      {hovered && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(220px circle at ${spotX.get()}px ${spotY.get()}px, rgba(239,68,68,0.07) 0%, transparent 70%)` }}
-        />
-      )}
       {children}
     </motion.div>
   );
@@ -233,6 +204,14 @@ export function Home() {
           }}
         />
 
+        {/* Akan kırmızı SVG çizgiler (BackgroundPaths) */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+
+        {/* Akan kırmızı SVG çizgiler (BackgroundPaths) */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+
         {/* 3D Digital Core (three.js — lazy chunk) */}
         <Suspense fallback={null}>
           <Hero3D />
@@ -306,7 +285,7 @@ export function Home() {
             {/* Primary */}
             <MagneticBtn
               onClick={() => scrollToSection("projects")}
-              className="group relative px-8 py-4 bg-primary hover:bg-red-700 text-white rounded-lg transition-colors duration-300 flex items-center gap-2 overflow-hidden"
+              className="group relative px-8 py-4 glass-red text-white rounded-lg flex items-center gap-2 overflow-hidden"
             >
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"
@@ -322,7 +301,7 @@ export function Home() {
             {/* Outline */}
             <MagneticBtn
               onClick={() => scrollToSection("contact")}
-              className="group relative px-8 py-4 bg-transparent border-2 border-card-foreground text-card-foreground hover:bg-primary hover:text-white rounded-lg transition-all duration-300 overflow-hidden"
+              className="group relative px-8 py-4 glass-dark text-card-foreground hover:text-white rounded-lg overflow-hidden"
             >
               <motion.div
                 className="absolute inset-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"
@@ -345,7 +324,7 @@ export function Home() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 1.2 + index * 0.1, type: "spring", stiffness: 300 }}
                 whileHover={{ y: -4, scale: 1.03 }}
-                className="relative group p-5 bg-card border border-primary/20 rounded-lg overflow-hidden cursor-default"
+                className="spotlight relative group p-5 bg-card border border-primary/20 rounded-lg overflow-hidden cursor-default"
                 style={{ transition: "border-color 0.2s, box-shadow 0.2s" }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = "rgba(239,68,68,0.5)";
@@ -382,7 +361,7 @@ export function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer group z-20"
+          className="spotlight absolute bottom-8 left-1/2 -translate-x-1/2 cursor-pointer group z-20"
         >
           <motion.div
             animate={{ y: [0, 10, 0] }}
@@ -507,8 +486,8 @@ export function Home() {
           >
             <motion.button
               onClick={() => scrollToSection("about")}
-              className="inline-flex items-center gap-2 text-primary hover:text-red-400 transition-colors font-mono text-sm group"
-              whileHover={{ x: 4 }}
+              className="spotlight relative inline-flex items-center gap-2 text-primary hover:text-red-400 transition-colors font-mono text-sm group"
+              whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
               Learn more about me

@@ -270,7 +270,7 @@ export function Skills() {
             <TiltCard
               key={category.category}
               index={categoryIndex}
-              className="p-6 bg-card border border-primary/20 rounded-xl hover:border-primary/50 transition-colors duration-300 relative overflow-hidden"
+              className="spotlight p-6 bg-card border border-primary/20 rounded-xl hover:border-primary/50 transition-colors duration-300 relative overflow-hidden"
             >
               <motion.div
                 className="absolute inset-0 bg-gradient-to-br from-red-600/5 to-transparent opacity-0 pointer-events-none rounded-xl"
@@ -312,7 +312,7 @@ export function Skills() {
                 key={skill.name}
                 delay={index * 0.1}
                 hiddenState={{ opacity: 0, y: 40, scale: 0.85, rotate: -8 }}
-                className="p-6 bg-card border border-primary/20 rounded-xl hover:border-primary/50 transition-colors duration-300 text-center group cursor-default"
+                className="spotlight relative p-6 bg-card border border-primary/20 rounded-xl hover:border-primary/50 transition-colors duration-300 text-center group cursor-default"
               >
                 <motion.div
                   className="mb-4"
@@ -339,7 +339,7 @@ export function Skills() {
         <ScrollReveal hiddenState={{ opacity: 0, y: 40, scale: 0.97 }}>
           <motion.div
             whileHover={{ scale: 1.01 }}
-            className="relative p-8 bg-gradient-to-br from-primary/10 via-transparent to-transparent border border-primary/20 rounded-xl text-center overflow-hidden"
+            className="spotlight relative p-8 bg-gradient-to-br from-primary/10 via-transparent to-transparent border border-primary/20 rounded-xl text-center overflow-hidden"
           >
             <motion.div
               className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-red-600/20 to-transparent rounded-tl-xl pointer-events-none"

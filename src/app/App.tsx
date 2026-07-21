@@ -11,12 +11,14 @@ import Loading from './components/Loading';
 import EmberBackground from './components/Background';
 import { useState } from "react";
 import { MotionConfig } from "motion/react";
+import { SpotlightEffect } from "./components/ui/spotlight";
 
 export default function App() {
   const [loaded, setLoaded] = useState(false);
 
   return (
     <MotionConfig reducedMotion="user">
+      <SpotlightEffect />
       {!loaded && <Loading onComplete={() => setLoaded(true)} />}
 
       {loaded && (
