@@ -45,7 +45,14 @@ function canonicalUrl(siteUrl: string): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const siteUrl = (env.VITE_SITE_URL || 'https://ofthub.github.io/Portfolio').replace(/\/+$/, '')
+  // Resolution order: an explicit VITE_SITE_URL wins; otherwise Vercel tells us
+  // its own production hostname at build time (so a fresh import is correct
+  // without configuring anything); otherwise the GitHub Pages project site.
+  const vercelHost = env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL
+  const siteUrl = (
+    env.VITE_SITE_URL ||
+    (vercelHost ? `https://${vercelHost}` : 'https://ofthub.github.io/Portfolio')
+  ).replace(/\/+$/, '')
 
   // The public path the app is served from: '/' for a root domain (Vercel),
   // '/Portfolio/' for the GitHub Pages project site. Derived from the site URL
