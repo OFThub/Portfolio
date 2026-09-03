@@ -2,6 +2,11 @@ name: Deploy to GitHub Pages
 
 # dist/ is not committed, so Pages is built here instead of served from the
 # repository. This is what replaced the old commit-the-build-output flow.
+#
+# Pages is a MIRROR, not the primary site: it cannot serve HTTP headers, so the
+# CSP, HSTS and friends in vercel.json do not apply to it. If both are live,
+# each build declares itself canonical, which splits search ranking between two
+# copies of the same page -- run only one publicly, or point one at the other.
 on:
   push:
     branches: [main]
@@ -42,13 +47,13 @@ jobs:
           VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
         run: npm run build
 
-      # enablement flips the repository's Pages source to "GitHub Actions" on the
-      # first run, so nobody has to remember to change it by hand — and the old
-      # deploy-from-branch source (which served the committed dist/) is retired
-      # in the same step.
+      # ONE-TIME SETUP: enable Pages under
+      #   Settings -> Pages -> Source -> "GitHub Actions"
+      # then re-run this workflow. `enablement: true` was tried here and the
+      # default GITHUB_TOKEN got a 403 creating the Pages site, so the switch
+      # has to be flipped by a human once. After that this step just reads the
+      # existing configuration and the workflow is self-sufficient.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
