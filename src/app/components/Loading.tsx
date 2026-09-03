@@ -75,6 +75,16 @@ const PHASE = {
   DONE: 6.0,
 };
 
+/**
+ * Hard wall-clock ceiling on the intro, in seconds.
+ *
+ * The intro is designed to run 6s at 60fps. A slow device, a throttled
+ * background tab, or a dropped frame budget would otherwise stretch that
+ * arbitrarily while the whole site stays hidden. Nobody waits this long for a
+ * portfolio.
+ */
+const MAX_INTRO_SECONDS = 8;
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function clamp01(t: number): number {
@@ -151,6 +161,14 @@ export default function Loading({ onComplete }: LoadingProps) {
   const doneTriggeredRef = useRef(false);
 
   useEffect(() => {
+    // Every other animation on the site honours this; the intro was the one
+    // that did not, and it is the heaviest and the most unavoidable of them.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setHidden(true);
+      onComplete?.();
+      return;
+    }
+
     const canvas = canvasRef.current!;
     const expCanvas = expCanvasRef.current!;
     const ctx = canvas.getContext("2d")!;
@@ -250,9 +268,14 @@ export default function Loading({ onComplete }: LoadingProps) {
       if (sub) sub.classList.remove("visible");
     }
 
-    // Time
+    // Animation clock. `dt` is capped so a long frame cannot make the physics
+    // jump, but that cap means `t` advances with FRAMES, not wall time: below
+    // ~30fps the intro takes proportionally longer in the real world, and the
+    // entire site sits behind it. `startedAt` is the wall clock that ends it
+    // regardless.
     let t = 0;
     let last = performance.now();
+    const startedAt = last;
 
     function animate(now: number) {
       const dt = Math.min(0.033, (now - last) / 1000);
@@ -438,14 +461,19 @@ export default function Loading({ onComplete }: LoadingProps) {
         ctx.fillRect(0, 0, W, H);
       }
 
+      const wallSeconds = (now - startedAt) / 1000;
+
       // Fade out (trigger once)
-      if (t >= PHASE.DONE - 0.85 && !fadeTriggeredRef.current) {
+      if (
+        (t >= PHASE.DONE - 0.85 || wallSeconds >= MAX_INTRO_SECONDS - 0.85) &&
+        !fadeTriggeredRef.current
+      ) {
         fadeTriggeredRef.current = true;
         setFadeOut(true);
       }
 
       // Done (trigger once)
-      if (t >= PHASE.DONE && !doneTriggeredRef.current) {
+      if ((t >= PHASE.DONE || wallSeconds >= MAX_INTRO_SECONDS) && !doneTriggeredRef.current) {
         doneTriggeredRef.current = true;
         setHidden(true);
         onComplete?.();
