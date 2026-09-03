@@ -449,7 +449,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "aiContentPlatform",
-    images: ["images/AIContentPlatform-1.jpg", "images/AIContentPlatform-2.jpg", "images/AIContentPlatform-3.jpg"],
+    images: [],
     technologies: [
       "Next.js",
       "React",
@@ -485,7 +485,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "eventFlowCommerce",
-    images: ["images/eventflow-1.jpg", "images/eventflow-2.jpg", "images/eventflow-3.jpg"],
+    images: [],
     technologies: [
       "Node.js",
       "TypeScript",
@@ -504,7 +504,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "documentSimplifier",
-    images: ["images/legal-simplifier-1.jpg", "images/legal-simplifier-2.jpg", "images/legal-simplifier-3.jpg"],
+    images: [],
     technologies: [
       "Python",
       "FastAPI",
@@ -521,7 +521,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "onlineLibrary",
-    images: ["images/online-library-1.jpg", "images/online-library-2.jpg", "images/online-library-3.jpg"],
+    images: [],
     technologies: [
       "Node.js",
       "Express",
@@ -538,7 +538,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "dropSystem",
-    images: ["images/drop-system-1.jpg", "images/drop-system-2.jpg", "images/drop-system-3.jpg"],
+    images: [],
     technologies: [
       "Node.js",
       "TypeScript",
@@ -564,7 +564,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "alganChatbot",
-    images: ["images/AlganAIChatbot-1.jpg", "images/AlganAIChatbot-2.jpg", "images/AlganAIChatbot-3.jpg"],
+    images: [],
     technologies: [
       "Python",
       "Claude API",
@@ -584,7 +584,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "sudoku",
-    images: ["images/Sudoku-1.jpg", "images/Sudoku-2.jpg", "images/Sudoku-3.jpg"],
+    images: [],
     technologies: ["Python", "Pygame", "Pyinstaller", "WebAssembly"],
     github: "https://github.com/OFThub/Sudoku",
     live: "",
@@ -592,7 +592,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "smashMateMinesweeper",
-    images: ["images/Minesweeper-1.jpg", "images/Minesweeper-2.jpg", "images/Minesweeper-3.jpg"],
+    images: [],
     technologies: [
       "React Native",
       "Expo",
@@ -607,7 +607,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "portfolio",
-    images: ["images/Portfolio-1.jpg", "images/Portfolio-2.jpg", "images/Portfolio-3.jpg"],
+    images: [],
     technologies: [
       "React 18",
       "TypeScript",
@@ -622,7 +622,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "smashMateFileManager",
-    images: ["images/SmashMate-1.jpg", "images/SmashMate-2.jpg", "images/SmashMate-3.jpg"],
+    images: [],
     technologies: [
       "Java 21",
       "Spring Boot 3.4.4",
@@ -642,7 +642,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "miniKatalog",
-    images: ["images/MiniKatalog-1.jpg", "images/MiniKatalog-2.jpg", "images/MiniKatalog-3.jpg"],
+    images: [],
     technologies: ["Flutter SDK 3.x", "Dart SDK 3.x", "http ^1.1.0", "material.dart", "FakeStore API"],
     github: "https://github.com/OFThub/SoftwarePersona-Mobil",
     live: "",
@@ -650,7 +650,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "planetSimulation",
-    images: ["images/GezegenSimulasyon-1.jpg", "images/GezegenSimulasyon-2.jpg", "images/GezegenSimulasyon-3.jpg"],
+    images: [],
     technologies: [
       "C Dili",
       "MinGW GCC Compiler",
@@ -664,7 +664,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "mnist",
-    images: ["images/mnist-1.jpg", "images/mnist-2.jpg"],
+    images: [],
     technologies: ["Python", "HTML", "JavaScript"],
     github: "",
     live: "",
@@ -672,7 +672,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "trafficAnalysis",
-    images: ["images/traffic-1.jpg", "images/traffic-2.jpg"],
+    images: [],
     technologies: ["Python", "OpenCV", "YOLO"],
     github: "",
     live: "",
@@ -680,7 +680,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "matrixPointer",
-    images: ["images/matrix-1.jpg"],
+    images: [],
     technologies: ["C", "Pointer Arithmetic", "Dynamic Memory Allocation (malloc)"],
     github: "https://github.com/OFThub/SisProg",
     live: "",
@@ -688,7 +688,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "oftify",
-    images: ["images/sarkievreni-1.jpg"],
+    images: [],
     technologies: [
       "React Native",
       "Zustand",

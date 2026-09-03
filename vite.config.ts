@@ -1,7 +1,43 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite'
+import fs from 'node:fs'
 import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+
+/**
+ * Fails the build when the bundle references an image that is not shipped.
+ *
+ * Project screenshots are plain strings in RAW_PROJECTS, so nothing type-checks
+ * them; a missing file used to surface only as dozens of 404s in a visitor's
+ * console, quietly replaced by placeholders. This walks the emitted JS instead
+ * of the source, so it sees exactly what the browser will ask for.
+ */
+function verifyReferencedImages(outDir: string): Plugin {
+  return {
+    name: 'verify-referenced-images',
+    apply: 'build',
+    closeBundle() {
+      const assetsDir = path.join(outDir, 'assets')
+      if (!fs.existsSync(assetsDir)) return
+
+      const referenced = new Set<string>()
+      for (const file of fs.readdirSync(assetsDir)) {
+        if (!file.endsWith('.js')) continue
+        const code = fs.readFileSync(path.join(assetsDir, file), 'utf8')
+        for (const m of code.matchAll(/["'`](images\/[^"'`]+)["'`]/g)) referenced.add(m[1])
+      }
+
+      const missing = [...referenced].filter((rel) => !fs.existsSync(path.join(outDir, rel)))
+      if (missing.length > 0) {
+        this.error(
+          `${missing.length} image(s) referenced by the bundle are not in the build output:\n` +
+            missing.map((m) => `  - ${m}`).join('\n') +
+            `\nAdd the files under public/ or remove the references.`,
+        )
+      }
+    },
+  }
+}
 
 /**
  * Canonical-URL plugin.
@@ -76,7 +112,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base,
-    plugins: [react(), tailwindcss(), canonicalUrl(siteUrl)],
+    plugins: [react(), tailwindcss(), canonicalUrl(siteUrl), verifyReferencedImages('dist')],
 
     resolve: {
       alias: { '@': path.resolve(__dirname, './src') },

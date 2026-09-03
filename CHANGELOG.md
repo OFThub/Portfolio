@@ -37,6 +37,9 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Removed 42 screenshot paths with no file behind them. They produced 40 console
+  404s on every visit, silently swapped for placeholders. `vite.config.ts` now
+  fails the build if the bundle references an image the output does not ship.
 - `RAW_PROJECTS` holds only language-independent data (slug, images,
   technologies, URLs, `featured`); titles, categories and descriptions moved to
   `src/i18n/{en,tr}.projects.ts` keyed by the same slug.

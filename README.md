@@ -156,8 +156,11 @@ commit it.
 
 ## Adding a project
 
-1. Save screenshots as `public/images/<name>-1.jpg` (long edge ≤ 1600px).
-2. Add an entry to `RAW_PROJECTS` in `src/app/components/Projects.tsx`.
+1. Save screenshots as `public/images/<name>-1.jpg` (long edge ≤ 1600px). Only
+   list paths whose file exists — the build fails otherwise, on purpose.
+2. Add an entry to `RAW_PROJECTS` in `src/app/components/Projects.tsx` (slug,
+   images, technologies, URLs) and the matching slug in
+   `src/i18n/en.projects.ts` **and** `src/i18n/tr.projects.ts`.
 3. Star and fork counts fill in automatically when `github` points at a repo
    under the account in `src/services/github.ts`; the response is cached in
    `localStorage` for 24h.

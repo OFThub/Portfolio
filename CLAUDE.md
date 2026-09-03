@@ -117,9 +117,12 @@ cover content, and do not narrow it to cover the code.
 
 ## Known gaps
 
-- 42 of the 48 screenshots referenced in `RAW_PROJECTS` do not exist yet; those
-  cards render the fallback placeholder. Adding the files fixes them, no code
-  change needed.
+- Only 2 of the 19 projects have screenshots (Sportify, the task manager). The
+  other 17 carry `images: []` and render without a carousel — the missing paths
+  were removed because they produced 40 console 404s on every visit. To add
+  them: drop the files in `public/images/` and list them in that project's
+  `images` array. `verifyReferencedImages` in `vite.config.ts` fails the build
+  if the two ever disagree again.
 - `src/app/components/Blog.tsx` renders `<ComingSoon/>` because `blogPosts` is
   empty. `FeaturedCard` and `ArticleCard` are written and typed but unused until
   a post is added.
