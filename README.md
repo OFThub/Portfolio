@@ -134,12 +134,14 @@ CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
 directory and headers. **Netlify** — `netlify.toml` does the same. Both serve
 from a root domain, so leave `VITE_BASE_PATH` unset.
 
-**GitHub Pages** (optional mirror) — `.github/workflows/deploy-pages.yml` builds
-and deploys on every push to `main` with
+**GitHub Pages** (optional mirror) — `.github/workflows/deploy-pages.yml` is
+**manual-only** (Actions tab → *Deploy to GitHub Pages* → *Run workflow*),
+because Pages is not enabled on this repository and a push trigger would fail
+on every commit. To turn it on: **Settings → Pages → Source → GitHub Actions**,
+then run the workflow. It builds with
 `VITE_SITE_URL=https://ofthub.github.io/Portfolio`; the base path follows from
-it. It needs one manual step first: **Settings → Pages → Source → GitHub
-Actions**, then re-run the workflow. Until that is done the workflow fails at
-`configure-pages` — the default token cannot create the Pages site itself.
+that. Uncomment the `push` trigger in the workflow if you want the mirror to
+track `main`.
 
 Two caveats before turning it on: Pages cannot set HTTP headers, so the CSP and
 HSTS above do **not** apply there; and if both deployments are public each one

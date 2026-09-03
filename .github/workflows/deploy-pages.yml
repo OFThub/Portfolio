@@ -7,9 +7,15 @@ name: Deploy to GitHub Pages
 # CSP, HSTS and friends in vercel.json do not apply to it. If both are live,
 # each build declares itself canonical, which splits search ranking between two
 # copies of the same page -- run only one publicly, or point one at the other.
+# Manual trigger only, deliberately. Pages is not enabled on this repository
+# yet, so a push trigger would paint every commit red for a deployment nobody
+# asked for. Once Settings -> Pages -> Source is set to "GitHub Actions", run
+# this once from the Actions tab; add the push trigger back if you want the
+# mirror to follow main automatically:
+#
+#   push:
+#     branches: [main]
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
