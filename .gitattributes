@@ -1,0 +1,9 @@
+# Normalise to LF in the repository; Git checks out the platform default.
+* text=auto eol=lf
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.woff2 binary

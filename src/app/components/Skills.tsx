@@ -12,6 +12,7 @@ import {
   Package,
   Layers,
 } from "lucide-react";
+import { useI18n } from "../../i18n";
 
 // ─── Scroll-aware wrapper: animates IN on enter, OUT on leave ─────────────────
 function ScrollReveal({
@@ -149,9 +150,13 @@ function SkillTag({ name, index }: { name: string; index: number }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function Skills() {
+  const { t } = useI18n();
+
+  /* Technology names are proper nouns and stay as they are; only the category
+     headings and the soft-skill labels are translated. */
   const skillCategories = [
     {
-      category: "Frontend",
+      category: t.skills.categories.frontend,
       icon: Code2,
       color: "from-red-500 to-red-700",
       skills: [
@@ -160,7 +165,7 @@ export function Skills() {
       ],
     },
     {
-      category: "Backend",
+      category: t.skills.categories.backend,
       icon: Server,
       color: "from-red-600 to-red-900",
       skills: [
@@ -169,7 +174,7 @@ export function Skills() {
       ],
     },
     {
-      category: "Database",
+      category: t.skills.categories.database,
       icon: Database,
       color: "from-red-700 to-black",
       skills: [
@@ -178,7 +183,7 @@ export function Skills() {
       ],
     },
     {
-      category: "Cloud & DevOps",
+      category: t.skills.categories.cloud,
       icon: Cloud,
       color: "from-red-500 to-red-800",
       skills: [
@@ -187,7 +192,7 @@ export function Skills() {
       ],
     },
     {
-      category: "Mobile",
+      category: t.skills.categories.mobile,
       icon: Smartphone,
       color: "from-red-600 to-red-900",
       skills: [
@@ -196,7 +201,7 @@ export function Skills() {
       ],
     },
     {
-      category: "Tools & Others",
+      category: t.skills.categories.tools,
       icon: Terminal,
       color: "from-red-700 to-black",
       skills: [
@@ -207,10 +212,10 @@ export function Skills() {
   ];
 
   const softSkills = [
-    { name: "Problem Solving",    icon: Layers    },
-    { name: "Team Collaboration", icon: GitBranch },
-    { name: "Communication",      icon: Globe     },
-    { name: "Project Management", icon: Package   },
+    { name: t.skills.soft.problemSolving,    icon: Layers    },
+    { name: t.skills.soft.teamCollaboration, icon: GitBranch },
+    { name: t.skills.soft.communication,     icon: Globe     },
+    { name: t.skills.soft.projectManagement, icon: Package   },
   ];
 
   return (
@@ -237,7 +242,7 @@ export function Skills() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.6 }}
             >
-              Technical
+              {t.skills.titleLead}
             </motion.span>{" "}
             <motion.span
               className="text-primary inline-block"
@@ -245,7 +250,7 @@ export function Skills() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.28, duration: 0.6 }}
             >
-              Skills
+              {t.skills.titleAccent}
             </motion.span>
           </h1>
           <motion.p
@@ -254,7 +259,7 @@ export function Skills() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.45, duration: 0.6 }}
           >
-            A comprehensive overview of my technical expertise and proficiency levels
+            {t.skills.subtitle}
           </motion.p>
           <motion.div
             initial={{ scaleX: 0 }}
@@ -304,7 +309,7 @@ export function Skills() {
           className="mb-16"
         >
           <h2 className="text-3xl font-bold text-white mb-8 text-center tracking-tight">
-            Soft Skills
+            {t.skills.softSkillsTitle}
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {softSkills.map((skill, index) => (
@@ -352,12 +357,10 @@ export function Skills() {
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
             <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">
-              Continuous Learning
+              {t.skills.continuousLearningTitle}
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              Technology evolves rapidly, and so do I. I'm committed to staying current with the
-              latest tools, frameworks, and best practices. Every project is an opportunity to
-              learn something new and refine my craft.
+              {t.skills.continuousLearningBody}
             </p>
           </motion.div>
         </ScrollReveal>

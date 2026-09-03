@@ -1,24 +1,6 @@
-import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
-import { useState, useEffect, useRef, useCallback } from "react";
-
-/* ─── Corner Decoration (Contact ile aynı) ──────────────────────────── */
-function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
-  const cls = {
-    tl: "top-0 left-0 border-t border-l",
-    tr: "top-0 right-0 border-t border-r",
-    bl: "bottom-0 left-0 border-b border-l",
-    br: "bottom-0 right-0 border-b border-r",
-  }[position];
-  return (
-    <motion.div
-      className={`absolute w-4 h-4 border-primary/60 ${cls}`}
-      initial={{ opacity: 0, scale: 0 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-      viewport={{ once: true }}
-    />
-  );
-}
+import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect, useRef } from "react";
+import { useI18n } from "../../i18n";
 
 /* ─── Floating Particle (Contact ile aynı) ──────────────────────────── */
 function Particle({ x, y, delay }: { x: number; y: number; delay: number }) {
@@ -140,6 +122,7 @@ function ScanLine() {
    MAIN FOOTER
 ═══════════════════════════════════════════════════════════════════════ */
 export function Footer() {
+  const { t } = useI18n();
   const [scrollY, setScrollY] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -160,18 +143,15 @@ export function Footer() {
     }
   };
 
-  const quickLinks = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "skills", label: "Skills" },
-    { id: "experience", label: "Experience" },
-  ];
+  const quickLinks = (["home", "about", "skills", "experience"] as const).map((id) => ({
+    id,
+    label: t.nav[id],
+  }));
 
-  const moreLinks = [
-    { id: "projects", label: "Projects" },
-    { id: "blog", label: "Blog" },
-    { id: "contact", label: "Contact" },
-  ];
+  const moreLinks = (["projects", "blog", "contact"] as const).map((id) => ({
+    id,
+    label: t.nav[id],
+  }));
 
   /* Particles */
   const particles = Array.from({ length: 6 }, (_, i) => ({
@@ -250,8 +230,8 @@ export function Footer() {
                 viewport={{ once: true }}
               >
                 <p className="text-gray-400 text-sm leading-relaxed font-mono">
-                  There's always a bigger fish in the sea,<br />
-                  That fish is going to be us tomorrow.
+                  {t.footer.quote[0]}<br />
+                  {t.footer.quote[1]}
                 </p>
                 <motion.div
                   className="absolute left-0 top-0 w-0.5 bg-primary"
@@ -278,7 +258,7 @@ export function Footer() {
                     transition={{ duration: 1.5, repeat: Infinity }}
                   />
                 </div>
-                <span className="text-gray-500 text-xs font-mono tracking-widest uppercase">Available for work</span>
+                <span className="text-gray-500 text-xs font-mono tracking-widest uppercase">{t.footer.available}</span>
               </motion.div>
             </motion.div>
 
@@ -291,7 +271,7 @@ export function Footer() {
             >
               <div className="flex items-center gap-2 mb-5">
                 <span className="w-1 h-5 bg-primary rounded-full block" />
-                <h3 className="text-white font-bold text-sm uppercase tracking-widest">Quick Links</h3>
+                <h3 className="text-white font-bold text-sm uppercase tracking-widest">{t.footer.quickLinks}</h3>
               </div>
               <ul className="space-y-3">
                 {quickLinks.map((link, i) => (
@@ -309,7 +289,7 @@ export function Footer() {
             >
               <div className="flex items-center gap-2 mb-5">
                 <span className="w-1 h-5 bg-primary rounded-full block" />
-                <h3 className="text-white font-bold text-sm uppercase tracking-widest">More</h3>
+                <h3 className="text-white font-bold text-sm uppercase tracking-widest">{t.footer.more}</h3>
               </div>
               <ul className="space-y-3">
                 {moreLinks.map((link, i) => (
@@ -339,13 +319,13 @@ export function Footer() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-gray-500 text-xs font-mono text-center md:text-left">
                 © {new Date().getFullYear()}{" "}
-                <span className="text-primary/70">Developer Portfolio</span>
-                {" "}— All rights reserved.
+                <span className="text-primary/70">{t.footer.tagline}</span>
+                {" "}— {t.footer.rightsSuffix}
               </p>
 
               {/* Scroll progress indicator */}
               <div className="flex items-center gap-3">
-                <span className="text-gray-600 text-xs font-mono">scroll</span>
+                <span className="text-gray-600 text-xs font-mono">{t.footer.scroll}</span>
                 <div className="relative w-24 h-px bg-primary/20 overflow-hidden rounded-full">
                   <motion.div
                     className="absolute left-0 top-0 h-full bg-primary rounded-full"
@@ -380,7 +360,7 @@ export function Footer() {
               {/* Shimmer */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full"
-                animate={{ x: ["−100%", "200%"] }}
+                animate={{ x: ["-100%", "200%"] }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1.5 }}
               />
               {/* Corner decos */}

@@ -1,11 +1,31 @@
 "use client";
 
-import React, { useMemo, useState, useRef, useEffect, useCallback } from "react";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "motion/react";
+import React, { useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Instagram, Youtube } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { useI18n } from "../../i18n";
 
 type Status = "idle" | "loading" | "success" | "error";
+
+/**
+ * EmailJS credentials are resolved once, at module load.
+ *
+ * All three are inlined into the public bundle by Vite — that is how EmailJS is
+ * designed to work in the browser. The account is protected by the domain
+ * allow-list in the EmailJS dashboard, not by keeping these values secret.
+ *
+ * When a build ships without them the form must not fire a request that can
+ * only 400; it degrades to the direct e-mail address instead.
+ */
+const EMAILJS = {
+  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+  templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+  publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+} as const;
+
+const EMAIL_ADDRESS = "oturkdogdu1@gmail.com";
+const FORM_ENABLED = Boolean(EMAILJS.serviceId && EMAILJS.templateId && EMAILJS.publicKey);
 
 /* ─── Floating Particle ─────────────────────────────────────────────── */
 function Particle({ x, y, delay }: { x: number; y: number; delay: number }) {
@@ -70,6 +90,7 @@ function AnimatedInput({
   minLength,
   maxLength,
   error,
+  autoComplete,
 }: {
   label: string;
   id: string;
@@ -82,6 +103,7 @@ function AnimatedInput({
   minLength?: number;
   maxLength?: number;
   error?: string;
+  autoComplete?: string;
 }) {
   const [focused, setFocused] = useState(false);
   const active = focused || value.length > 0;
@@ -110,6 +132,7 @@ function AnimatedInput({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         required={required}
+        autoComplete={autoComplete}
         minLength={minLength}
         maxLength={maxLength}
         placeholder={active ? placeholder : undefined}
@@ -266,6 +289,7 @@ function GlowCard({ children, className = "", delay = 0 }: {
    MAIN CONTACT COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
 export function Contact() {
+  const { t } = useI18n();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -296,11 +320,12 @@ export function Contact() {
 
   const contactInfo = useMemo(
     () => [
-      { icon: Mail,   label: "Email",    value: "oturkdogdu1@gmail.com",  link: "mailto:oturkdogdu1@gmail.com" },
-      { icon: Phone,  label: "Phone",    value: "+90 551 682 34 80",       link: "tel:+905516823480" },
-      { icon: MapPin, label: "Location", value: "Istanbul, Turkey",        link: null as string | null },
+      { icon: Mail,   label: t.contact.labels.email,    value: EMAIL_ADDRESS,        link: `mailto:${EMAIL_ADDRESS}` },
+      { icon: Phone,  label: t.contact.labels.phone,    value: "+90 551 682 34 80",  link: "tel:+905516823480" },
+      { icon: MapPin, label: t.contact.labels.location, value: t.contact.locationValue, link: null as string | null },
     ],
-    []
+    // Labels are translated, so this has to recompute when the language changes.
+    [t]
   );
 
   const socialLinks = useMemo(
@@ -320,13 +345,13 @@ export function Contact() {
     const e: Record<string, string> = {};
     const subj = formData.subject.trim();
     const msg  = formData.message.trim();
-    if (hp.trim().length > 0) e._ = "Spam tespit edildi.";
-    if (Date.now() - formStartTs < 2500) e._ = "Çok hızlı gönderim.";
-    if (subj.length < MIN_SUBJECT) e.subject = `En az ${MIN_SUBJECT} karakter.`;
-    if (subj.length > MAX_SUBJECT) e.subject = `En fazla ${MAX_SUBJECT} karakter.`;
-    if (msg.length < MIN_MSG) e.message = `En az ${MIN_MSG} karakter.`;
-    if (msg.length > MAX_MSG) e.message = `En fazla ${MAX_MSG} karakter.`;
-    if (looksSpammy(`${subj} ${msg}`)) e.message = "Mesaj spam gibi görünüyor.";
+    if (hp.trim().length > 0) e._ = t.contact.validation.spam;
+    if (Date.now() - formStartTs < 2500) e._ = t.contact.validation.tooFast;
+    if (subj.length < MIN_SUBJECT) e.subject = t.contact.validation.minChars(MIN_SUBJECT);
+    if (subj.length > MAX_SUBJECT) e.subject = t.contact.validation.maxChars(MAX_SUBJECT);
+    if (msg.length < MIN_MSG) e.message = t.contact.validation.minChars(MIN_MSG);
+    if (msg.length > MAX_MSG) e.message = t.contact.validation.maxChars(MAX_MSG);
+    if (looksSpammy(`${subj} ${msg}`)) e.message = t.contact.validation.looksSpammy;
     return e;
   };
 
@@ -356,7 +381,14 @@ export function Contact() {
     const rl = canSendNow();
     if (!rl.ok) {
       setStatus("error");
-      setMessage({ type: "error", text: `${rl.waitSec} sn sonra tekrar deneyin.` });
+      setMessage({ type: "error", text: t.contact.validation.rateLimited(rl.waitSec) });
+      return;
+    }
+
+    const { serviceId, templateId, publicKey } = EMAILJS;
+    if (!serviceId || !templateId || !publicKey) {
+      setStatus("error");
+      setMessage({ type: "error", text: t.contact.status.formDisabled(EMAIL_ADDRESS) });
       return;
     }
 
@@ -365,19 +397,22 @@ export function Contact() {
 
     try {
       await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        serviceId,
+        templateId,
         { from_name: formData.name, reply_to: formData.email, subject: formData.subject, message: formData.message },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        publicKey
       );
       setStatus("success");
-      setMessage({ type: "success", text: "Mesajınız başarıyla gönderildi!" });
+      setMessage({ type: "success", text: t.contact.status.success });
       setFormData({ name: "", email: "", subject: "", message: "" });
       setHp("");
       setTimeout(() => setStatus("idle"), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      // The provider's raw error can name internal template/service state —
+      // log it for us, show the visitor a route that still works.
+      console.error("EmailJS send failed:", err);
       setStatus("error");
-      setMessage({ type: "error", text: `Gönderim başarısız: ${err?.text || err?.message || "Bilinmeyen hata"}` });
+      setMessage({ type: "error", text: t.contact.status.sendFailed(EMAIL_ADDRESS) });
     } finally {
       setSending(false);
     }
@@ -445,7 +480,7 @@ export function Contact() {
               className="h-px bg-gradient-to-r from-transparent to-primary/60"
               style={{ width: 80 }}
             />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">Get in touch</span>
+            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.contact.overline}</span>
             <motion.div
               className="h-px bg-gradient-to-l from-transparent to-primary/60"
               style={{ width: 80 }}
@@ -459,7 +494,7 @@ export function Contact() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              Contact{" "}
+              {t.contact.titleLead}{" "}
             </motion.span>
             <motion.span
               className="text-primary inline-block"
@@ -467,7 +502,7 @@ export function Contact() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
             >
-              <GlitchText>Me</GlitchText>
+              <GlitchText>{t.contact.titleAccent}</GlitchText>
             </motion.span>
           </h1>
 
@@ -477,7 +512,7 @@ export function Contact() {
             transition={{ delay: 0.7, duration: 0.8 }}
             className="text-xl text-gray-400 max-w-3xl mx-auto font-mono"
           >
-            <Typewriter text="Have a project in mind or just want to say hello? Don't hesitate to get in touch." delay={0.8} />
+            <Typewriter text={t.contact.subtitle} delay={0.8} />
           </motion.p>
         </motion.div>
 
@@ -493,14 +528,14 @@ export function Contact() {
               transition={{ delay: 0.4 }}
             >
               <span className="w-1 h-6 bg-primary rounded-full block" />
-              Send Me a Message
+              {t.contact.formTitle}
             </motion.h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Honeypot */}
               <div className="hidden" aria-hidden="true">
                 <label>
-                  Company
+                  {t.contact.labels.company}
                   <input type="text" name="company" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" />
                 </label>
               </div>
@@ -508,13 +543,13 @@ export function Contact() {
               {/* Staggered fields */}
               {[
                 { component: (
-                  <AnimatedInput label="Name" id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Your name" required />
+                  <AnimatedInput label={t.contact.labels.name} id="name" name="name" value={formData.name} onChange={handleChange} placeholder={t.contact.placeholders.name} required autoComplete="name" />
                 )},
                 { component: (
-                  <AnimatedInput label="Email" id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="your.email@example.com" required />
+                  <AnimatedInput label={t.contact.labels.email} id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder={t.contact.placeholders.email} required autoComplete="email" />
                 )},
                 { component: (
-                  <AnimatedInput label="Subject" id="subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="What's this about?" required minLength={MIN_SUBJECT} maxLength={MAX_SUBJECT} error={errors.subject} />
+                  <AnimatedInput label={t.contact.labels.subject} id="subject" name="subject" value={formData.subject} onChange={handleChange} placeholder={t.contact.placeholders.subject} required autoComplete="off" minLength={MIN_SUBJECT} maxLength={MAX_SUBJECT} error={errors.subject} />
                 )},
               ].map((field, i) => (
                 <motion.div
@@ -544,11 +579,12 @@ export function Contact() {
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   >
-                    Message
+                    {t.contact.labels.message}
                   </motion.label>
                   <textarea
                     id="message"
                     name="message"
+                    autoComplete="off"
                     value={formData.message}
                     onChange={handleChange}
                     onFocus={() => setTextareaFocused(true)}
@@ -562,7 +598,7 @@ export function Contact() {
                       borderColor: textareaFocused ? "rgba(239,68,68,0.7)" : errors.message ? "rgba(239,68,68,0.5)" : "rgba(239,68,68,0.2)",
                       boxShadow: textareaFocused ? "0 0 0 2px rgba(239,68,68,0.15)" : "none",
                     }}
-                    placeholder={textareaFocused || formData.message.length > 0 ? "Tell me about your project..." : ""}
+                    placeholder={textareaFocused || formData.message.length > 0 ? t.contact.placeholders.message : ""}
                   />
                   <div className="flex justify-between mt-2 text-xs text-gray-500 font-mono">
                     <AnimatePresence mode="wait">
@@ -593,16 +629,22 @@ export function Contact() {
               >
                 <MagneticButton
                   type="submit"
-                  disabled={sending || status === "loading"}
+                  disabled={!FORM_ENABLED || sending || status === "loading"}
                   className="relative w-full px-6 py-4 glass-red disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center gap-2 group overflow-hidden"
                 >
                   {/* Shimmer */}
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"
-                    animate={status !== "loading" ? { x: ["−100%", "200%"] } : {}}
+                    animate={status !== "loading" ? { x: ["-100%", "200%"] } : {}}
                     transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
                   />
-                  <span className="relative z-10">{sending ? "Sending..." : "Send Message"}</span>
+                  <span className="relative z-10">
+                    {!FORM_ENABLED
+                      ? t.contact.submitDisabled
+                      : sending
+                        ? t.contact.submitting
+                        : t.contact.submit}
+                  </span>
                   <motion.div
                     className="relative z-10"
                     animate={sending ? { x: [0, 4, 0] } : { x: 0 }}
@@ -650,7 +692,7 @@ export function Contact() {
             <GlowCard delay={0.35}>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 <span className="w-1 h-6 bg-primary rounded-full block" />
-                Contact Information
+                {t.contact.infoTitle}
               </h2>
               <div className="space-y-5">
                 {contactInfo.map((info, i) => (
@@ -693,7 +735,7 @@ export function Contact() {
             <GlowCard delay={0.5}>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 <span className="w-1 h-6 bg-primary rounded-full block" />
-                Connect With Me
+                {t.contact.socialTitle}
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {socialLinks.map((social, i) => (
@@ -759,10 +801,10 @@ export function Contact() {
                       transition={{ duration: 1.5, repeat: Infinity }}
                     />
                   </div>
-                  <span className="text-white font-bold">Available for Work</span>
+                  <span className="text-white font-bold">{t.contact.availableTitle}</span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  I'm currently available for freelance projects and full-time opportunities. Let's discuss how I can help bring your ideas to life!
+                  {t.contact.availableBody}
                 </p>
               </div>
             </motion.div>
@@ -798,7 +840,7 @@ export function Contact() {
             transition={{ delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Let's Work Together
+            {t.contact.closingTitle}
           </motion.h2>
 
           <motion.p
@@ -808,13 +850,14 @@ export function Contact() {
             transition={{ delay: 0.4 }}
             viewport={{ once: true }}
           >
-            Learning is an endless ocean;<br />
-            we are engineers navigating with devotion.<br />
-            Every commit a direction, every bug a notion—<br />
-            building logic from chaos with structured motion.<br />
-            <br />
-            Want to join the crew on this journey?<br />
-            You won't be turned away.
+            {t.contact.poem.map((line, i) => (
+              <span key={i}>
+                {line}
+                <br />
+                {/* blank line between the stanza and the closing couplet */}
+                {i === 3 && <br />}
+              </span>
+            ))}
           </motion.p>
         </motion.div>
       </div>

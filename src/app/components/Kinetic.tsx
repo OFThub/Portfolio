@@ -53,8 +53,10 @@ export function KineticLetters({
       delay: stagger(42, { start: startDelay }),
       ease: "outExpo",
     });
-    return () => anim.pause();
-  }, [startDelay]);
+    return () => {
+      anim.pause();
+    };
+  }, [startDelay, text]);
 
   return (
     <span

@@ -1,6 +1,46 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { useI18n } from "../../i18n";
+
+/* Section order drives both the navbar and the scroll-spy. Module scope keeps
+   the identity stable so the scroll listener effect has an honest dep list —
+   and it means switching language never re-registers the scroll listener. */
+const SECTION_IDS = ["home", "about", "skills", "experience", "projects", "blog", "contact"] as const;
+
+/* ─── Language switch ────────────────────────────────────────────────────
+   Two explicit segments rather than a single toggle: the visitor can see
+   which language is active and which one they are switching to. */
+function LanguageSwitch({ className = "" }: { className?: string }) {
+  const { lang, setLang, t } = useI18n();
+
+  return (
+    <div
+      role="group"
+      aria-label={t.language.switchAria}
+      className={`flex items-center gap-1 font-mono text-xs border border-primary/25 rounded-md px-1 py-1 ${className}`}
+    >
+      {(["en", "tr"] as const).map((code) => {
+        const active = lang === code;
+        return (
+          <button
+            key={code}
+            type="button"
+            onClick={() => setLang(code)}
+            aria-pressed={active}
+            className="relative px-2 py-0.5 rounded transition-colors duration-200"
+            style={{
+              background: active ? "rgba(239,68,68,0.18)" : "transparent",
+              color: active ? "rgb(239,68,68)" : "rgb(156,163,175)",
+            }}
+          >
+            {code.toUpperCase()}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -93,30 +133,24 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [logoHovered, setLogoHovered] = useState(false);
 
+  const { t } = useI18n();
   const { scrollYProgress } = useScroll();
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
-  const links = [
-    { id: "home",       label: "Home" },
-    { id: "about",      label: "About" },
-    { id: "skills",     label: "Skills" },
-    { id: "experience", label: "Experience" },
-    { id: "projects",   label: "Projects" },
-    { id: "blog",       label: "Blog" },
-    { id: "contact",    label: "Contact" },
-  ];
+  const links = SECTION_IDS.map((id) => ({ id, label: t.nav[id] }));
+
 
   /* ── Active section tracker ── */
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
       const scrollPosition = window.scrollY + 100;
-      for (const link of links) {
-        const el = document.getElementById(link.id);
+      for (const id of SECTION_IDS) {
+        const el = document.getElementById(id);
         if (el) {
           const { offsetTop, offsetHeight } = el;
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(link.id);
+            setActiveSection(id);
             break;
           }
         }
@@ -141,7 +175,7 @@ export function Navigation() {
   return (
     <>
       <motion.nav
-        aria-label="Main navigation"
+        aria-label={t.nav.mainNavAria}
         className="fixed top-0 left-0 right-0 z-50 border-b border-primary/20 overflow-hidden"
         style={{
           // backdrop-filter kaldırıldı: altındaki canvas her karede değiştiği için
@@ -187,7 +221,7 @@ export function Navigation() {
                   {/* Shimmer inside logo */}
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full"
-                    animate={logoHovered ? { x: ["−100%", "200%"] } : {}}
+                    animate={logoHovered ? { x: ["-100%", "200%"] } : {}}
                     transition={{ duration: 0.6 }}
                   />
                   <span className="text-white font-bold text-base relative z-10">OFT</span>
@@ -252,11 +286,21 @@ export function Navigation() {
               ))}
             </motion.div>
 
+            {/* ── Language (desktop) ── */}
+            <motion.div
+              className="hidden md:flex"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <LanguageSwitch />
+            </motion.div>
+
             {/* ── Mobile Hamburger ── */}
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
               className="spotlight md:hidden relative p-2 text-white overflow-hidden"
-              aria-label="Toggle navigation menu"
+              aria-label={t.nav.menuToggleAria}
               aria-expanded={isOpen}
               whileTap={{ scale: 0.92 }}
             >
@@ -367,6 +411,16 @@ export function Navigation() {
                     </div>
                   </motion.button>
                 ))}
+
+                {/* ── Language (mobile) ── */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: SECTION_IDS.length * 0.05, duration: 0.3 }}
+                  className="pt-3 mt-2 border-t border-primary/15 flex justify-center"
+                >
+                  <LanguageSwitch />
+                </motion.div>
               </div>
             </motion.div>
           )}

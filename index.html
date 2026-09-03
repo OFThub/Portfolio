@@ -1,50 +1,87 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Font preloading for Space Grotesk -->
+    <!-- Fonts: preconnect so the stylesheet request starts on the same RTT.
+         api.github.com is warmed too — the Projects section fetches it on mount. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" />
+    <link rel="preconnect" href="https://api.github.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" />
 
     <!-- Primary SEO -->
     <title>Ömer Faruk Türkdoğdu — Full Stack Developer</title>
-    <meta name="description" content="Full Stack Developer specializing in React, Node.js, TypeScript, Python and cloud technologies. Computer Engineering student at Sakarya University." />
+    <meta name="description" content="Full Stack Developer specialising in React, .NET, Node.js, TypeScript and Python. Computer Engineering student at Sakarya University, based in Istanbul." />
     <meta name="author" content="Ömer Faruk Türkdoğdu" />
-    <meta name="robots" content="index, follow" />
-    <meta name="keywords" content="full stack developer, React, Node.js, TypeScript, Python, Istanbul, portfolio, Ömer Faruk Türkdoğdu" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="full stack developer, React, TypeScript, .NET, Node.js, Python, Istanbul, portfolio, Ömer Faruk Türkdoğdu" />
+    <link rel="canonical" href="%SITE_URL%/" />
 
     <!-- Open Graph -->
+    <meta property="og:site_name" content="Ömer Faruk Türkdoğdu" />
     <meta property="og:title" content="Ömer Faruk Türkdoğdu — Full Stack Developer" />
-    <meta property="og:description" content="Full Stack Developer specializing in React, Node.js, TypeScript and cloud technologies." />
+    <meta property="og:description" content="Full Stack Developer specialising in React, .NET, Node.js, TypeScript and Python." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ofthub.github.io/" />
-    <meta property="og:image" content="https://ofthub.github.io/og-image.png" />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:image" content="%SITE_URL%/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Portfolio of Ömer Faruk Türkdoğdu, Full Stack Developer" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Ömer Faruk Türkdoğdu — Full Stack Developer" />
-    <meta name="twitter:description" content="Full Stack Developer specializing in React, Node.js, TypeScript and cloud technologies." />
-    <meta name="twitter:image" content="https://ofthub.github.io/og-image.png" />
+    <meta name="twitter:description" content="Full Stack Developer specialising in React, .NET, Node.js, TypeScript and Python." />
+    <meta name="twitter:image" content="%SITE_URL%/og-image.jpg" />
+    <meta name="twitter:image:alt" content="Portfolio of Ömer Faruk Türkdoğdu, Full Stack Developer" />
 
     <!-- PWA / Theme -->
     <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="OFT Portfolio" />
 
-    <!-- Favicon & Manifest -->
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- Icons & Manifest -->
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+
+    <!-- Structured data: lets search engines render a person/knowledge card. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Ömer Faruk Türkdoğdu",
+        "url": "%SITE_URL%/",
+        "image": "%SITE_URL%/og-image.jpg",
+        "jobTitle": "Full Stack Developer",
+        "email": "mailto:oturkdogdu1@gmail.com",
+        "address": { "@type": "PostalAddress", "addressLocality": "Istanbul", "addressCountry": "TR" },
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "Sakarya University" },
+        "knowsAbout": ["React", "TypeScript", "ASP.NET Core", "Node.js", "Python", "Flutter"],
+        "sameAs": [
+          "https://github.com/OFThub",
+          "https://www.linkedin.com/in/omerfarukoft/",
+          "https://www.instagram.com/omerfaruk.oft/",
+          "https://www.youtube.com/@oft.omerfaruk"
+        ]
+      }
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
+    <noscript>
+      This portfolio needs JavaScript. You can reach Ömer Faruk Türkdoğdu at
+      <a href="mailto:oturkdogdu1@gmail.com">oturkdogdu1@gmail.com</a> or on
+      <a href="https://github.com/OFThub">GitHub</a>.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

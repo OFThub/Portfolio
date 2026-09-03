@@ -1,7 +1,23 @@
-import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { Calendar, Clock, ArrowRight, Tag } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { ImageWithFallback } from "./ImageWithFallback";
+import { useI18n } from "../../i18n";
+import { useState, useEffect, useRef } from "react";
+
+type BlogPost = {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  readTime: string;
+  tags: string[];
+  featured: boolean;
+};
+
+/* No posts published yet — the section renders <ComingSoon/> until this array
+   holds an entry with a real id and title. Module scope: static data. */
+const blogPosts: BlogPost[] = [];
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -126,7 +142,8 @@ function SectionTitle({ children, delay = 0 }: { children: string; delay?: numbe
 }
 
 /* ─── Featured Article Card ──────────────────────────────────────────── */
-function FeaturedCard({ post, index }: { post: any; index: number }) {
+function FeaturedCard({ post, index }: { post: BlogPost; index: number }) {
+  const { t } = useI18n();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -169,7 +186,7 @@ function FeaturedCard({ post, index }: { post: any; index: number }) {
           transition={{ delay: 0.4 + index * 0.12, type: "spring", stiffness: 300 }}
           viewport={{ once: true }}
         >
-          Featured
+          {t.blog.featuredBadge}
         </motion.div>
 
         {/* Pulse dot top right */}
@@ -246,7 +263,7 @@ function FeaturedCard({ post, index }: { post: any; index: number }) {
             animate={{ x: hovered ? 3 : 0 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
-            Read more
+            {t.blog.readMore}
             <motion.span animate={{ x: hovered ? [0, 4, 0] : 0 }} transition={{ duration: 0.8, repeat: hovered ? Infinity : 0 }}>
               <ArrowRight className="w-4 h-4" />
             </motion.span>
@@ -265,7 +282,7 @@ function FeaturedCard({ post, index }: { post: any; index: number }) {
 }
 
 /* ─── Regular Article Card ───────────────────────────────────────────── */
-function ArticleCard({ post, index }: { post: any; index: number }) {
+function ArticleCard({ post, index }: { post: BlogPost; index: number }) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -350,19 +367,7 @@ function ArticleCard({ post, index }: { post: any; index: number }) {
 
 /* ─── Coming Soon Screen ─────────────────────────────────────────────── */
 function ComingSoon() {
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 80);
-    return () => clearInterval(id);
-  }, []);
-
-  const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-  const scramble = (word: string) =>
-    word
-      .split("")
-      .map((c, i) => (i < Math.floor(tick / 3) % (word.length + 1) ? c : CHARS[Math.floor(Math.random() * CHARS.length)])    )
-      .join("");
-
+  const { t } = useI18n();
   return (
     <section id="blog" className="relative min-h-screen pt-24 pb-16 flex items-center justify-center overflow-hidden">
 
@@ -415,12 +420,12 @@ function ComingSoon() {
         {/* Overline */}
         <motion.div className="flex items-center justify-center gap-3 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
           <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 40 }} transition={{ delay: 0.5, duration: 0.8 }} />
-          <span className="text-primary/70 text-xs tracking-[0.3em] uppercase font-mono">Status</span>
+          <span className="text-primary/70 text-xs tracking-[0.3em] uppercase font-mono">{t.blog.comingSoonStatus}</span>
           <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 40 }} transition={{ delay: 0.5, duration: 0.8 }} />
         </motion.div>
 
         <h1 className="text-4xl font-bold text-white mb-3">
-          Blog <span className="text-primary"><GlitchText>Coming Soon</GlitchText></span>
+          {t.blog.comingSoonLead} <span className="text-primary"><GlitchText>{t.blog.comingSoonAccent}</GlitchText></span>
         </h1>
 
         <motion.div
@@ -431,7 +436,7 @@ function ComingSoon() {
         />
 
         <p className="text-gray-400 text-sm font-mono leading-relaxed mb-6">
-          I'll be sharing insights and technical articles here soon.
+          {t.blog.comingSoonBody}
         </p>
 
         {/* Live indicator */}
@@ -445,7 +450,7 @@ function ComingSoon() {
             <div className="w-2 h-2 rounded-full bg-yellow-500" />
             <motion.div className="absolute inset-0 w-2 h-2 rounded-full bg-yellow-500" animate={{ scale: [1, 2.5], opacity: [0.6, 0] }} transition={{ duration: 1.5, repeat: Infinity }} />
           </div>
-          <span className="text-yellow-500/70 text-xs font-mono tracking-widest uppercase">In Progress</span>
+          <span className="text-yellow-500/70 text-xs font-mono tracking-widest uppercase">{t.blog.inProgress}</span>
         </motion.div>
       </motion.div>
     </section>
@@ -456,20 +461,7 @@ function ComingSoon() {
    MAIN BLOG COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
 export function Blog() {
-  const blogPosts = [
-    {
-      id: "",
-      title: "",
-      excerpt: "",
-      image: "",
-      date: "",
-      readTime: "",
-      tags: ["React", "JavaScript", "Web Development"],
-      featured: true,
-    },
-  ];
-
-  /* If no real posts, show coming soon */
+  const { t } = useI18n();
   const hasRealPosts = blogPosts.some((p) => p.id !== "" && p.title !== "");
   if (!hasRealPosts) return <ComingSoon />;
 
@@ -518,19 +510,19 @@ export function Blog() {
         >
           <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">Articles</span>
+            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.blog.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
           </motion.div>
 
           <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-            <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>Tech{" "}</motion.span>
+            <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>{t.blog.titleLead}{" "}</motion.span>
             <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
-              <GlitchText>Blog</GlitchText>
+              <GlitchText>{t.blog.titleAccent}</GlitchText>
             </motion.span>
           </h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
-            Insights, tutorials, and thoughts on web development and technology
+            {t.blog.subtitle}
           </motion.p>
 
           <motion.div className="mx-auto mt-6 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" initial={{ width: 0 }} animate={{ width: "40%" }} transition={{ delay: 0.9, duration: 1 }} />
@@ -539,7 +531,7 @@ export function Blog() {
         {/* ── Featured Posts ── */}
         {featuredPosts.length > 0 && (
           <div className="mb-16">
-            <SectionTitle delay={0.1}>Featured Articles</SectionTitle>
+            <SectionTitle delay={0.1}>{t.blog.featuredTitle}</SectionTitle>
             <div className="grid md:grid-cols-2 gap-8">
               {featuredPosts.map((post, i) => (
                 <FeaturedCard key={post.id} post={post} index={i} />
@@ -551,7 +543,7 @@ export function Blog() {
         {/* ── Recent Posts ── */}
         {recentPosts.length > 0 && (
           <div>
-            <SectionTitle delay={0.1}>Recent Articles</SectionTitle>
+            <SectionTitle delay={0.1}>{t.blog.recentTitle}</SectionTitle>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {recentPosts.map((post, i) => (
                 <ArticleCard key={post.id} post={post} index={i} />

@@ -1,6 +1,7 @@
-import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { GraduationCap, Award, BookOpen, Code2, Terminal, Cpu } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useI18n } from "../../i18n";
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -261,27 +262,17 @@ function SectionTitle({ icon: Icon, title, delay = 0 }: { icon: React.ElementTyp
    MAIN ABOUT COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
 export function About() {
-  const education = [
-    {
-      degree: "Bachelor of Science in Computer Engineering",
-      institution: "Sakarya University",
-      year: "2023 - 2027",
-      description:
-        "Focused on software development, algorithms, and system design. Graduating with a strong foundation in both hardware and software principles, ready to tackle real-world challenges in the tech industry.",
-    },
-  ];
-
-  const certifications = ["Software Persona - Software Development Intern", "KOSGEB - KOSGEB Entrepreneurship Training Certificate of Participation","Borusan Technology School Certificate","Borusan School of Equality","Borusan School of Sustainability"];
+  const { t } = useI18n();
+  const education = t.about.education;
+  const certifications = t.about.certifications;
 
   const particles = Array.from({ length: 8 }, (_, i) => ({
     id: i, x: Math.random() * 100, y: Math.random() * 100, delay: Math.random() * 5,
   }));
 
-  const traits = [
-    { icon: Code2, label: "Clean Code", desc: "Maintainable & readable" },
-    { icon: Cpu,   label: "Systems Thinking", desc: "End-to-end mindset" },
-    { icon: Terminal, label: "Always Learning", desc: "Curiosity-driven" },
-  ];
+  /* Icons pair with translated labels by position. */
+  const TRAIT_ICONS = [Code2, Cpu, Terminal];
+  const traits = t.about.traits.map((trait, i) => ({ ...trait, icon: TRAIT_ICONS[i] }));
 
   return (
     <section id="about" className="relative min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -321,19 +312,19 @@ export function About() {
         >
           <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">Who I Am</span>
+            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.about.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
           </motion.div>
 
           <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-            <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>About{" "}</motion.span>
+            <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>{t.about.titleLead}{" "}</motion.span>
             <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
-              <GlitchText>Me</GlitchText>
+              <GlitchText>{t.about.titleAccent}</GlitchText>
             </motion.span>
           </h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
-            <Typewriter text="Passionate developer dedicated to creating exceptional digital experiences" delay={0.8} />
+            <Typewriter text={t.about.tagline} delay={0.8} />
           </motion.p>
 
           <motion.div className="mx-auto mt-6 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" initial={{ width: 0 }} animate={{ width: "40%" }} transition={{ delay: 0.9, duration: 1, ease: "easeOut" }} />
@@ -360,15 +351,11 @@ export function About() {
               className="flex items-center gap-3 mb-6"
             >
               <span className="w-1 h-8 bg-primary rounded-full" />
-              <h2 className="text-3xl font-bold text-white">Full Stack Developer</h2>
+              <h2 className="text-3xl font-bold text-white">{t.about.role}</h2>
             </motion.div>
 
             <div className="space-y-4 text-gray-400 text-sm leading-relaxed">
-              {[
-                "I'm a passionate full-stack developer with a love for creating beautiful, functional, and user-friendly applications. My journey in Computer Engineering began with a curiosity for how things work and evolved into a career focused on building solutions that make a difference.",
-                "With a strong curiosity across all areas of technology, I continuously strive to expand my knowledge and push my boundaries. I enjoy exploring diverse domains, understanding how systems work end-to-end, and turning ideas into structured, practical solutions.",
-                "Passionate about transforming theoretical knowledge into practical applications, consistently exceeding expectations and contributing to team success.",
-              ].map((para, i) => (
+              {t.about.bio.map((para, i) => (
                 <motion.p
                   key={i}
                   initial={{ opacity: 0, y: 10 }}
@@ -383,9 +370,9 @@ export function About() {
 
             {/* Traits */}
             <div className="mt-8 space-y-3">
-              {traits.map((t, i) => (
+              {traits.map((trait, i) => (
                 <motion.div
-                  key={t.label}
+                  key={trait.label}
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 + i * 0.1, duration: 0.5 }}
@@ -397,11 +384,11 @@ export function About() {
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(239,68,68,0.1)")}
                 >
                   <div className="p-1.5 bg-primary/10 rounded-md">
-                    <t.icon className="w-4 h-4 text-primary" />
+                    <trait.icon className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-white text-sm font-semibold">{t.label}</p>
-                    <p className="text-gray-500 text-xs font-mono">{t.desc}</p>
+                    <p className="text-white text-sm font-semibold">{trait.label}</p>
+                    <p className="text-gray-500 text-xs font-mono">{trait.desc}</p>
                   </div>
                   <motion.div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary/40" animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }} />
                 </motion.div>
@@ -418,7 +405,7 @@ export function About() {
           viewport={{ once: true }}
           className="mb-20"
         >
-          <SectionTitle icon={GraduationCap} title="Education" />
+          <SectionTitle icon={GraduationCap} title={t.about.educationTitle} />
 
           <div className="space-y-6">
             {education.map((edu, index) => (
@@ -475,7 +462,7 @@ export function About() {
           viewport={{ once: true }}
           className="mb-20"
         >
-          <SectionTitle icon={Award} title="Certifications" delay={0.1} />
+          <SectionTitle icon={Award} title={t.about.certificationsTitle} delay={0.1} />
 
           <div className="grid sm:grid-cols-2 gap-4">
             {certifications.map((cert, index) => (
@@ -511,7 +498,7 @@ export function About() {
         <GlowCard className="p-8 bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 rounded-lg">
           <ScanLine />
 
-          <SectionTitle icon={BookOpen} title="My Philosophy" delay={0.1} />
+          <SectionTitle icon={BookOpen} title={t.about.philosophyTitle} delay={0.1} />
 
           <div className="space-y-5 text-gray-400">
             {/* Quote */}
@@ -530,7 +517,7 @@ export function About() {
                 viewport={{ once: true }}
               />
               <p className="text-lg text-gray-200 italic font-light leading-relaxed">
-                "Coding, like invention, starts with careful observation of the world and turns insight into technology that improves human life."
+                “{t.about.quote}”
               </p>
             </motion.div>
 
@@ -541,7 +528,7 @@ export function About() {
               transition={{ delay: 0.5 }}
               viewport={{ once: true }}
             >
-              As an engineer, I am driven by the desire to solve real-world problems and make a meaningful impact. I focus on building solutions that reduce repetitive and demanding work, enabling people to dedicate more time to their passions and lead more fulfilling lives.
+              {t.about.philosophy[0]}
             </motion.p>
 
             <motion.p
@@ -551,7 +538,7 @@ export function About() {
               transition={{ delay: 0.6 }}
               viewport={{ once: true }}
             >
-              I believe technology should empower people — not replace them — helping them work more efficiently, create greater value, and ultimately gain more time and financial freedom rather than eliminating opportunities.
+              {t.about.philosophy[1]}
             </motion.p>
           </div>
         </GlowCard>

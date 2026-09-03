@@ -1,11 +1,16 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { ExternalLink, Github, Filter, Star } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ImageWithFallback } from "./ImageWithFallback";
 import { useGitHubRepos } from "../../hooks/useGitHubRepos";
 import type { GitHubRepo } from "../../services/github";
 import { CountUp } from "./Kinetic";
-import { MatrixRain } from "./ui/matrix-rain";
+import { MatrixRain } from "./effects/MatrixRain";
+import { useI18n } from "../../i18n";
+
+/* Vite's base path, always with a trailing slash. Files in public/ referenced
+   from JS must go through this or they break on a sub-path deployment. */
+const BASE = import.meta.env.BASE_URL;
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -181,12 +186,13 @@ function ImageCarousel({ images, title, category }: { images: string[]; title: s
 }
 
 /* ─── Project Card ───────────────────────────────────────────────────── */
-function ProjectCard({ project, index }: { project: any; index: number }) {
+function ProjectCard({ project, index }: { project: EnrichedProject; index: number }) {
+  const { t } = useI18n();
   const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
-      key={project.title}
+      key={project.key}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -215,7 +221,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           transition={{ delay: index * 0.12 + 0.3, type: "spring", stiffness: 300 }}
           viewport={{ once: true }}
         >
-          Featured
+          {t.projects.featuredBadge}
         </motion.div>
       )}
 
@@ -225,7 +231,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           animate={{ scale: hovered ? 1.04 : 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <ImageCarousel images={project.images} title={project.title} category={project.category} />
+          <ImageCarousel images={project.images.map((src) => BASE + src)} title={project.title} category={project.category} />
         </motion.div>
 
         {/* Hover overlay with links */}
@@ -240,8 +246,8 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
               style={{ background: "rgba(0,0,0,0.45)" }}
             >
               {[
-                { href: project.github, Icon: Github, label: "GitHub" },
-                { href: project.live,   Icon: ExternalLink, label: "Live" },
+                { href: project.github, Icon: Github, label: t.projects.githubLinkAria },
+                { href: project.live,   Icon: ExternalLink, label: t.projects.liveLinkAria },
               ].map(({ href, Icon, label }, i) => (
                 <motion.a
                   key={label}
@@ -337,10 +343,9 @@ function MagneticBtn({ children, href, className }: { children: React.ReactNode;
 }
 
 /* ─── GitHub helpers ─────────────────────────────────────────────────── */
+/** Everything about a project that is the same in every language. */
 type RawProject = {
-  title: string;
-  category: string;
-  description: string;
+  key: string;
   images: string[];
   technologies: string[];
   github: string;
@@ -348,7 +353,14 @@ type RawProject = {
   featured: boolean;
 };
 
-type EnrichedProject = RawProject & {
+/** The translated half, looked up by `key` in the dictionary. */
+type ProjectCopy = {
+  title: string;
+  category: string;
+  description: string;
+};
+
+type EnrichedProject = RawProject & ProjectCopy & {
   stars: number;
   forks: number;
   updatedAt: string | null;
@@ -360,13 +372,18 @@ function extractRepoName(githubUrl: string): string | null {
   return parts[parts.length - 1] ?? null;
 }
 
-function enrichProject(project: RawProject, githubRepos: GitHubRepo[]): EnrichedProject {
+function enrichProject(
+  project: RawProject,
+  copy: ProjectCopy,
+  githubRepos: GitHubRepo[],
+): EnrichedProject {
   const repoName = extractRepoName(project.github);
   const match = repoName
     ? githubRepos.find((r) => r.name.toLowerCase() === repoName.toLowerCase())
     : null;
   return {
     ...project,
+    ...copy,
     stars: match?.stargazers_count ?? 0,
     forks: match?.forks_count ?? 0,
     updatedAt: match?.updated_at ?? null,
@@ -376,7 +393,8 @@ function enrichProject(project: RawProject, githubRepos: GitHubRepo[]): Enriched
 
 function buildAutoDiscoveredProjects(
   githubRepos: GitHubRepo[],
-  portfolioProjects: RawProject[]
+  portfolioProjects: RawProject[],
+  autoCategory: string,
 ): EnrichedProject[] {
   const portfolioRepoNames = new Set(
     portfolioProjects
@@ -393,8 +411,9 @@ function buildAutoDiscoveredProjects(
         !portfolioRepoNames.has(repo.name.toLowerCase())
     )
     .map((repo) => ({
+      key: repo.name,
       title: repo.name.replace(/-/g, " ").replace(/_/g, " "),
-      category: "Other",
+      category: autoCategory,
       description: repo.description ?? "",
       images: [] as string[],
       technologies: ([repo.language!, ...repo.topics]).filter(Boolean),
@@ -407,120 +426,103 @@ function buildAutoDiscoveredProjects(
     }));
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   MAIN PROJECTS COMPONENT
-═══════════════════════════════════════════════════════════════════════ */
-export function Projects() {
-  const [filter, setFilter] = useState("All");
-  const { repos: githubRepos } = useGitHubRepos();
-
-  const RAW_PROJECTS = [
-    {
-      title: "Sportify",
-      category: "All",
-      description:
-        "Fitness Center Management and Appointment System",
-      images: [
-        "images/Sportify-1.png",
-        "images/Sportify-2.png",
-        "images/Sportify-3.png",
-      ],
-      technologies: ["C#", "ASP.NET Core MVC", "EF Core", "LINQ", "SQL Server/PostgreSQL", "Bootstrap 5", "JavaScript", "jQuery"],
-      github: "https://github.com/OFThub/Sportify",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "AI Content Platform",
-      category: "All",
-      description:
-        "All-in-one platform for AI-driven content creation and management",
-      images: [
-        "images/AIContentPlatform-1.png",
-        "images/AIContentPlatform-2.png",
-        "images/AIContentPlatform-3.png",
-      ],
-      technologies: ["Next.js", "React", "TypeScript", "Node.js", "Express", "MongoDB", "Tailwind CSS v4", "Docker", "JWT", "PostCSS"],
-      github: "https://github.com/OFThub/AIContentPlatform",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "Real-Time Task Management System",
-      category: "Full-Stack",
-      description:
-        "A collaborative project management platform featuring real-time synchronization, role-based access control, and interactive Kanban boards.",
-      images: [
-        "images/todolist-1.png",
-        "images/todolist-2.png",
-        "images/todolist-3.png",
-      ],
-      technologies: ["React","Node.js","Express","MongoDB","Socket.IO","JWT","Tailwind CSS","Mongoose"],
-      github: "https://github.com/OFThub/ToDoList",
-      live: "https://todotoflow.netlify.app/",
-      featured: true,
-    },
-    {
-      title: "EventFlowCommerce",
-      category: "Microservices",
-      description:
-        "A production-ready reference implementation of event-driven microservices architecture utilizing DDD, Event Sourcing, CQRS, and the Saga Pattern.",
-      images: [
-        "images/eventflow-1.png",
-        "images/eventflow-2.png",
-        "images/eventflow-3.png",
-      ],
-      technologies: [
-        "Node.js",
-        "TypeScript",
-        "AWS (Lambda, EventBridge, DynamoDB)",
-        "Kubernetes",
-        "Istio",
-        "Docker",
-        "Fastify",
-        "AWS CDK",
-        "CQRS",
-        "Event Sourcing"
-      ],
-      github: "https://github.com/OFThub/EventFlowCommerce",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "AI Document Simplifier",
-      category: "Artificial Intelligence",
-      description:
-        "It is a fully functional system with a multi-agent architecture designed to solve real-world legal document analysis problems; it simplifies complex texts and performs risk analysis.",
-      images: [
-        "images/legal-simplifier-1.png",
-        "images/legal-simplifier-2.png",
-        "images/legal-simplifier-3.png",
-      ],
-      technologies: [
-        "Python",
-        "FastAPI",
-        "Llama 3 (Ollama)",
-        "Multi-Agent Architecture",
-        "Vanilla JS",
-        "pdfplumber & PyMuPDF",
-        "SQLite & JSON Memory",
-        "Hybrid Risk Engine (Rule-based + LLM)",
-      ],
-      github: "https://github.com/OFThub/AIDocumentSimplifier",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "Online Library Application",
-      category: "Full Stack Development",
-      description:
-      "A comprehensive digital library platform with user, author, and admin roles; featuring book uploading, approval mechanisms, category filtering, and interaction systems (comments, likes, ratings).",
-      images: [
-      "images/online-library-1.png",
-      "images/online-library-2.png",
-      "images/online-library-3.png",
-      ],
-      technologies: [
+/* ─── Portfolio projects ─────────────────────────────────────────────
+   Module scope on purpose: this is static data, so keeping it out of the
+   component body means the useMemo dependency lists below are honest. */
+const RAW_PROJECTS: RawProject[] = [
+  {
+    key: "sportify",
+    images: ["images/Sportify-1.jpg", "images/Sportify-2.jpg", "images/Sportify-3.jpg"],
+    technologies: [
+      "C#",
+      "ASP.NET Core MVC",
+      "EF Core",
+      "LINQ",
+      "SQL Server/PostgreSQL",
+      "Bootstrap 5",
+      "JavaScript",
+      "jQuery",
+    ],
+    github: "https://github.com/OFThub/Sportify",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "aiContentPlatform",
+    images: ["images/AIContentPlatform-1.jpg", "images/AIContentPlatform-2.jpg", "images/AIContentPlatform-3.jpg"],
+    technologies: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Tailwind CSS v4",
+      "Docker",
+      "JWT",
+      "PostCSS",
+    ],
+    github: "https://github.com/OFThub/AIContentPlatform",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "taskManagement",
+    images: ["images/todolist-1.jpg", "images/todolist-2.jpg", "images/todolist-3.jpg"],
+    technologies: [
+      "React",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "Socket.IO",
+      "JWT",
+      "Tailwind CSS",
+      "Mongoose",
+    ],
+    github: "https://github.com/OFThub/ToDoList",
+    live: "https://todotoflow.netlify.app/",
+    featured: true,
+  },
+  {
+    key: "eventFlowCommerce",
+    images: ["images/eventflow-1.jpg", "images/eventflow-2.jpg", "images/eventflow-3.jpg"],
+    technologies: [
+      "Node.js",
+      "TypeScript",
+      "AWS (Lambda, EventBridge, DynamoDB)",
+      "Kubernetes",
+      "Istio",
+      "Docker",
+      "Fastify",
+      "AWS CDK",
+      "CQRS",
+      "Event Sourcing",
+    ],
+    github: "https://github.com/OFThub/EventFlowCommerce",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "documentSimplifier",
+    images: ["images/legal-simplifier-1.jpg", "images/legal-simplifier-2.jpg", "images/legal-simplifier-3.jpg"],
+    technologies: [
+      "Python",
+      "FastAPI",
+      "Llama 3 (Ollama)",
+      "Multi-Agent Architecture",
+      "Vanilla JS",
+      "pdfplumber & PyMuPDF",
+      "SQLite & JSON Memory",
+      "Hybrid Risk Engine (Rule-based + LLM)",
+    ],
+    github: "https://github.com/OFThub/AIDocumentSimplifier",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "onlineLibrary",
+    images: ["images/online-library-1.jpg", "images/online-library-2.jpg", "images/online-library-3.jpg"],
+    technologies: [
       "Node.js",
       "Express",
       "MongoDB & Mongoose",
@@ -529,22 +531,15 @@ export function Projects() {
       "Multer",
       "Vanilla JS",
       "CSS3 (Responsive Design)",
-      ],
-      github: "https://github.com/OFThub/OnlineLibrary",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "Limited-Stock Product Drop System",
-      category: "Full Stack Development / Backend Engineering",
-      description:
-      "A sophisticated reservation system designed for high-traffic product launches, preventing stock errors (race conditions) with PostgreSQL's 'SELECT FOR UPDATE' locking mechanism. It ensures 100% stock accuracy, automatic reservation time management, and detailed inventory audit trails.",
-      images: [
-      "images/drop-system-1.png",
-      "images/drop-system-2.png",
-      "images/drop-system-3.png",
-      ],
-      technologies: [
+    ],
+    github: "https://github.com/OFThub/OnlineLibrary",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "dropSystem",
+    images: ["images/drop-system-1.jpg", "images/drop-system-2.jpg", "images/drop-system-3.jpg"],
+    technologies: [
       "Node.js",
       "TypeScript",
       "Express",
@@ -554,256 +549,187 @@ export function Projects() {
       "Node-cron",
       "Winston (Structured Logging)",
       "Vite & React",
-      ],
-      github: "https://github.com/OFThub/DropSystem",
-      live: "https://drop-system.pxxl.app",
-      featured: true,
-    },
-    {
-      title: "tarsau - File Archiving Tool",
-      category: "System Programming / File Management",
-      description:
-      "A file archiving program that works like tar, rar, and zip but does not compress files. It concatenates text files into a single .sau archive file and extracts them. Compiled with the 'make' command. The concatenation process is performed with 'tarsau -b file1 file2 ... -o archive.sau', and the extraction process is done with 'tarsau -a archive.sau [target_directory]'. The archive file consists of an organization section containing the total size and pipe (|) separated file names, permissions, and sizes, followed by the content sections of the files in order. A single archive can contain up to 32 files, with a total size not exceeding 200 MB, and only ASCII text files are supported. Development stages can be tracked through the commit history.",
-      images: [],
-      technologies: [
-      "Make",
-      ],
-      github: "",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "Algan AI Chatbot",
-      category: "All",
-      description:
-        "Modular AI Chatbot system with dynamic mode switching that operates via voice commands.",
-      images: [
-        "images/AlganAIChatbot-1.png",
-        "images/AlganAIChatbot-2.png",
-        "images/AlganAIChatbot-3.png",
-      ],
-      technologies: ["Python", "Claude API", "OpenAI Whisper", "OpenAI TTS", "Pydantic", "asyncio", "MongoDB", "PostgreSQL", "Web Speech API", "Faster-Whisper", "Docker"],
-      github: "https://github.com/OFThub/Project-Algan",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "Sudoku Game",
-      category: "All",
-      description:
-        "Cross-platform Sudoku game running seamlessly on both web browsers and as a standalone desktop application (.exe) with real-time cell validation and instant completion feedback.",
-      images: [
-        "images/Sudoku-1.png",
-        "images/Sudoku-2.png",
-        "images/Sudoku-3.png",
-      ],
-      technologies: ["Python", "Pygame", "Pyinstaller", "WebAssembly"],
-      github: "https://github.com/OFThub/Sudoku",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "SmashMate — Minesweeper Edition",
-      category: "Mobile",
-      description:
-        "A fully-featured, expertly-crafted Minesweeper game built with React Native and Expo (SDK 52), using Expo Router for seamless navigation. Features first-click safety, BFS chain-reveal, light/dark themes, haptic feedback, and smooth Reanimated animations.",
-      images: [
-        "images/Minesweeper-1.png",
-        "images/Minesweeper-2.png",
-        "images/Minesweeper-3.png",
-      ],
-      technologies: [
-        "React Native",
-        "Expo",
-        "Expo Router",
-        "TypeScript",
-        "React Native Reanimated",
-        "AsyncStorage"
-      ],
-      github: "https://github.com/OFThub/SmashMate-Mobile",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "Full Stack Developer Portfolio",
-      category: "Web",
-      description:
-        "A breathtaking single-page portfolio website built with React, TypeScript, and Tailwind CSS featuring a stunning black and red color scheme with smooth scrolling navigation. Features a dark theme, Motion animations, fully responsive design, and comprehensive sections including a Hero section with Spline 3D integration area, About, Skills, Experience, Projects, Blog, and a Contact form.",
-      images: [
-        "images/Portfolio-1.png",
-        "images/Portfolio-2.png",
-        "images/Portfolio-3.png",
-      ],
-      technologies: [
-        "React 18",
-        "TypeScript",
-        "Tailwind CSS v4",
-        "Motion (Framer Motion)",
-        "Lucide React Icons",
-        "Vite"
-      ],
-      github: "https://github.com/OFThub/Full-Stack-Developer-Portfolio",
-      live: "",
-      featured: true,
-    },
-    {
-      title: "SmashMate File Manager — REST Service",
-      category: "Backend",
-      description:
-        "A RESTful file management service built with Java 21 and Spring Boot 3.4.4 that stores files in Cloudflare R2 object storage, manages metadata in H2, and provides image thumbnail previews. Features single & batch file upload via multipart form data, file download with correct content-type/content-disposition headers, auto-generated 200×200 JPEG thumbnail previews via Thumbnailator (with R2 caching), and structured JSON metadata previews for non-image files. Includes paginated file listing, file validation, global error handling, and Swagger/OpenAPI documentation.",
-      images: [
-        "images/SmashMate-1.png",
-        "images/SmashMate-2.png",
-        "images/SmashMate-3.png"
-      ],
-      technologies: [
-        "Java 21",
-        "Spring Boot 3.4.4",
-        "Maven",
-        "Cloudflare R2 (AWS SDK v2)",
-        "H2 Database",
-        "Spring Data JPA",
-        "Thumbnailator 0.4.21",
-        "SpringDoc OpenAPI 2.8.6",
-        "JUnit 5",
-        "Mockito",
-        "Docker"
-      ],
-      github: "https://github.com/OFThub/SmashMate-Backend",
-      live: "",
-      featured: true
-    },
-    {
-      "title": "Mini Katalog - Flutter Uygulaması",
-      "category": "Mobile",
-      "description": "Flutter ile geliştirilmiş, eğitim amaçlı mini e-ticaret katalog uygulaması. Splash Screen, Ürün Grid + Arama, Detay + Sepete Ekle ve Sepet Yönetimi ekranlarından oluşur. Gerçek zamanlı ürün arama, Chip'lerle kategori filtresi, ürün ekleme/çıkarma ve miktar güncelleme özellikli sepet yönetimi sunar. FakeStore API entegrasyonu ve internet bağlantısı olmadığında çalışan offline fallback yapısı içerir. Renkli ve modern UI için özel tema, açılış ve geçiş animasyonları ile Navigator.push ve Route Arguments kullanan sayfa geçişleri barındırır. Proje; veri servisleri, modeller (product, cart_item, cart), ekranlar ve modüler widget'lar (product_card, category_filter, search_bar_widget) şeklinde katmanlı mimariye sahiptir. Eğitim kapsamında Widget ağacı (Stateless/Stateful), setState ve ChangeNotifier ile State yönetimi, http paketiyle async/await ağ istekleri, model sınıflarında fromJson/toJson dönüşümleri, dinamik GridView/ListView listeleme, ThemeData ve AnimationController/Tween kullanımı pratik edilmiştir.",
-      "images": [
-        "images/MiniKatalog-1.png",
-        "images/MiniKatalog-2.png",
-        "images/MiniKatalog-3.png"
-      ],
-      "technologies": [
-        "Flutter SDK 3.x",
-        "Dart SDK 3.x",
-        "http ^1.1.0",
-        "material.dart",
-        "FakeStore API"
-      ],
-      "github": "https://github.com/OFThub/SoftwarePersona-Mobil",
-      "live": "",
-      "featured": true
-    },
-    {
-      "title": "Gezegenler Arası Yaşam ve Seyahat Simülasyonu",
-      "category": "Desktop / System",
-      "description": "MinGW C Dili kullanılarak Nesne Yönelimli Programlama (NDP) benzetimi prensiplerine göre tasarlanmış, modüler ve kapsamlı bir gezegenler arası seyahat konsol simülasyonu. Proje; structlar ve fonksiyon işaretçileri kullanılarak kalıtım ile polimorfizm kavramlarının C dilinde simüle edilmesi esasına dayanır. Zaman, Kişi, UzayAracı, Simülasyon, DosyaOkuma yapıları ile Gezegen (Üst Yapı) altındaki KayacGezegen, GazDevi, BuzDevi ve CuceGezegen türetilmiş yapılarını içeren bir hiyerarşiye sahiptir. Gerçek takvim kurallarına (ayların gün sayıları vb.) göre işleyen bir zaman döngüsü barındırır ve her döngü iterasyonunda 1 simülasyon saati ilerlenir. Kişilerin kalan ömürleri; bulundukları gezegenin türüne göre dinamik olarak değişen yaşlanma faktörlerine (Kayaç ve Yolda: 1.0, Gaz Devi: 0.1, Buz Devi: 0.5, Cüce Gezegen: 0.01) bağlı olarak düşer. Uzay araçları, bulundukları gezegenin tarihi kendi çıkış tarihlerine eşitlendiğinde seyahate başlar; kalan ömrü sıfırlanan kişiler ölür ve araçtaki tüm yolcular öldüğünde araç 'İMHA' durumuna geçer. Nüfus takibi gerçek zamanlı yapılarak yoldaki araçların yolcuları gezegen nüfuslarına dahil edilmez. Büyük veri dosyalarından (Kisiler.txt, Araclar.txt, Gezegenler.txt) okuma yapabilen performans odaklı mimaride thread sleep kullanılmamış, konsol sürekli temizlenerek akıcı bir simülasyon sağlanmıştır. Başlık (.h) ve kaynak (.c) dosyalarının ayrı tasarlandığı modüler yapı, Makefile hiyerarşisine uygun şekilde derlenmektedir.",
-      "images": [
-        "images/GezegenSimulasyon-1.png",
-        "images/GezegenSimulasyon-2.png",
-        "images/GezegenSimulasyon-3.png"
-      ],
-      "technologies": [
-        "C Dili",
-        "MinGW GCC Compiler",
-        "Makefile",
-        "Object-Oriented C (OOP Simulation)",
-        "File I/O (Data Parsing)"
-      ],
-      "github": "https://github.com/OFThub/UzayProgramC",
-      "live": "",
-      "featured": true
-    },
-    {
-      title: "Handwritten Number Recognition (MNIST)",
-      category: "Artificial Intelligence",
-      description:
-        "The first step in the Artificial Intelligence Learning Journey focusing on the basics of artificial intelligence and essential libraries, featuring an introductory program that performs handwritten digit recognition, later transferred to an HTML interface.",
-      images: [
-        "images/mnist-1.png",
-        "images/mnist-2.png",
-      ],
-      technologies: [
-        "Python",
-        "HTML",
-        "JavaScript",
-      ],
-      github: "",
-      live: "",
-      featured: false,
-    },
-    {
-      title: "Traffic Flow Analysis and Vehicle Counter",
-      category: "Artificial Intelligence",
-      description:
-        "The second project of the learning journey involving the development of a computer vision–based application that analyzes traffic flow by detecting and counting vehicles according to the lanes they use.",
-      images: [
-        "images/traffic-1.png",
-        "images/traffic-2.png",
-      ],
-      technologies: [
-        "Python",
-        "OpenCV",
-        "YOLO",
-      ],
-      github: "",
-      live: "",
-      featured: false,
-    },
-    {
-      title: "Dinamik 2B Matris Üzerinde İşaretçi Aritmetiği ve Özel Toplam",
-      category: "System Programming",
-      description:
-        "Yalnızca işaretçi aritmetiği kullanarak dinamik olarak ayrılmış 2 boyutlu bir matris üzerinde işlemler gerçekleştiren, ana ve ikincil köşegen elemanlarının toplamını merkez elemanı mükerrer saymadan hesaplayan bir C programı.",
-      images: [
-        "images/matrix-1.png",
-      ],
-      technologies: [
-        "C",
-        "Pointer Arithmetic",
-        "Dynamic Memory Allocation (malloc)",
-      ],
-      github: "https://github.com/OFThub/SisProg",
-      live: "",
-      featured: false,
-    },
-    {
-      title: "OFTify",
-      category: "Mobile Application",
-      description:
-        "Spotify benzeri, tam teşekküllü yerel müzik çalar uygulaması. Cihaz hafızasındaki müzik dosyalarını otomatik tarayarak çalma listeleri, kategoriler, sanatçı ve albüm bazlı gruplandırma sunar. Arka planda oynatma desteği, Fisher-Yates algoritmalı rastgele karıştırma ve özel vinil disk animasyonlu modern bir koyu tema arayüzüne sahiptir.",
-      images: [
-        "images/sarkievreni-1.png",
-      ],
-      technologies: [
-        "React Native",
-        "Zustand",
-        "react-native-track-player",
-        "react-native-fs",
-        "react-native-reanimated",
-        "AsyncStorage",
-      ],
-      github: "https://github.com/OFThub/OFTify",
-      live: "",
-      featured: true,
-    },
-  ];
+    ],
+    github: "https://github.com/OFThub/DropSystem",
+    live: "https://drop-system.pxxl.app",
+    featured: true,
+  },
+  {
+    key: "tarsau",
+    images: [],
+    technologies: ["Make"],
+    github: "",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "alganChatbot",
+    images: ["images/AlganAIChatbot-1.jpg", "images/AlganAIChatbot-2.jpg", "images/AlganAIChatbot-3.jpg"],
+    technologies: [
+      "Python",
+      "Claude API",
+      "OpenAI Whisper",
+      "OpenAI TTS",
+      "Pydantic",
+      "asyncio",
+      "MongoDB",
+      "PostgreSQL",
+      "Web Speech API",
+      "Faster-Whisper",
+      "Docker",
+    ],
+    github: "https://github.com/OFThub/Project-Algan",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "sudoku",
+    images: ["images/Sudoku-1.jpg", "images/Sudoku-2.jpg", "images/Sudoku-3.jpg"],
+    technologies: ["Python", "Pygame", "Pyinstaller", "WebAssembly"],
+    github: "https://github.com/OFThub/Sudoku",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "smashMateMinesweeper",
+    images: ["images/Minesweeper-1.jpg", "images/Minesweeper-2.jpg", "images/Minesweeper-3.jpg"],
+    technologies: [
+      "React Native",
+      "Expo",
+      "Expo Router",
+      "TypeScript",
+      "React Native Reanimated",
+      "AsyncStorage",
+    ],
+    github: "https://github.com/OFThub/SmashMate-Mobile",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "portfolio",
+    images: ["images/Portfolio-1.jpg", "images/Portfolio-2.jpg", "images/Portfolio-3.jpg"],
+    technologies: [
+      "React 18",
+      "TypeScript",
+      "Tailwind CSS v4",
+      "Motion (Framer Motion)",
+      "Lucide React Icons",
+      "Vite",
+    ],
+    github: "https://github.com/OFThub/Full-Stack-Developer-Portfolio",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "smashMateFileManager",
+    images: ["images/SmashMate-1.jpg", "images/SmashMate-2.jpg", "images/SmashMate-3.jpg"],
+    technologies: [
+      "Java 21",
+      "Spring Boot 3.4.4",
+      "Maven",
+      "Cloudflare R2 (AWS SDK v2)",
+      "H2 Database",
+      "Spring Data JPA",
+      "Thumbnailator 0.4.21",
+      "SpringDoc OpenAPI 2.8.6",
+      "JUnit 5",
+      "Mockito",
+      "Docker",
+    ],
+    github: "https://github.com/OFThub/SmashMate-Backend",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "miniKatalog",
+    images: ["images/MiniKatalog-1.jpg", "images/MiniKatalog-2.jpg", "images/MiniKatalog-3.jpg"],
+    technologies: ["Flutter SDK 3.x", "Dart SDK 3.x", "http ^1.1.0", "material.dart", "FakeStore API"],
+    github: "https://github.com/OFThub/SoftwarePersona-Mobil",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "planetSimulation",
+    images: ["images/GezegenSimulasyon-1.jpg", "images/GezegenSimulasyon-2.jpg", "images/GezegenSimulasyon-3.jpg"],
+    technologies: [
+      "C Dili",
+      "MinGW GCC Compiler",
+      "Makefile",
+      "Object-Oriented C (OOP Simulation)",
+      "File I/O (Data Parsing)",
+    ],
+    github: "https://github.com/OFThub/UzayProgramC",
+    live: "",
+    featured: true,
+  },
+  {
+    key: "mnist",
+    images: ["images/mnist-1.jpg", "images/mnist-2.jpg"],
+    technologies: ["Python", "HTML", "JavaScript"],
+    github: "",
+    live: "",
+    featured: false,
+  },
+  {
+    key: "trafficAnalysis",
+    images: ["images/traffic-1.jpg", "images/traffic-2.jpg"],
+    technologies: ["Python", "OpenCV", "YOLO"],
+    github: "",
+    live: "",
+    featured: false,
+  },
+  {
+    key: "matrixPointer",
+    images: ["images/matrix-1.jpg"],
+    technologies: ["C", "Pointer Arithmetic", "Dynamic Memory Allocation (malloc)"],
+    github: "https://github.com/OFThub/SisProg",
+    live: "",
+    featured: false,
+  },
+  {
+    key: "oftify",
+    images: ["images/sarkievreni-1.jpg"],
+    technologies: [
+      "React Native",
+      "Zustand",
+      "react-native-track-player",
+      "react-native-fs",
+      "react-native-reanimated",
+      "AsyncStorage",
+    ],
+    github: "https://github.com/OFThub/OFTify",
+    live: "",
+    featured: true,
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAIN PROJECTS COMPONENT
+═══════════════════════════════════════════════════════════════════════ */
+export function Projects() {
+  const { t } = useI18n();
+  /* The filter value is the untranslated key; only its button label is localised. */
+  const [filter, setFilter] = useState("All");
+  const { repos: githubRepos } = useGitHubRepos();
 
   const categories = ["All"];
 
   const enrichedProjects = useMemo(
     () =>
-      RAW_PROJECTS.map((p) => enrichProject(p, githubRepos)).sort((a, b) => {
+      RAW_PROJECTS.map((p) =>
+        enrichProject(p, t.projects.items[p.key as keyof typeof t.projects.items], githubRepos),
+      ).sort((a, b) => {
         if (b.stars !== a.stars) return b.stars - a.stars;
         const dateA = new Date(a.updatedAt ?? 0).getTime();
         const dateB = new Date(b.updatedAt ?? 0).getTime();
         return dateB - dateA;
       }),
-    [githubRepos]
+    [githubRepos, t]
   );
 
   const autoDiscovered = useMemo(
-    () => buildAutoDiscoveredProjects(githubRepos, RAW_PROJECTS),
-    [githubRepos]
+    () => buildAutoDiscoveredProjects(githubRepos, RAW_PROJECTS, t.projects.autoCategory),
+    [githubRepos, t]
   );
 
   const filteredProjects =
@@ -856,19 +782,19 @@ export function Projects() {
         >
           <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">Work</span>
+            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.projects.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
           </motion.div>
 
           <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-            <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>Featured{" "}</motion.span>
+            <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>{t.projects.titleLead}{" "}</motion.span>
             <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
-              <GlitchText>Projects</GlitchText>
+              <GlitchText>{t.projects.titleAccent}</GlitchText>
             </motion.span>
           </h1>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
-            A selection of my recent work showcasing various technologies and solutions
+            {t.projects.subtitle}
           </motion.p>
 
           <motion.div className="mx-auto mt-6 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" initial={{ width: 0 }} animate={{ width: "40%" }} transition={{ delay: 0.9, duration: 1 }} />
@@ -908,11 +834,12 @@ export function Projects() {
               {filter === category && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"
-                  animate={{ x: ["−100%", "200%"] }}
+                  animate={{ x: ["-100%", "200%"] }}
                   transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
                 />
               )}
-              <span className="relative z-10">{category}</span>
+              {/* The value stays "All"; only the label is localised. */}
+              <span className="relative z-10">{category === "All" ? t.projects.filterAll : category}</span>
             </motion.button>
           ))}
         </motion.div>
@@ -924,7 +851,7 @@ export function Projects() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {filteredProjects.map((project, index) => (
-              <ProjectCard key={project.title} project={project} index={index} />
+              <ProjectCard key={project.key} project={project} index={index} />
             ))}
           </motion.div>
         </AnimatePresence>
@@ -939,7 +866,7 @@ export function Projects() {
             className="mt-16"
           >
             <h3 className="text-xl font-semibold text-white/50 mb-6 text-center font-mono tracking-widest uppercase text-sm">
-              More on GitHub
+              {t.projects.moreOnGithub}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {autoDiscovered.map((repo) => (
@@ -1004,14 +931,14 @@ export function Projects() {
               className="text-3xl font-bold text-white mb-3"
               initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.2 }} viewport={{ once: true }}
             >
-              Want to see more?
+              {t.projects.ctaTitle}
             </motion.h2>
 
             <motion.p
               className="text-gray-400 mb-6 font-mono text-sm"
               initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.3 }} viewport={{ once: true }}
             >
-              Check out my GitHub profile for more projects and contributions
+              {t.projects.ctaBody}
             </motion.p>
 
             <motion.div
@@ -1026,11 +953,11 @@ export function Projects() {
               >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"
-                  animate={{ x: ["−100%", "200%"] }}
+                  animate={{ x: ["-100%", "200%"] }}
                   transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
                 />
                 <Github className="w-5 h-5 relative z-10" />
-                <span className="relative z-10">View GitHub Profile</span>
+                <span className="relative z-10">{t.projects.ctaButton}</span>
                 <motion.span
                   className="relative z-10"
                   animate={{ x: [0, 3, 0] }}

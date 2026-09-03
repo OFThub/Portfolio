@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { MotionConfig } from "motion/react";
+
+import { LanguageProvider, useI18n } from "../i18n";
 import { Navigation } from './components/Navigation';
 import { Home } from './components/Home';
 import { About } from './components/About';
@@ -9,11 +13,14 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import Loading from './components/Loading';
 import EmberBackground from './components/Background';
-import { useState } from "react";
-import { MotionConfig } from "motion/react";
-import { SpotlightEffect } from "./components/ui/spotlight";
+import { SpotlightEffect } from "./components/effects/Spotlight";
 
-export default function App() {
+/**
+ * The page itself. Split out from `App` so it can call `useI18n` — a hook
+ * cannot read a provider that its own component renders.
+ */
+function Portfolio() {
+  const { t } = useI18n();
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -27,7 +34,7 @@ export default function App() {
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-red-600 focus:text-white focus:rounded focus:outline-none"
           >
-            Skip to main content
+            {t.nav.skipToContent}
           </a>
           <EmberBackground />
           <div className="min-h-screen relative z-10 bg-transparent">
@@ -46,5 +53,13 @@ export default function App() {
         </>
       )}
     </MotionConfig>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <Portfolio />
+    </LanguageProvider>
   );
 }

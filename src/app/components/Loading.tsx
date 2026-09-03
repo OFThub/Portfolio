@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import "../../styles/Loading.css";
+import { useI18n } from "../../i18n";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -135,6 +136,7 @@ interface LoadingProps {
 }
 
 export default function Loading({ onComplete }: LoadingProps) {
+  const { t } = useI18n();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const expCanvasRef = useRef<HTMLCanvasElement>(null);
   const sigContainerRef = useRef<HTMLDivElement>(null);
@@ -472,12 +474,12 @@ export default function Loading({ onComplete }: LoadingProps) {
 
       {/* ✅ NEW: Professional name block (no SVG handwriting) */}
       <div ref={sigContainerRef} className="signature-container signature-pro">
-        <div className="sig-name" aria-label="Name">
+        <div className="sig-name" aria-label={t.loading.nameAria}>
           Ömer Faruk <span className="sig-surname">Türkdoğdu</span>
         </div>
 
         <div ref={sigSubtitleRef} className="sig-subtitle">
-          Full Stack Developer
+          {t.loading.subtitle}
         </div>
       </div>
 

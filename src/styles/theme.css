@@ -1,5 +1,13 @@
 @custom-variant dark (&:is(.dark *));
 
+/* Space Grotesk is fetched by the <link> in index.html. Binding it to
+   Tailwind's sans namespace is what actually applies it — without this the
+   font downloaded on every visit and the page rendered in the system stack. */
+@theme {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 :root {
   --font-size: 16px;
   --background: #0a0a0a;

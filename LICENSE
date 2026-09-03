@@ -1,0 +1,45 @@
+MIT License
+
+Copyright (c) 2026 Ömer Faruk Türkdoğdu
+
+SCOPE — please read before reusing.
+
+In the licence below, "the Software" means the source code of this repository:
+the TypeScript, JavaScript, CSS, and configuration files, and the build setup.
+You are free to use that code under the MIT terms.
+
+"the Software" does NOT include the personal content this repository happens to
+carry, all rights to which are reserved by the copyright holder:
+
+  - the name, likeness, biography, education, work history and contact details
+    of Ömer Faruk Türkdoğdu;
+  - the written copy in src/i18n/ (English and Turkish), including project
+    descriptions;
+  - the images in public/ (favicon.png, icon-192.png, apple-touch-icon.png,
+    og-image.jpg) and the project screenshots in public/images/.
+
+If you want to build on this portfolio, take the code and replace the content
+with your own. Republishing the content as if it were yours is not permitted,
+and is separately actionable regardless of this licence.
+
+Third-party components carry their own licences; see ATTRIBUTIONS.md.
+
+---
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,9 +1,10 @@
-import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { ArrowRight, Code2, Database, Globe, Server } from "lucide-react";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { lazy, Suspense } from "react";
 import { KineticLetters } from "./Kinetic";
-import { FloatingPaths } from "./ui/background-paths";
+import { FloatingPaths } from "./effects/FloatingPaths";
+import { useI18n } from "../../i18n";
 const Hero3D = lazy(() => import("./Hero3D"));
 
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
@@ -65,6 +66,9 @@ function Typewriter({ lines, delay = 0 }: { lines: string[]; delay?: number }) {
   const [started, setStarted] = useState(false);
 
   useEffect(() => { const t = setTimeout(() => setStarted(true), delay * 1000); return () => clearTimeout(t); }, [delay]);
+  // Restart typing when the text changes (language switch), otherwise the old
+  // sentence stays on screen because `displayed` is already "complete".
+  useEffect(() => { setDisplayed(""); }, [fullText]);
   useEffect(() => {
     if (!started || displayed.length >= fullText.length) return;
     const t = setTimeout(() => setDisplayed(fullText.slice(0, displayed.length + 1)), 28);
@@ -82,11 +86,10 @@ function Typewriter({ lines, delay = 0 }: { lines: string[]; delay?: number }) {
 }
 
 /* ─── Magnetic Button ────────────────────────────────────────────────── */
-function MagneticBtn({ children, onClick, className, variant = "primary" }: {
+function MagneticBtn({ children, onClick, className }: {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
-  variant?: "primary" | "outline";
 }) {
   return (
     <motion.button
@@ -156,6 +159,8 @@ function ScanLine({ duration = 6 }: { duration?: number }) {
    MAIN HOME COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
 export function Home() {
+  const { t } = useI18n();
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -171,18 +176,11 @@ export function Home() {
     []
   );
 
-  const techItems = [
-    { icon: Code2,    label: "Frontend",  desc: "React · TypeScript · Tailwind" },
-    { icon: Server,   label: "Backend",   desc: "Node.js · REST · GraphQL" },
-    { icon: Database, label: "Database",  desc: "PostgreSQL · MongoDB · Redis" },
-    { icon: Globe,    label: "Cloud",     desc: "AWS · Docker · CI/CD" },
-  ];
-
-  const pillars = [
-    { title: "Clean Code",  description: "Writing maintainable, scalable, and efficient code following best practices." },
-    { title: "Modern Tech", description: "Utilizing cutting-edge technologies and frameworks for optimal solutions." },
-    { title: "User First",  description: "Designing intuitive interfaces that prioritize user experience and accessibility." },
-  ];
+  /* Icons stay in the component and are zipped with the translated copy —
+     an icon is not content, and duplicating it per language invites drift. */
+  const TECH_ICONS = [Code2, Server, Database, Globe];
+  const techItems = t.home.tech.map((item, i) => ({ ...item, icon: TECH_ICONS[i] }));
+  const pillars = t.home.pillars;
 
   return (
     <section id="home" className="min-h-screen pt-16">
@@ -242,7 +240,7 @@ export function Home() {
             transition={{ delay: 0.3 }}
           >
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 60 }} transition={{ delay: 0.5, duration: 0.8 }} />
-            <span className="text-primary/70 text-xs tracking-[0.4em] uppercase font-mono">Portfolio</span>
+            <span className="text-primary/70 text-xs tracking-[0.4em] uppercase font-mono">{t.home.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 60 }} transition={{ delay: 0.5, duration: 0.8 }} />
           </motion.div>
 
@@ -253,11 +251,11 @@ export function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <KineticLetters text="Full Stack" gradient startDelay={350} />
+            <KineticLetters text={t.home.titleLead} gradient startDelay={350} />
             <br />
             <span className="text-primary inline-block">
-              <GlitchText text="Developer">
-                <KineticLetters text="Developer" startDelay={750} />
+              <GlitchText text={t.home.titleAccent}>
+                <KineticLetters text={t.home.titleAccent} startDelay={750} />
               </GlitchText>
             </span>
           </motion.h1>
@@ -270,7 +268,7 @@ export function Home() {
             transition={{ delay: 0.7 }}
           >
             <Typewriter
-              lines={["Crafting elegant solutions with modern technologies.", "Specializing in end-to-end web development."]}
+              lines={t.home.typewriter}
               delay={0.8}
             />
           </motion.p>
@@ -289,10 +287,10 @@ export function Home() {
             >
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"
-                animate={{ x: ["−100%", "200%"] }}
+                animate={{ x: ["-100%", "200%"] }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
               />
-              <span className="relative z-10">View My Work</span>
+              <span className="relative z-10">{t.home.ctaWork}</span>
               <motion.div className="relative z-10" whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 400 }}>
                 <ArrowRight className="w-5 h-5" />
               </motion.div>
@@ -306,7 +304,7 @@ export function Home() {
               <motion.div
                 className="absolute inset-0 bg-primary scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"
               />
-              <span className="relative z-10">Get In Touch</span>
+              <span className="relative z-10">{t.home.ctaContact}</span>
             </MagneticBtn>
           </motion.div>
 
@@ -370,7 +368,7 @@ export function Home() {
           >
             <motion.div className="w-1 h-2 bg-primary rounded-full" />
           </motion.div>
-          <p className="text-gray-600 text-xs font-mono mt-2 tracking-widest">scroll</p>
+          <p className="text-gray-600 text-xs font-mono mt-2 tracking-widest">{t.home.scroll}</p>
         </motion.button>
       </div>
 
@@ -401,23 +399,22 @@ export function Home() {
           >
             <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.2 }} viewport={{ once: true }}>
               <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} whileInView={{ width: 60 }} transition={{ delay: 0.3, duration: 0.8 }} viewport={{ once: true }} />
-              <span className="text-primary/70 text-xs tracking-[0.4em] uppercase font-mono">Approach</span>
+              <span className="text-primary/70 text-xs tracking-[0.4em] uppercase font-mono">{t.home.approachOverline}</span>
               <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} whileInView={{ width: 60 }} transition={{ delay: 0.3, duration: 0.8 }} viewport={{ once: true }} />
             </motion.div>
 
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
               <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} viewport={{ once: true }}>
-                Turning Ideas Into
+                {t.home.approachTitleLead}
               </motion.span>
               <br />
               <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} viewport={{ once: true }}>
-                <GlitchText>Reality</GlitchText>
+                <GlitchText>{t.home.approachTitleAccent}</GlitchText>
               </motion.span>
             </h2>
 
             <motion.p className="text-xl text-gray-400 max-w-3xl mx-auto" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} viewport={{ once: true }}>
-              With expertise across the full development stack, I create performant,
-              scalable, and user-centric applications that make an impact.
+              {t.home.approachSubtitle}
             </motion.p>
 
             <motion.div
@@ -490,7 +487,7 @@ export function Home() {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
-              Learn more about me
+              {t.home.learnMore}
               <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
                 <ArrowRight className="w-4 h-4" />
               </motion.span>

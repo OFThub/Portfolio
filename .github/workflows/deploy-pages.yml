@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+
+# dist/ is not committed, so Pages is built here instead of served from the
+# repository. This is what replaced the old commit-the-build-output flow.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two Pages deployments race; queue instead of cancelling so a
+# deployment already in flight finishes.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        env:
+          # OFThub/Portfolio is a project repository, so Pages serves it from a
+          # sub-path. VITE_BASE_PATH is derived from this, so one variable is
+          # enough and the two cannot drift apart.
+          VITE_SITE_URL: https://ofthub.github.io/Portfolio
+          VITE_EMAILJS_SERVICE_ID: ${{ secrets.VITE_EMAILJS_SERVICE_ID }}
+          VITE_EMAILJS_TEMPLATE_ID: ${{ secrets.VITE_EMAILJS_TEMPLATE_ID }}
+          VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
+        run: npm run build
+
+      # enablement flips the repository's Pages source to "GitHub Actions" on the
+      # first run, so nobody has to remember to change it by hand — and the old
+      # deploy-from-branch source (which served the committed dist/) is retired
+      # in the same step.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

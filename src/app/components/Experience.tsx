@@ -1,6 +1,7 @@
-import { motion, useMotionValue, useSpring, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Calendar, MapPin, Briefcase } from "lucide-react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useI18n } from "../../i18n";
 
 /* ─── Corner Decoration (tüm bileşenlerle aynı) ─────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
@@ -215,26 +216,18 @@ function TimelineLine() {
 /* ═══════════════════════════════════════════════════════════════════════
    MAIN EXPERIENCE COMPONENT
 ═══════════════════════════════════════════════════════════════════════ */
+/* Technology names are not translated, so they stay out of the dictionary and
+   are zipped onto the translated entries by position. */
+const EXPERIENCE_TECHNOLOGIES = [
+  ["React", "Node.js", "AWS", "MongoDB", "TypeScript", "Docker"],
+];
+
 export function Experience() {
-  const experiences = [
-    {
-      title: "Software Developer Intern",
-      company: "Software Persona",
-      location: "İstanbul, Turkey",
-      period: "Jan 2026 - Present",
-      type: "Internship",
-      description:
-        "Completed a multidisciplinary software internship at SoftwarePersona, focusing on UI/UX design, web development, database systems, and mobile application development. Actively participated in project design and production processes within a collaborative development environment.",
-      achievements: [
-        "Contributed to end-to-end project workflows from design to deployment",
-        "Designed and implemented database structures using SQL principles",
-        "Developed responsive web interfaces aligned with UI/UX best practices",
-        "Participated in mobile application development processes",
-        "Collaborated within a structured team-based development environment",
-      ],
-      technologies: ["React", "Node.js", "AWS", "MongoDB", "TypeScript", "Docker"],
-    },
-  ];
+  const { t } = useI18n();
+  const experiences = t.experience.items.map((item, i) => ({
+    ...item,
+    technologies: EXPERIENCE_TECHNOLOGIES[i] ?? [],
+  }));
 
   /* Particles */
   const particles = Array.from({ length: 8 }, (_, i) => ({
@@ -295,7 +288,7 @@ export function Experience() {
               animate={{ width: 80 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">Career</span>
+            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.experience.overline}</span>
             <motion.div
               className="h-px bg-gradient-to-l from-transparent to-primary/60"
               initial={{ width: 0 }}
@@ -311,7 +304,7 @@ export function Experience() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              Work{" "}
+              {t.experience.titleLead}{" "}
             </motion.span>
             <motion.span
               className="text-primary inline-block"
@@ -319,7 +312,7 @@ export function Experience() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
             >
-              <GlitchText>Experience</GlitchText>
+              <GlitchText>{t.experience.titleAccent}</GlitchText>
             </motion.span>
           </h1>
 
@@ -329,7 +322,7 @@ export function Experience() {
             transition={{ delay: 0.7 }}
             className="text-xl text-gray-400 max-w-3xl mx-auto font-mono"
           >
-            My professional journey and key achievements in software development
+            {t.experience.subtitle}
           </motion.p>
 
           {/* Animated underline */}
@@ -446,7 +439,7 @@ export function Experience() {
                         viewport={{ once: true }}
                       >
                         <Briefcase className="w-3.5 h-3.5 text-primary" />
-                        Key Achievements
+                        {t.experience.achievementsTitle}
                       </motion.h4>
                       <ul className="space-y-2">
                         {exp.achievements.map((achievement, i) => (
@@ -462,7 +455,7 @@ export function Experience() {
                       transition={{ delay: 0.6 }}
                       viewport={{ once: true }}
                     >
-                      <p className="text-xs text-gray-600 font-mono uppercase tracking-widest mb-2">Stack</p>
+                      <p className="text-xs text-gray-600 font-mono uppercase tracking-widest mb-2">{t.experience.stackTitle}</p>
                       <div className="flex flex-wrap gap-2">
                         {exp.technologies.map((tech, i) => (
                           <TechBadge key={i} label={tech} delay={0.65 + i * 0.06} />

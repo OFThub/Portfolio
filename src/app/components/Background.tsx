@@ -82,7 +82,6 @@ export default function EmberBackground() {
 
     // İmleç takibi
     const cursor = { x: -200, y: -200, vx: 0, vy: 0, prevX: -200, prevY: -200 };
-    let isMouseOnCanvas = false;
 
     function resize() {
       W = canvas.width = window.innerWidth;
@@ -101,9 +100,7 @@ export default function EmberBackground() {
       cursor.y = e.clientY;
     }
 
-    function onMouseEnter() { isMouseOnCanvas = true; }
     function onMouseLeave() {
-      isMouseOnCanvas = false;
       cursor.vx = 0;
       cursor.vy = 0;
     }
@@ -117,11 +114,9 @@ export default function EmberBackground() {
       cursor.prevY = cursor.y;
       cursor.x = t.clientX;
       cursor.y = t.clientY;
-      isMouseOnCanvas = true;
     }
 
     window.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mouseenter", onMouseEnter);
     canvas.addEventListener("mouseleave", onMouseLeave);
     window.addEventListener("touchmove", onTouchMove, { passive: true });
 
@@ -289,7 +284,6 @@ export default function EmberBackground() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
-      canvas.removeEventListener("mouseenter", onMouseEnter);
       canvas.removeEventListener("mouseleave", onMouseLeave);
       window.removeEventListener("touchmove", onTouchMove);
     };

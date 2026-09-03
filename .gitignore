@@ -1,2 +1,20 @@
+# dependencies
 node_modules
-*.env
+
+# build output
+dist
+*.tsbuildinfo
+
+# environment — every Vite variant, not just "*.env"
+.env
+.env.*
+!.env.example
+
+# editor / OS
+.DS_Store
+Thumbs.db
+*.local
+
+# logs
+npm-debug.log*
+yarn-error.log*
