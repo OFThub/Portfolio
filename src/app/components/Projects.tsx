@@ -191,8 +191,17 @@ function ProjectCard({ project, index }: { project: EnrichedProject; index: numb
       key={project.key}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true }}
+      /* Stagger across the row, not the whole list. The delay used to be
+         `index * 0.12`, so with 14 projects the last card waited 1.56s after
+         coming into view before it appeared. The grid is at most three columns
+         wide, so `index % 3` restarts the cascade on every row and caps the
+         wait at 0.16s. */
+      transition={{ delay: (index % 3) * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      /* `amount` defaults to "some", i.e. a single pixel: a card fired its
+         entrance while its top edge had barely cleared the bottom of the
+         screen, so it finished animating before it was properly visible.
+         Wait until a fifth of the card is actually on screen. */
+      viewport={{ once: true, amount: 0.2 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="spotlight group relative bg-card border border-primary/20 rounded-lg overflow-hidden"
