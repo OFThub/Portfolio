@@ -288,7 +288,7 @@ export function Experience() {
               animate={{ width: 80 }}
               transition={{ delay: 0.4, duration: 0.8 }}
             />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.experience.overline}</span>
+            <span className="text-red-500 text-sm tracking-[0.3em] uppercase font-mono">{t.experience.overline}</span>
             <motion.div
               className="h-px bg-gradient-to-l from-transparent to-primary/60"
               initial={{ width: 0 }}
@@ -297,7 +297,7 @@ export function Experience() {
             />
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6">
+          <h2 className="text-5xl sm:text-6xl font-bold mb-6">
             <motion.span
               className="text-white inline-block"
               initial={{ opacity: 0, x: -20 }}
@@ -314,7 +314,7 @@ export function Experience() {
             >
               <GlitchText>{t.experience.titleAccent}</GlitchText>
             </motion.span>
-          </h1>
+          </h2>
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -357,7 +357,7 @@ export function Experience() {
                     {/* Card Header */}
                     <div className="mb-5">
                       <div className="flex items-start justify-between mb-2 gap-2">
-                        <motion.h3
+                        <motion.h4
                           className="text-xl font-bold text-white"
                           initial={{ opacity: 0, x: -10 }}
                           whileInView={{ opacity: 1, x: 0 }}
@@ -365,7 +365,7 @@ export function Experience() {
                           viewport={{ once: true }}
                         >
                           {exp.title}
-                        </motion.h3>
+                        </motion.h4>
 
                         <motion.span
                           className="px-3 py-1 bg-primary/20 text-primary text-xs rounded-full flex-shrink-0 border border-primary/30 font-mono"
@@ -392,7 +392,7 @@ export function Experience() {
 
                       {/* Meta */}
                       <motion.div
-                        className="flex flex-wrap gap-4 text-sm text-gray-500 font-mono"
+                        className="flex flex-wrap gap-4 text-sm text-gray-400 font-mono"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
@@ -455,7 +455,7 @@ export function Experience() {
                       transition={{ delay: 0.6 }}
                       viewport={{ once: true }}
                     >
-                      <p className="text-xs text-gray-600 font-mono uppercase tracking-widest mb-2">{t.experience.stackTitle}</p>
+                      <p className="text-xs text-gray-400 font-mono uppercase tracking-widest mb-2">{t.experience.stackTitle}</p>
                       <div className="flex flex-wrap gap-2">
                         {exp.technologies.map((tech, i) => (
                           <TechBadge key={i} label={tech} delay={0.65 + i * 0.06} />

@@ -28,7 +28,9 @@ function LanguageSwitch({ className = "" }: { className?: string }) {
             type="button"
             onClick={() => setLang(code)}
             aria-pressed={active}
-            className="relative px-2 py-0.5 rounded transition-colors duration-200"
+            /* 44x44 is the smallest comfortable touch target; the label itself
+               is only about 20px tall, so the box is sized rather than the text. */
+            className="relative flex min-h-11 min-w-11 items-center justify-center rounded px-2 transition-colors duration-200"
             style={{
               background: active ? "rgba(239,68,68,0.18)" : "transparent",
               color: active ? "rgb(239,68,68)" : "rgb(156,163,175)",
@@ -299,7 +301,7 @@ export function Navigation() {
             {/* ── Mobile Hamburger ── */}
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className="spotlight md:hidden relative p-2 text-white overflow-hidden"
+              className="spotlight md:hidden relative flex min-h-11 min-w-11 items-center justify-center p-2 text-white overflow-hidden"
               aria-label={t.nav.menuToggleAria}
               aria-expanded={isOpen}
               whileTap={{ scale: 0.92 }}

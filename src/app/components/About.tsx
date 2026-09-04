@@ -175,13 +175,13 @@ function CodeTerminal() {
         </div>
         <div className="flex-1 flex items-center justify-center gap-2">
           <Terminal className="w-3.5 h-3.5 text-primary/60" />
-          <span className="text-gray-500 text-xs font-mono">developer.ts</span>
+          <span className="text-gray-400 text-xs font-mono">developer.ts</span>
         </div>
         {/* Live dot */}
         <div className="relative flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
           <motion.div className="absolute left-0 w-1.5 h-1.5 rounded-full bg-green-500" animate={{ scale: [1, 2.5], opacity: [0.6, 0] }} transition={{ duration: 1.5, repeat: Infinity }} />
-          <span className="text-gray-600 text-xs font-mono">live</span>
+          <span className="text-gray-400 text-xs font-mono">live</span>
         </div>
       </div>
 
@@ -246,7 +246,7 @@ function SectionTitle({ icon: Icon, title, delay = 0 }: { icon: React.ElementTyp
       >
         <Icon className="w-6 h-6 text-primary" />
       </motion.div>
-      <h2 className="text-3xl font-bold text-white">{title}</h2>
+      <h3 className="text-3xl font-bold text-white">{title}</h3>
       <motion.div
         className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent"
         initial={{ scaleX: 0, originX: 0 }}
@@ -312,16 +312,16 @@ export function About() {
         >
           <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.about.overline}</span>
+            <span className="text-red-500 text-sm tracking-[0.3em] uppercase font-mono">{t.about.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6">
+          <h2 className="text-5xl sm:text-6xl font-bold mb-6">
             <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>{t.about.titleLead}{" "}</motion.span>
             <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
               <GlitchText>{t.about.titleAccent}</GlitchText>
             </motion.span>
-          </h1>
+          </h2>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
             <Typewriter text={t.about.tagline} delay={0.8} />
@@ -351,7 +351,7 @@ export function About() {
               className="flex items-center gap-3 mb-6"
             >
               <span className="w-1 h-8 bg-primary rounded-full" />
-              <h2 className="text-3xl font-bold text-white">{t.about.role}</h2>
+              <h3 className="text-3xl font-bold text-white">{t.about.role}</h3>
             </motion.div>
 
             <div className="space-y-4 text-gray-400 text-sm leading-relaxed">
@@ -388,7 +388,7 @@ export function About() {
                   </div>
                   <div>
                     <p className="text-white text-sm font-semibold">{trait.label}</p>
-                    <p className="text-gray-500 text-xs font-mono">{trait.desc}</p>
+                    <p className="text-gray-400 text-xs font-mono">{trait.desc}</p>
                   </div>
                   <motion.div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary/40" animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }} />
                 </motion.div>
@@ -416,12 +416,12 @@ export function About() {
               >
                 <ScanLine />
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-2">
-                  <motion.h3
+                  <motion.h4
                     className="text-xl font-bold text-white"
                     initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.2 }} viewport={{ once: true }}
                   >
                     {edu.degree}
-                  </motion.h3>
+                  </motion.h4>
                   <motion.span
                     className="text-primary text-xs font-mono border border-primary/30 bg-primary/5 px-3 py-1 rounded-full flex-shrink-0"
                     initial={{ opacity: 0, scale: 0.85 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, type: "spring", stiffness: 300 }} viewport={{ once: true }}

@@ -129,7 +129,7 @@ function SectionTitle({ children, delay = 0 }: { children: string; delay?: numbe
       className="flex items-center gap-3 mb-8"
     >
       <span className="w-1 h-7 bg-primary rounded-full" />
-      <h2 className="text-3xl font-bold text-white">{children}</h2>
+      <h3 className="text-3xl font-bold text-white">{children}</h3>
       <motion.div
         className="flex-1 h-px bg-gradient-to-r from-primary/40 to-transparent"
         initial={{ scaleX: 0, originX: 0 }}
@@ -207,7 +207,7 @@ function FeaturedCard({ post, index }: { post: BlogPost; index: number }) {
       {/* Content */}
       <div className="p-6 relative z-10">
         <motion.div
-          className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-mono"
+          className="flex items-center gap-4 text-xs text-gray-400 mb-3 font-mono"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.4 + index * 0.12 }}
@@ -231,7 +231,7 @@ function FeaturedCard({ post, index }: { post: BlogPost; index: number }) {
           viewport={{ once: true }}
         />
 
-        <motion.h3
+        <motion.h4
           className="text-2xl font-bold text-white mb-3"
           style={{ color: hovered ? "rgb(239,68,68)" : "white", transition: "color 0.2s" }}
           initial={{ opacity: 0 }}
@@ -240,7 +240,7 @@ function FeaturedCard({ post, index }: { post: BlogPost; index: number }) {
           viewport={{ once: true }}
         >
           {post.title}
-        </motion.h3>
+        </motion.h4>
 
         <motion.p
           className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed"
@@ -319,7 +319,7 @@ function ArticleCard({ post, index }: { post: BlogPost; index: number }) {
 
       {/* Content */}
       <div className="p-5 flex-1 flex flex-col relative z-10">
-        <div className="flex items-center gap-3 text-xs text-gray-500 mb-3 font-mono">
+        <div className="flex items-center gap-3 text-xs text-gray-400 mb-3 font-mono">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3 text-primary/60" />
             {post.date}
@@ -338,12 +338,12 @@ function ArticleCard({ post, index }: { post: BlogPost; index: number }) {
           viewport={{ once: true }}
         />
 
-        <h3
+        <h4
           className="text-lg font-bold mb-2 line-clamp-2 transition-colors duration-200"
           style={{ color: hovered ? "rgb(239,68,68)" : "white" }}
         >
           {post.title}
-        </h3>
+        </h4>
 
         <p className="text-gray-400 text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
           {post.excerpt}
@@ -420,13 +420,13 @@ function ComingSoon() {
         {/* Overline */}
         <motion.div className="flex items-center justify-center gap-3 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
           <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 40 }} transition={{ delay: 0.5, duration: 0.8 }} />
-          <span className="text-primary/70 text-xs tracking-[0.3em] uppercase font-mono">{t.blog.comingSoonStatus}</span>
+          <span className="text-red-500 text-xs tracking-[0.3em] uppercase font-mono">{t.blog.comingSoonStatus}</span>
           <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 40 }} transition={{ delay: 0.5, duration: 0.8 }} />
         </motion.div>
 
-        <h1 className="text-4xl font-bold text-white mb-3">
+        <h2 className="text-4xl font-bold text-white mb-3">
           {t.blog.comingSoonLead} <span className="text-primary"><GlitchText>{t.blog.comingSoonAccent}</GlitchText></span>
-        </h1>
+        </h2>
 
         <motion.div
           className="h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent mx-auto mb-4"
@@ -510,16 +510,16 @@ export function Blog() {
         >
           <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.blog.overline}</span>
+            <span className="text-red-500 text-sm tracking-[0.3em] uppercase font-mono">{t.blog.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6">
+          <h2 className="text-5xl sm:text-6xl font-bold mb-6">
             <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>{t.blog.titleLead}{" "}</motion.span>
             <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
               <GlitchText>{t.blog.titleAccent}</GlitchText>
             </motion.span>
-          </h1>
+          </h2>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
             {t.blog.subtitle}

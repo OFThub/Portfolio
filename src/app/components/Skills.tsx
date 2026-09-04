@@ -235,7 +235,7 @@ export function Skills() {
             transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="h-px w-24 bg-gradient-to-r from-transparent via-red-500 to-transparent mx-auto mb-6"
           />
-          <h1 className="text-5xl sm:text-6xl font-bold mb-4 tracking-tight">
+          <h2 className="text-5xl sm:text-6xl font-bold mb-4 tracking-tight">
             <motion.span
               className="text-white inline-block"
               initial={{ opacity: 0, y: 20 }}
@@ -252,7 +252,7 @@ export function Skills() {
             >
               {t.skills.titleAccent}
             </motion.span>
-          </h1>
+          </h2>
           <motion.p
             className="text-lg text-gray-400 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
@@ -290,9 +290,9 @@ export function Skills() {
                 >
                   <category.icon className="w-5 h-5 text-white" />
                 </motion.div>
-                <h2 className="text-xl font-bold text-white tracking-tight">
+                <h3 className="text-xl font-bold text-white tracking-tight">
                   {category.category}
-                </h2>
+                </h3>
               </div>
               <div className="grid grid-cols-2 gap-0.5">
                 {category.skills.map((skill, skillIndex) => (
@@ -308,9 +308,9 @@ export function Skills() {
           hiddenState={{ opacity: 0, y: 30 }}
           className="mb-16"
         >
-          <h2 className="text-3xl font-bold text-white mb-8 text-center tracking-tight">
+          <h3 className="text-3xl font-bold text-white mb-8 text-center tracking-tight">
             {t.skills.softSkillsTitle}
-          </h2>
+          </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {softSkills.map((skill, index) => (
               <ScrollReveal
@@ -332,9 +332,9 @@ export function Skills() {
                   whileHover={{ width: "60%" }}
                   transition={{ duration: 0.3 }}
                 />
-                <h3 className="text-gray-300 group-hover:text-white transition-colors text-sm font-semibold tracking-wide">
+                <h4 className="text-gray-300 group-hover:text-white transition-colors text-sm font-semibold tracking-wide">
                   {skill.name}
-                </h3>
+                </h4>
               </ScrollReveal>
             ))}
           </div>
@@ -356,9 +356,9 @@ export function Skills() {
               animate={{ opacity: [1, 0.5, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             />
-            <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">
+            <h3 className="text-3xl font-bold text-white mb-3 tracking-tight">
               {t.skills.continuousLearningTitle}
-            </h2>
+            </h3>
             <p className="text-gray-400 max-w-2xl mx-auto leading-relaxed">
               {t.skills.continuousLearningBody}
             </p>

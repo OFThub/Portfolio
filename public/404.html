@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>404 — Ömer Faruk Türkdoğdu</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
+
+    <!--
+      Standalone on purpose. Vercel serves this for paths that do not exist, so
+      it must not depend on the React bundle: if the app failed to build or an
+      asset 404s, this page still renders. That also rules out the webfont --
+      the system stack keeps it instant and offline-safe.
+    -->
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --muted: #9ca3af;
+        --accent: #ef4444;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1.5rem;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+        overflow-x: hidden;
+      }
+      .glow {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(circle at 50% 40%, rgba(220, 38, 38, 0.13) 0%, transparent 60%);
+      }
+      main { position: relative; max-width: 34rem; }
+      .code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: clamp(4.5rem, 18vw, 8rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        margin: 0;
+        color: var(--accent);
+        text-shadow: 0 0 42px rgba(220, 38, 38, 0.35);
+      }
+      h1 {
+        font-size: clamp(1.25rem, 4vw, 1.6rem);
+        font-weight: 600;
+        margin: 1.25rem 0 0.75rem;
+      }
+      p {
+        margin: 0 auto 2rem;
+        max-width: 30rem;
+        line-height: 1.65;
+        color: var(--muted);
+        font-size: 0.975rem;
+      }
+      .rule {
+        width: 4.5rem;
+        height: 1px;
+        margin: 0 auto 1.75rem;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+      }
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        /* 44px minimum touch target, the same rule the rest of the site follows. */
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(220, 38, 38, 0.35);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--fg);
+        transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+      }
+      a.primary { background: rgba(220, 38, 38, 0.16); }
+      a:hover { background: rgba(220, 38, 38, 0.28); border-color: var(--accent); }
+      a:active { transform: scale(0.97); }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+      @media (prefers-reduced-motion: reduce) {
+        a { transition: none; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="glow" aria-hidden="true"></div>
+    <main>
+      <p class="code" aria-hidden="true">404</p>
+      <h1>This page does not exist</h1>
+      <div class="rule" aria-hidden="true"></div>
+      <p>
+        The address you followed is not part of this portfolio — it may have been
+        renamed or removed. Everything lives on a single page, so the links below
+        will get you there.
+      </p>
+      <div class="actions">
+        <a class="primary" href="/">Back to the portfolio</a>
+        <a href="/#projects">See the projects</a>
+        <a href="mailto:oturkdogdu1@gmail.com">Report a broken link</a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -424,14 +424,14 @@ export function Contact() {
               className="h-px bg-gradient-to-r from-transparent to-primary/60"
               style={{ width: 80 }}
             />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.contact.overline}</span>
+            <span className="text-red-500 text-sm tracking-[0.3em] uppercase font-mono">{t.contact.overline}</span>
             <motion.div
               className="h-px bg-gradient-to-l from-transparent to-primary/60"
               style={{ width: 80 }}
             />
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6">
+          <h2 className="text-5xl sm:text-6xl font-bold mb-6">
             <motion.span
               className="text-white inline-block"
               initial={{ opacity: 0, x: -20 }}
@@ -448,7 +448,7 @@ export function Contact() {
             >
               <GlitchText>{t.contact.titleAccent}</GlitchText>
             </motion.span>
-          </h1>
+          </h2>
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -465,7 +465,7 @@ export function Contact() {
           {/* ── Contact Form ── */}
           <GlowCard delay={0.2}>
             <ScanLine />
-            <motion.h2
+            <motion.h3
               className="text-2xl font-bold text-white mb-6 flex items-center gap-3"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -473,7 +473,7 @@ export function Contact() {
             >
               <span className="w-1 h-6 bg-primary rounded-full block" />
               {t.contact.formTitle}
-            </motion.h2>
+            </motion.h3>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Staggered fields */}
@@ -536,7 +536,7 @@ export function Contact() {
                     }}
                     placeholder={textareaFocused || formData.message.length > 0 ? t.contact.placeholders.message : ""}
                   />
-                  <div className="flex justify-between mt-2 text-xs text-gray-500 font-mono">
+                  <div className="flex justify-between mt-2 text-xs text-gray-400 font-mono">
                     <AnimatePresence mode="wait">
                       {errors.message ? (
                         <motion.span key="err" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-red-400">
@@ -621,10 +621,10 @@ export function Contact() {
 
             {/* Contact Details */}
             <GlowCard delay={0.35}>
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 <span className="w-1 h-6 bg-primary rounded-full block" />
                 {t.contact.infoTitle}
-              </h2>
+              </h3>
               <div className="space-y-5">
                 {contactInfo.map((info, i) => (
                   <motion.div
@@ -642,7 +642,7 @@ export function Contact() {
                       <info.icon className="w-5 h-5 text-primary" />
                     </motion.div>
                     <div>
-                      <p className="text-gray-500 text-xs font-mono uppercase tracking-widest mb-0.5">{info.label}</p>
+                      <p className="text-gray-400 text-xs font-mono uppercase tracking-widest mb-0.5">{info.label}</p>
                       {info.link ? (
                         <a href={info.link} className="text-white hover:text-primary transition-colors text-sm">
                           {info.value}
@@ -664,10 +664,10 @@ export function Contact() {
 
             {/* Social Links */}
             <GlowCard delay={0.5}>
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                 <span className="w-1 h-6 bg-primary rounded-full block" />
                 {t.contact.socialTitle}
-              </h2>
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 {socialLinks.map((social, i) => (
                   <motion.a
@@ -764,7 +764,7 @@ export function Contact() {
             <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
           </motion.div>
 
-          <motion.h2
+          <motion.h3
             className="text-3xl font-bold text-white mb-4"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -772,7 +772,7 @@ export function Contact() {
             viewport={{ once: true }}
           >
             {t.contact.closingTitle}
-          </motion.h2>
+          </motion.h3>
 
           <motion.p
             className="text-gray-400 max-w-3xl mx-auto leading-relaxed font-mono text-sm"

@@ -171,7 +171,7 @@ function ImageCarousel({ images, title, category }: { images: string[]; title: s
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
       >
-        <span className="text-xs font-mono text-primary/70 bg-black/60 px-2 py-0.5 rounded border border-primary/20">
+        <span className="text-xs font-mono text-red-500 bg-black/60 px-2 py-0.5 rounded border border-primary/20">
           {category}
         </span>
       </motion.div>
@@ -287,7 +287,7 @@ function ProjectCard({ project, index }: { project: EnrichedProject; index: numb
           transition={{ delay: index * 0.12 + 0.25 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-xl font-bold text-white">{project.title}</h3>
+          <h4 className="text-xl font-bold text-white">{project.title}</h4>
           {project.stars > 0 && (
             <span className="flex items-center gap-1 text-xs text-yellow-400 shrink-0 mt-1">
               <Star className="w-3 h-3 fill-current" />
@@ -658,16 +658,16 @@ export function Projects() {
         >
           <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
-            <span className="text-primary/70 text-sm tracking-[0.3em] uppercase font-mono">{t.projects.overline}</span>
+            <span className="text-red-500 text-sm tracking-[0.3em] uppercase font-mono">{t.projects.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 80 }} transition={{ delay: 0.4, duration: 0.8 }} />
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6">
+          <h2 className="text-5xl sm:text-6xl font-bold mb-6">
             <motion.span className="text-white inline-block" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.6 }}>{t.projects.titleLead}{" "}</motion.span>
             <motion.span className="text-primary inline-block" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
               <GlitchText>{t.projects.titleAccent}</GlitchText>
             </motion.span>
-          </h1>
+          </h2>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
             {t.projects.subtitle}
@@ -754,12 +754,12 @@ export function Projects() {
           />
 
           <div className="relative z-10">
-            <motion.h2
+            <motion.h3
               className="text-3xl font-bold text-white mb-3"
               initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.2 }} viewport={{ once: true }}
             >
               {t.projects.ctaTitle}
-            </motion.h2>
+            </motion.h3>
 
             <motion.p
               className="text-gray-400 mb-6 font-mono text-sm"

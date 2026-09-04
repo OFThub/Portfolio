@@ -258,7 +258,7 @@ export function Footer() {
                     transition={{ duration: 1.5, repeat: Infinity }}
                   />
                 </div>
-                <span className="text-gray-500 text-xs font-mono tracking-widest uppercase">{t.footer.available}</span>
+                <span className="text-gray-400 text-xs font-mono tracking-widest uppercase">{t.footer.available}</span>
               </motion.div>
             </motion.div>
 
@@ -317,15 +317,15 @@ export function Footer() {
             />
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-gray-500 text-xs font-mono text-center md:text-left">
+              <p className="text-gray-400 text-xs font-mono text-center md:text-left">
                 © {new Date().getFullYear()}{" "}
-                <span className="text-primary/70">{t.footer.tagline}</span>
+                <span className="text-red-500">{t.footer.tagline}</span>
                 {" "}— {t.footer.rightsSuffix}
               </p>
 
               {/* Scroll progress indicator */}
               <div className="flex items-center gap-3">
-                <span className="text-gray-600 text-xs font-mono">{t.footer.scroll}</span>
+                <span className="text-gray-400 text-xs font-mono">{t.footer.scroll}</span>
                 <div className="relative w-24 h-px bg-primary/20 overflow-hidden rounded-full">
                   <motion.div
                     className="absolute left-0 top-0 h-full bg-primary rounded-full"
@@ -334,7 +334,7 @@ export function Footer() {
                     }}
                   />
                 </div>
-                <span className="text-gray-600 text-xs font-mono w-8">
+                <span className="text-gray-400 text-xs font-mono w-8">
                   {Math.min(100, Math.round((scrollY / (document.body.scrollHeight - window.innerHeight || 1)) * 100))}%
                 </span>
               </div>

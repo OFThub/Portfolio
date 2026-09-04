@@ -240,7 +240,7 @@ export function Home() {
             transition={{ delay: 0.3 }}
           >
             <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 60 }} transition={{ delay: 0.5, duration: 0.8 }} />
-            <span className="text-primary/70 text-xs tracking-[0.4em] uppercase font-mono">{t.home.overline}</span>
+            <span className="text-red-500 text-xs tracking-[0.4em] uppercase font-mono">{t.home.overline}</span>
             <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} animate={{ width: 60 }} transition={{ delay: 0.5, duration: 0.8 }} />
           </motion.div>
 
@@ -341,7 +341,7 @@ export function Home() {
                 />
                 <item.icon className="w-7 h-7 text-primary mx-auto mb-2 relative z-10" />
                 <p className="text-white text-sm font-semibold relative z-10">{item.label}</p>
-                <p className="text-gray-600 text-xs font-mono mt-1 relative z-10">{item.desc}</p>
+                <p className="text-gray-400 text-xs font-mono mt-1 relative z-10">{item.desc}</p>
                 {/* Pulse dot */}
                 <motion.div
                   className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary/50"
@@ -368,7 +368,7 @@ export function Home() {
           >
             <motion.div className="w-1 h-2 bg-primary rounded-full" />
           </motion.div>
-          <p className="text-gray-600 text-xs font-mono mt-2 tracking-widest">{t.home.scroll}</p>
+          <p className="text-gray-400 text-xs font-mono mt-2 tracking-widest">{t.home.scroll}</p>
         </motion.button>
       </div>
 
@@ -399,7 +399,7 @@ export function Home() {
           >
             <motion.div className="flex items-center justify-center gap-4 mb-4" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.2 }} viewport={{ once: true }}>
               <motion.div className="h-px bg-gradient-to-r from-transparent to-primary/60" initial={{ width: 0 }} whileInView={{ width: 60 }} transition={{ delay: 0.3, duration: 0.8 }} viewport={{ once: true }} />
-              <span className="text-primary/70 text-xs tracking-[0.4em] uppercase font-mono">{t.home.approachOverline}</span>
+              <span className="text-red-500 text-xs tracking-[0.4em] uppercase font-mono">{t.home.approachOverline}</span>
               <motion.div className="h-px bg-gradient-to-l from-transparent to-primary/60" initial={{ width: 0 }} whileInView={{ width: 60 }} transition={{ delay: 0.3, duration: 0.8 }} viewport={{ once: true }} />
             </motion.div>
 
