@@ -4,7 +4,7 @@ Single-page developer portfolio. React 18 + TypeScript on Vite 6, Tailwind CSS v
 canvas/WebGL background work, English/Turkish content, and a Projects section that
 pulls live star and fork counts from the GitHub API.
 
-**Live:** https://ofthub.github.io/Portfolio &nbsp;·&nbsp; **Contact:** oturkdogdu1@gmail.com
+**Live:** https://portfolio-orcin-zeta-8tbk5l20gi.vercel.app &nbsp;·&nbsp; **Contact:** oturkdogdu1@gmail.com
 
 ---
 
@@ -34,17 +34,10 @@ secret here. See [`.env.example`](.env.example).
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `VITE_EMAILJS_SERVICE_ID` | no | EmailJS service for the contact form |
-| `VITE_EMAILJS_TEMPLATE_ID` | no | EmailJS template id |
-| `VITE_EMAILJS_PUBLIC_KEY` | no | EmailJS browser key (public by design) |
-| `VITE_SITE_URL` | no | Canonical origin. Defaults to `https://ofthub.github.io/Portfolio`. Stamped into `og:url`, `canonical`, `sitemap.xml` and `robots.txt` at build time |
-| `VITE_BASE_PATH` | no | Public path the app is served from. Derived from `VITE_SITE_URL` — only set it when the served path genuinely differs from the canonical one |
+| `VITE_SITE_URL` | no | Canonical origin, stamped into `og:url`, `canonical`, `sitemap.xml` and `robots.txt`. On Vercel it is filled in from the deployment's own hostname, so it only needs setting for a custom domain |
 
-With the three EmailJS values unset the contact form renders disabled and points
-visitors at the e-mail address instead of firing a request that can only fail.
-
-> **Protect the EmailJS account with a domain allow-list**
-> (Dashboard → Account → Security), not by hiding the key — it ships in the JS.
+That is the entire list. The site has no backend and no third-party service, so
+there is nothing else to configure and no key to leak.
 
 ## Project structure
 
@@ -53,7 +46,7 @@ index.html                    meta, JSON-LD, %SITE_URL% placeholders
 vite.config.ts                build config + canonical-url plugin
 tsconfig.json                 strict TS, no emit
 eslint.config.js              flat config
-vercel.json / netlify.toml    security headers + cache policy (keep in sync)
+vercel.json                   security headers + cache policy
 .github/workflows/ci.yml      typecheck · lint · build · prod audit
 
 public/
@@ -100,9 +93,12 @@ src/
   `typeof en`, so a key added in English without a Turkish translation fails
   `npm run typecheck`. There is no runtime fallback because there is no runtime
   gap.
-- **One base path, two hosts.** `VITE_BASE_PATH` lets the same source serve a
-  root domain and a project sub-path; anything in `public/` referenced from JS
-  goes through `import.meta.env.BASE_URL`.
+- **Nothing leaves the page on its own.** The contact form hands the message to
+  the visitor's mail client via `mailto:`; the only network call the site makes
+  is the GitHub API for star counts.
+- **Always-on animation is gated.** Canvas loops stop when the tab is hidden or
+  the section scrolls away, and the hero's 72 animated SVG paths fall back to a
+  static frame off-screen.
 
 ## Internationalisation
 
@@ -130,26 +126,14 @@ CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
 `Permissions-Policy`, COOP/CORP, plus immutable caching for `/assets/*` and
 `no-cache` for `index.html`.
 
-**Vercel** — import the repo; `vercel.json` supplies build command, output
-directory and headers. **Netlify** — `netlify.toml` does the same. Both serve
-from a root domain, so leave `VITE_BASE_PATH` unset.
+**Vercel** — import the repo and it deploys on every push to `main`;
+`vercel.json` supplies the build command, output directory and headers. The
+canonical URL resolves from Vercel's own production hostname, so a fresh import
+needs no environment variables at all.
 
-**GitHub Pages** (optional mirror) — `.github/workflows/deploy-pages.yml` is
-**manual-only** (Actions tab → *Deploy to GitHub Pages* → *Run workflow*),
-because Pages is not enabled on this repository and a push trigger would fail
-on every commit. To turn it on: **Settings → Pages → Source → GitHub Actions**,
-then run the workflow. It builds with
-`VITE_SITE_URL=https://ofthub.github.io/Portfolio`; the base path follows from
-that. Uncomment the `push` trigger in the workflow if you want the mirror to
-track `main`.
-
-Two caveats before turning it on: Pages cannot set HTTP headers, so the CSP and
-HSTS above do **not** apply there; and if both deployments are public each one
-declares itself canonical, which splits search ranking between two copies of the
-same page. Keep Vercel as the primary site.
-
-Set `VITE_SITE_URL` to the production origin in the hosting dashboard, then add
-that same origin to the EmailJS allow-list.
+Attaching a custom domain is the only case that needs configuration: set
+`VITE_SITE_URL` to it in the Vercel dashboard so the canonical URL, Open Graph
+tags and sitemap follow.
 
 `dist/` is generated, git-ignored, and built by the host on every deploy — do not
 commit it.
@@ -165,8 +149,9 @@ commit it.
    under the account in `src/services/github.ts`; the response is cached in
    `localStorage` for 24h.
 
-Repos not listed in `RAW_PROJECTS` are surfaced automatically as
-"auto-discovered", excluding forks and archived repos.
+The project list is curated by hand. Repositories are not surfaced
+automatically: a project earns a card by being added to `RAW_PROJECTS` with a
+reachable repository link.
 
 ## Accessibility
 

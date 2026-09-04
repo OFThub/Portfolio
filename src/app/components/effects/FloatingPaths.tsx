@@ -1,18 +1,37 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 
 /*
  * FloatingPaths — hero arka planına katman olarak eklenen akan SVG çizgi animasyonu.
  * prefers-reduced-motion aktifken çizgiler tek statik kare olarak render edilir.
+ *
+ * Home renders two of these, 36 paths each. Animating `pathLength`/`pathOffset`
+ * is CPU work the compositor cannot take over, so 72 of them running while the
+ * visitor reads a section far below is the most expensive thing on the page.
+ * They fall back to the same static frame as reduced-motion once the hero
+ * scrolls out of view.
  */
 
 const prefersReducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export function FloatingPaths({ position }: { position: number }) {
-  const reduced = useMemo(prefersReducedMotion, []);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(true);
+  const reducedMotion = useMemo(prefersReducedMotion, []);
+  const reduced = reducedMotion || !inView;
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [reducedMotion]);
   const paths = useMemo(
     () =>
       Array.from({ length: 36 }, (_, i) => ({
@@ -31,7 +50,7 @@ export function FloatingPaths({ position }: { position: number }) {
   );
 
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none">
       <svg
         className="w-full h-full text-primary"
         viewBox="0 0 696 316"

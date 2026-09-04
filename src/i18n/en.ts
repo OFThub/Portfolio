@@ -211,8 +211,6 @@ export const en = {
     filterAll: "All",
     githubLinkAria: "Open GitHub repository",
     liveLinkAria: "Open live site",
-    moreOnGithub: "More on GitHub",
-    autoCategory: "Other",
     ctaTitle: "Want to see more?",
     ctaBody: "Check out my GitHub profile for more projects and contributions",
     ctaButton: "View GitHub Profile",

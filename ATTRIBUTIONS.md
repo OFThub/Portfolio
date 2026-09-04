@@ -16,7 +16,6 @@
 | [three.js](https://threejs.org) | MIT |
 | [anime.js](https://animejs.com) | MIT |
 | [Lucide](https://lucide.dev) icons | ISC |
-| [@emailjs/browser](https://www.emailjs.com) | MIT |
 
 ## Data
 

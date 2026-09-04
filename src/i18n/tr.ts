@@ -184,8 +184,6 @@ export const tr: typeof en = {
     filterAll: "Tümü",
     githubLinkAria: "GitHub deposunu aç",
     liveLinkAria: "Canlı siteyi aç",
-    moreOnGithub: "GitHub'da Daha Fazlası",
-    autoCategory: "Diğer",
     ctaTitle: "Daha fazlasını görmek ister misiniz?",
     ctaBody: "Daha fazla proje ve katkı için GitHub profilime göz atın",
     ctaButton: "GitHub Profilini Gör",

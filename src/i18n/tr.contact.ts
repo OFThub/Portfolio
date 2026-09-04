@@ -33,7 +33,6 @@ export const trContact: typeof enContact = {
     message: "Mesaj",
     phone: "Telefon",
     location: "Konum",
-    company: "Şirket",
   },
   placeholders: {
     name: "Adınız",
@@ -43,20 +42,11 @@ export const trContact: typeof enContact = {
   },
   locationValue: "İstanbul, Türkiye",
   submit: "Mesajı Gönder",
-  submitting: "Gönderiliyor...",
-  submitDisabled: "Kullanılamıyor",
   validation: {
-    spam: "Spam tespit edildi.",
-    tooFast: "Çok hızlı oldu — biraz zaman ayırın.",
     minChars: (n: number) => `En az ${n} karakter.`,
     maxChars: (n: number) => `En fazla ${n} karakter.`,
-    looksSpammy: "Bu mesaj spam gibi görünüyor.",
-    rateLimited: (seconds: number) => `Tekrar göndermek için ${seconds} sn bekleyin.`,
   },
   status: {
-    success: "Mesaj gönderildi — ulaştığınız için teşekkürler!",
-    formDisabled: (email: string) =>
-      `Form şu anda kullanılamıyor — bana ${email} adresinden ulaşabilirsiniz.`,
-    sendFailed: (email: string) => `Gönderilemedi. Doğrudan ${email} adresine yazabilirsiniz.`,
+    mailClientOpened: "Mail uygulamanız açılıyor — bir şey olmazsa doğrudan yazabilirsiniz.",
   },
 };

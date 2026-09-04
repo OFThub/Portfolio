@@ -8,10 +8,6 @@ import { CountUp } from "./Kinetic";
 import { MatrixRain } from "./effects/MatrixRain";
 import { useI18n } from "../../i18n";
 
-/* Vite's base path, always with a trailing slash. Files in public/ referenced
-   from JS must go through this or they break on a sub-path deployment. */
-const BASE = import.meta.env.BASE_URL;
-
 /* ─── Corner Decoration ──────────────────────────────────────────────── */
 function CornerDeco({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
   const cls = {
@@ -231,7 +227,7 @@ function ProjectCard({ project, index }: { project: EnrichedProject; index: numb
           animate={{ scale: hovered ? 1.04 : 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <ImageCarousel images={project.images.map((src) => BASE + src)} title={project.title} category={project.category} />
+          <ImageCarousel images={project.images} title={project.title} category={project.category} />
         </motion.div>
 
         {/* Hover overlay with links */}
@@ -248,7 +244,9 @@ function ProjectCard({ project, index }: { project: EnrichedProject; index: numb
               {[
                 { href: project.github, Icon: Github, label: t.projects.githubLinkAria },
                 { href: project.live,   Icon: ExternalLink, label: t.projects.liveLinkAria },
-              ].map(({ href, Icon, label }, i) => (
+              ]
+                .filter((link) => link.href !== "")
+                .map(({ href, Icon, label }, i) => (
                 <motion.a
                   key={label}
                   href={href}
@@ -391,48 +389,13 @@ function enrichProject(
   };
 }
 
-function buildAutoDiscoveredProjects(
-  githubRepos: GitHubRepo[],
-  portfolioProjects: RawProject[],
-  autoCategory: string,
-): EnrichedProject[] {
-  const portfolioRepoNames = new Set(
-    portfolioProjects
-      .map((p) => extractRepoName(p.github)?.toLowerCase())
-      .filter(Boolean)
-  );
-
-  return githubRepos
-    .filter(
-      (repo) =>
-        !repo.fork &&
-        !repo.archived &&
-        repo.language !== null &&
-        !portfolioRepoNames.has(repo.name.toLowerCase())
-    )
-    .map((repo) => ({
-      key: repo.name,
-      title: repo.name.replace(/-/g, " ").replace(/_/g, " "),
-      category: autoCategory,
-      description: repo.description ?? "",
-      images: [] as string[],
-      technologies: ([repo.language!, ...repo.topics]).filter(Boolean),
-      github: repo.html_url,
-      live: repo.homepage ?? "",
-      featured: false,
-      stars: repo.stargazers_count,
-      forks: repo.forks_count,
-      updatedAt: repo.updated_at,
-    }));
-}
-
 /* ─── Portfolio projects ─────────────────────────────────────────────
    Module scope on purpose: this is static data, so keeping it out of the
    component body means the useMemo dependency lists below are honest. */
 const RAW_PROJECTS: RawProject[] = [
   {
     key: "sportify",
-    images: ["images/Sportify-1.jpg", "images/Sportify-2.jpg", "images/Sportify-3.jpg"],
+    images: ["/images/Sportify-1.jpg", "/images/Sportify-2.jpg", "/images/Sportify-3.jpg"],
     technologies: [
       "C#",
       "ASP.NET Core MVC",
@@ -468,7 +431,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "taskManagement",
-    images: ["images/todolist-1.jpg", "images/todolist-2.jpg", "images/todolist-3.jpg"],
+    images: ["/images/todolist-1.jpg", "/images/todolist-2.jpg", "/images/todolist-3.jpg"],
     technologies: [
       "React",
       "Node.js",
@@ -551,34 +514,14 @@ const RAW_PROJECTS: RawProject[] = [
       "Vite & React",
     ],
     github: "https://github.com/OFThub/DropSystem",
-    live: "https://drop-system.pxxl.app",
+    live: "",
     featured: true,
   },
   {
     key: "tarsau",
     images: [],
-    technologies: ["Make"],
-    github: "",
-    live: "",
-    featured: true,
-  },
-  {
-    key: "alganChatbot",
-    images: [],
-    technologies: [
-      "Python",
-      "Claude API",
-      "OpenAI Whisper",
-      "OpenAI TTS",
-      "Pydantic",
-      "asyncio",
-      "MongoDB",
-      "PostgreSQL",
-      "Web Speech API",
-      "Faster-Whisper",
-      "Docker",
-    ],
-    github: "https://github.com/OFThub/Project-Algan",
+    technologies: ["C", "Make", "POSIX File I/O"],
+    github: "https://github.com/OFThub/Tarsau",
     live: "",
     featured: true,
   },
@@ -587,64 +530,6 @@ const RAW_PROJECTS: RawProject[] = [
     images: [],
     technologies: ["Python", "Pygame", "Pyinstaller", "WebAssembly"],
     github: "https://github.com/OFThub/Sudoku",
-    live: "",
-    featured: true,
-  },
-  {
-    key: "smashMateMinesweeper",
-    images: [],
-    technologies: [
-      "React Native",
-      "Expo",
-      "Expo Router",
-      "TypeScript",
-      "React Native Reanimated",
-      "AsyncStorage",
-    ],
-    github: "https://github.com/OFThub/SmashMate-Mobile",
-    live: "",
-    featured: true,
-  },
-  {
-    key: "portfolio",
-    images: [],
-    technologies: [
-      "React 18",
-      "TypeScript",
-      "Tailwind CSS v4",
-      "Motion (Framer Motion)",
-      "Lucide React Icons",
-      "Vite",
-    ],
-    github: "https://github.com/OFThub/Full-Stack-Developer-Portfolio",
-    live: "",
-    featured: true,
-  },
-  {
-    key: "smashMateFileManager",
-    images: [],
-    technologies: [
-      "Java 21",
-      "Spring Boot 3.4.4",
-      "Maven",
-      "Cloudflare R2 (AWS SDK v2)",
-      "H2 Database",
-      "Spring Data JPA",
-      "Thumbnailator 0.4.21",
-      "SpringDoc OpenAPI 2.8.6",
-      "JUnit 5",
-      "Mockito",
-      "Docker",
-    ],
-    github: "https://github.com/OFThub/SmashMate-Backend",
-    live: "",
-    featured: true,
-  },
-  {
-    key: "miniKatalog",
-    images: [],
-    technologies: ["Flutter SDK 3.x", "Dart SDK 3.x", "http ^1.1.0", "material.dart", "FakeStore API"],
-    github: "https://github.com/OFThub/SoftwarePersona-Mobil",
     live: "",
     featured: true,
   },
@@ -661,30 +546,6 @@ const RAW_PROJECTS: RawProject[] = [
     github: "https://github.com/OFThub/UzayProgramC",
     live: "",
     featured: true,
-  },
-  {
-    key: "mnist",
-    images: [],
-    technologies: ["Python", "HTML", "JavaScript"],
-    github: "",
-    live: "",
-    featured: false,
-  },
-  {
-    key: "trafficAnalysis",
-    images: [],
-    technologies: ["Python", "OpenCV", "YOLO"],
-    github: "",
-    live: "",
-    featured: false,
-  },
-  {
-    key: "matrixPointer",
-    images: [],
-    technologies: ["C", "Pointer Arithmetic", "Dynamic Memory Allocation (malloc)"],
-    github: "https://github.com/OFThub/SisProg",
-    live: "",
-    featured: false,
   },
   {
     key: "oftify",
@@ -724,11 +585,6 @@ export function Projects() {
         const dateB = new Date(b.updatedAt ?? 0).getTime();
         return dateB - dateA;
       }),
-    [githubRepos, t]
-  );
-
-  const autoDiscovered = useMemo(
-    () => buildAutoDiscoveredProjects(githubRepos, RAW_PROJECTS, t.projects.autoCategory),
     [githubRepos, t]
   );
 
@@ -855,55 +711,6 @@ export function Projects() {
             ))}
           </motion.div>
         </AnimatePresence>
-
-        {/* ── More on GitHub ── */}
-        {autoDiscovered.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mt-16"
-          >
-            <h3 className="text-xl font-semibold text-white/50 mb-6 text-center font-mono tracking-widest uppercase text-sm">
-              {t.projects.moreOnGithub}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {autoDiscovered.map((repo) => (
-                <a
-                  key={repo.github}
-                  href={repo.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="spotlight relative border border-white/10 rounded-lg p-4 hover:border-red-600/40 transition-colors group bg-white/[0.02]"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-medium text-white/80 group-hover:text-red-400 transition-colors text-sm capitalize">
-                      {repo.title}
-                    </h4>
-                    {repo.stars > 0 && (
-                      <span className="text-xs text-yellow-400 flex items-center gap-1 shrink-0">
-                        <Star className="w-3 h-3 fill-current" /> <CountUp value={repo.stars} />
-                      </span>
-                    )}
-                  </div>
-                  {repo.description && (
-                    <p className="text-xs text-white/40 mt-1 line-clamp-2 leading-relaxed">
-                      {repo.description}
-                    </p>
-                  )}
-                  <div className="flex gap-1.5 mt-3 flex-wrap">
-                    {repo.technologies.slice(0, 3).map((tech) => (
-                      <span key={tech} className="text-xs px-2 py-0.5 rounded bg-white/5 text-white/40 border border-white/10">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </a>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
         {/* ── CTA ── */}
         <motion.div

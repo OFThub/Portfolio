@@ -3,15 +3,13 @@
 /**
  * Build-time environment contract.
  *
- * Everything here is inlined into the public bundle by Vite — only values that
- * are safe to publish belong in this list. The EmailJS public key is designed
- * for browser use; the service is protected by domain allow-listing in the
- * EmailJS dashboard, not by secrecy of this key.
+ * Everything here is inlined into the public bundle by Vite, so only values
+ * that are safe to publish belong in this list. The site has no backend and no
+ * third-party service keys — nothing secret should ever be added here.
  */
 interface ImportMetaEnv {
-  readonly VITE_EMAILJS_SERVICE_ID?: string;
-  readonly VITE_EMAILJS_TEMPLATE_ID?: string;
-  readonly VITE_EMAILJS_PUBLIC_KEY?: string;
+  /** Canonical origin. Falls back to Vercel's own production hostname. */
+  readonly VITE_SITE_URL?: string;
 }
 
 interface ImportMeta {

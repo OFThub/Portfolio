@@ -33,7 +33,6 @@ export const enContact = {
     message: "Message",
     phone: "Phone",
     location: "Location",
-    company: "Company",
   },
   placeholders: {
     name: "Your name",
@@ -43,20 +42,11 @@ export const enContact = {
   },
   locationValue: "Istanbul, Turkey",
   submit: "Send Message",
-  submitting: "Sending...",
-  submitDisabled: "Unavailable",
   validation: {
-    spam: "Spam detected.",
-    tooFast: "That was too fast — please take a moment.",
     minChars: (n: number) => `At least ${n} characters.`,
     maxChars: (n: number) => `At most ${n} characters.`,
-    looksSpammy: "This message looks like spam.",
-    rateLimited: (seconds: number) => `Please wait ${seconds}s before sending again.`,
   },
   status: {
-    success: "Message sent — thanks for reaching out!",
-    formDisabled: (email: string) =>
-      `The form is unavailable right now — you can reach me at ${email}.`,
-    sendFailed: (email: string) => `Could not send. Please write to me directly at ${email}.`,
+    mailClientOpened: "Opening your mail app — if nothing happens, write to me directly.",
   },
 };

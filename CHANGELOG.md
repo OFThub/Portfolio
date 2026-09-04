@@ -4,6 +4,49 @@ All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] — 2026-09-04
+
+Vercel is now the only deployment target, and the project list is curated by
+hand rather than mirrored from GitHub.
+
+### Removed
+
+- **EmailJS, entirely.** The dependency, the three `VITE_EMAILJS_*` variables,
+  the local `.env`, the `api.emailjs.com` entry in the CSP, and the honeypot,
+  timing trap and send throttle that only ever existed to protect it. The
+  contact form now composes a `mailto:` and hands it to the visitor's own mail
+  client, so the site makes no outbound call of its own and ships no key.
+- **GitHub Pages.** The deploy workflow and the `VITE_BASE_PATH` plumbing that
+  let one build serve a sub-path. Only Vercel remains, so `base` is always `/`
+  and image paths are plain root-relative strings again.
+- **`netlify.toml`.** A second header file nobody deployed was a standing
+  invitation for the two to drift apart.
+- **The "More on GitHub" section.** It listed every non-fork repository — 38 of
+  which have no description at all, including coursework like `Lig`,
+  `AgacYapisi` and `ArrayvsLinkedList`. Automatically publishing everything is
+  the opposite of a portfolio.
+- **Eight projects.** `mnist`, `trafficAnalysis` and `matrixPointer` are
+  tutorial steps and a single coursework function, with no repository behind
+  them. `miniKatalog` is a self-described teaching exercise. `portfolio` is this
+  site, listed inside itself. `alganChatbot`, `smashMateMinesweeper` and
+  `smashMateFileManager` are substantial, but their repositories return 404 —
+  restore them if those are made public again.
+
+### Fixed
+
+- **Every card showed a dead "Live" button.** A link with an empty `href` was
+  still rendered, so 18 of 19 projects offered a button that reloaded the page.
+  Links with no URL are now dropped.
+- `tarsau` had no repository link at all; it points at `OFThub/Tarsau` now.
+- `dropSystem` linked to a live demo that returns 404. Link removed.
+- **The full-page ember canvas never stopped.** `Background.tsx` had no
+  visibility gating, so a background tab kept repainting a full-viewport
+  particle field. It now pauses on `visibilitychange` — every other loop
+  (`Hero3D`, `MatrixRain`, the carousel) already did this.
+- **The hero animated 72 SVG paths forever.** `pathLength`/`pathOffset` cannot
+  be composited, so they burned CPU while the visitor read sections far below.
+  `FloatingPaths` now falls back to its static frame once out of view.
+
 ## [1.1.0] — 2026-09-03
 
 ### Added

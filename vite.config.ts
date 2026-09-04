@@ -24,7 +24,7 @@ function verifyReferencedImages(outDir: string): Plugin {
       for (const file of fs.readdirSync(assetsDir)) {
         if (!file.endsWith('.js')) continue
         const code = fs.readFileSync(path.join(assetsDir, file), 'utf8')
-        for (const m of code.matchAll(/["'`](images\/[^"'`]+)["'`]/g)) referenced.add(m[1])
+        for (const m of code.matchAll(/["'`]\/?(images\/[^"'`]+)["'`]/g)) referenced.add(m[1])
       }
 
       const missing = [...referenced].filter((rel) => !fs.existsSync(path.join(outDir, rel)))
@@ -81,37 +81,16 @@ function canonicalUrl(siteUrl: string): Plugin {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  // Resolution order: an explicit VITE_SITE_URL wins; otherwise Vercel tells us
-  // its own production hostname at build time (so a fresh import is correct
-  // without configuring anything); otherwise the GitHub Pages project site.
+  // An explicit VITE_SITE_URL wins (custom domain); otherwise Vercel tells us
+  // its own production hostname at build time, so a fresh import needs no
+  // configuration at all. The localhost fallback only matters for `vite build`
+  // run by hand.
   const vercelHost = env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL
   const siteUrl = (
-    env.VITE_SITE_URL ||
-    (vercelHost ? `https://${vercelHost}` : 'https://ofthub.github.io/Portfolio')
+    env.VITE_SITE_URL || (vercelHost ? `https://${vercelHost}` : 'http://localhost:4173')
   ).replace(/\/+$/, '')
 
-  // The public path the app is served from: '/' for a root domain (Vercel),
-  // '/Portfolio/' for the GitHub Pages project site. Derived from the site URL
-  // by default so setting one variable cannot desync the other; override only
-  // when the two genuinely differ. Anything referencing a file in public/ from
-  // JS must go through import.meta.env.BASE_URL, which Vite derives from this.
-  const base = env.VITE_BASE_PATH || new URL(siteUrl + '/').pathname
-
-  // The two settings describe the same address from different angles. If they
-  // disagree the build still succeeds and the site still loads — only the
-  // canonical, og:url and sitemap quietly point somewhere else, which is
-  // exactly the kind of failure nobody notices for weeks.
-  const sitePath = new URL(siteUrl + '/').pathname
-  if (sitePath !== base) {
-    console.warn(
-      `[canonical-url] VITE_BASE_PATH is "${base}" but VITE_SITE_URL resolves to ` +
-        `"${sitePath}". Assets will be served from one path while canonical URLs ` +
-        `claim the other. Set both, or neither.`,
-    )
-  }
-
   return {
-    base,
     plugins: [react(), tailwindcss(), canonicalUrl(siteUrl), verifyReferencedImages('dist')],
 
     resolve: {

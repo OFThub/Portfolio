@@ -1,7 +1,7 @@
 {
   "name": "omerfaruk-portfolio",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Ömer Faruk Türkdoğdu — Full Stack Developer portfolio.",
   "license": "MIT",
@@ -22,7 +22,6 @@
     "verify": "npm run typecheck && npm run lint && vite build"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "animejs": "^4.5.0",
     "lucide-react": "^0.487.0",
     "motion": "^12.23.24",

@@ -3,29 +3,11 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Instagram, Youtube } from "lucide-react";
-import emailjs from "@emailjs/browser";
 import { useI18n } from "../../i18n";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-/**
- * EmailJS credentials are resolved once, at module load.
- *
- * All three are inlined into the public bundle by Vite — that is how EmailJS is
- * designed to work in the browser. The account is protected by the domain
- * allow-list in the EmailJS dashboard, not by keeping these values secret.
- *
- * When a build ships without them the form must not fire a request that can
- * only 400; it degrades to the direct e-mail address instead.
- */
-const EMAILJS = {
-  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-  templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-  publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-} as const;
-
 const EMAIL_ADDRESS = "oturkdogdu1@gmail.com";
-const FORM_ENABLED = Boolean(EMAILJS.serviceId && EMAILJS.templateId && EMAILJS.publicKey);
 
 /* ─── Floating Particle ─────────────────────────────────────────────── */
 function Particle({ x, y, delay }: { x: number; y: number; delay: number }) {
@@ -297,13 +279,9 @@ export function Contact() {
     message: "",
   });
 
-  const [sending, setSending] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
-  const [hp, setHp] = useState("");
-  const [formStartTs] = useState(() => Date.now());
-
   const MIN_MSG = 30, MAX_MSG = 1500, MIN_SUBJECT = 3, MAX_SUBJECT = 120;
 
   /* Particles */
@@ -338,34 +316,28 @@ export function Contact() {
     []
   );
 
-  const countLinks = (s: string) => (s.match(/https?:\/\//gi) || []).length;
-  const looksSpammy = (s: string) => /(.)\1{8,}/.test(s) || countLinks(s) > 2;
 
   const validate = () => {
     const e: Record<string, string> = {};
     const subj = formData.subject.trim();
     const msg  = formData.message.trim();
-    if (hp.trim().length > 0) e._ = t.contact.validation.spam;
-    if (Date.now() - formStartTs < 2500) e._ = t.contact.validation.tooFast;
     if (subj.length < MIN_SUBJECT) e.subject = t.contact.validation.minChars(MIN_SUBJECT);
     if (subj.length > MAX_SUBJECT) e.subject = t.contact.validation.maxChars(MAX_SUBJECT);
     if (msg.length < MIN_MSG) e.message = t.contact.validation.minChars(MIN_MSG);
     if (msg.length > MAX_MSG) e.message = t.contact.validation.maxChars(MAX_MSG);
-    if (looksSpammy(`${subj} ${msg}`)) e.message = t.contact.validation.looksSpammy;
     return e;
   };
 
-  const canSendNow = () => {
-    const key = "contact_last_sent_ts";
-    const last = Number(localStorage.getItem(key) || "0");
-    const now  = Date.now();
-    const ms   = 60_000;
-    if (now - last < ms) return { ok: false, waitSec: Math.ceil((ms - (now - last)) / 1000) };
-    localStorage.setItem(key, String(now));
-    return { ok: true, waitSec: 0 };
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  /**
+   * The form hands the message to the visitor's own mail client.
+   *
+   * There is no third-party sender and no backend, so nothing leaves this page
+   * on its own: no key ships in the bundle, no service to rate-limit, and no
+   * spam surface to defend -- which is why the honeypot, the timing trap and
+   * the send throttle went with EmailJS. The trade-off is that the visitor
+   * sends the mail themselves.
+   */
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
     setMessage({ type: "", text: "" });
@@ -374,48 +346,20 @@ export function Contact() {
     if (Object.keys(v).length) {
       setErrors(v);
       setStatus("error");
-      if (v._) setMessage({ type: "error", text: v._ });
       return;
     }
 
-    const rl = canSendNow();
-    if (!rl.ok) {
-      setStatus("error");
-      setMessage({ type: "error", text: t.contact.validation.rateLimited(rl.waitSec) });
-      return;
-    }
+    const body = `${formData.message}
 
-    const { serviceId, templateId, publicKey } = EMAILJS;
-    if (!serviceId || !templateId || !publicKey) {
-      setStatus("error");
-      setMessage({ type: "error", text: t.contact.status.formDisabled(EMAIL_ADDRESS) });
-      return;
-    }
+-- ${formData.name} <${formData.email}>`;
+    window.location.href =
+      `mailto:${EMAIL_ADDRESS}` +
+      `?subject=${encodeURIComponent(formData.subject)}` +
+      `&body=${encodeURIComponent(body)}`;
 
-    setSending(true);
-    setStatus("loading");
-
-    try {
-      await emailjs.send(
-        serviceId,
-        templateId,
-        { from_name: formData.name, reply_to: formData.email, subject: formData.subject, message: formData.message },
-        publicKey
-      );
-      setStatus("success");
-      setMessage({ type: "success", text: t.contact.status.success });
-      setFormData({ name: "", email: "", subject: "", message: "" });
-      setHp("");
-      setTimeout(() => setStatus("idle"), 3000);
-    } catch (err: unknown) {
-      // The provider's raw error can name internal template/service state —
-      // log it for us, show the visitor a route that still works.
-      console.error("EmailJS send failed:", err);
-      setStatus("error");
-      setMessage({ type: "error", text: t.contact.status.sendFailed(EMAIL_ADDRESS) });
-    } finally {
-      setSending(false);
-    }
+    setStatus("success");
+    setMessage({ type: "success", text: t.contact.status.mailClientOpened });
+    setTimeout(() => setStatus("idle"), 6000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -532,14 +476,6 @@ export function Contact() {
             </motion.h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Honeypot */}
-              <div className="hidden" aria-hidden="true">
-                <label>
-                  {t.contact.labels.company}
-                  <input type="text" name="company" value={hp} onChange={(e) => setHp(e.target.value)} tabIndex={-1} autoComplete="off" />
-                </label>
-              </div>
-
               {/* Staggered fields */}
               {[
                 { component: (
@@ -629,7 +565,7 @@ export function Contact() {
               >
                 <MagneticButton
                   type="submit"
-                  disabled={!FORM_ENABLED || sending || status === "loading"}
+                  disabled={status === "loading"}
                   className="relative w-full px-6 py-4 glass-red disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg flex items-center justify-center gap-2 group overflow-hidden"
                 >
                   {/* Shimmer */}
@@ -639,16 +575,11 @@ export function Contact() {
                     transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
                   />
                   <span className="relative z-10">
-                    {!FORM_ENABLED
-                      ? t.contact.submitDisabled
-                      : sending
-                        ? t.contact.submitting
-                        : t.contact.submit}
+                    {t.contact.submit}
                   </span>
                   <motion.div
                     className="relative z-10"
-                    animate={sending ? { x: [0, 4, 0] } : { x: 0 }}
-                    transition={{ duration: 0.6, repeat: sending ? Infinity : 0 }}
+                    animate={{ x: 0 }}
                   >
                     <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.div>

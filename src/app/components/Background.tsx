@@ -238,6 +238,9 @@ export default function EmberBackground() {
     }
 
     function animate() {
+      // stop() may land while this frame is mid-flight; without this the tail
+      // of the function would queue the next one and restart the loop.
+      if (!running) return;
       frame++;
       ctx.clearRect(0, 0, W, H);
 
@@ -278,10 +281,34 @@ export default function EmberBackground() {
       rafId = requestAnimationFrame(animate);
     }
 
-    rafId = requestAnimationFrame(animate);
+    /* This canvas is position:fixed, so it is never scrolled out of view and an
+       IntersectionObserver would never fire. What it can be is invisible: a
+       background tab kept repainting a full-viewport particle field, which is
+       pure battery drain for something nobody is looking at. */
+    let running = false;
+
+    function start() {
+      if (running || document.hidden) return;
+      running = true;
+      rafId = requestAnimationFrame(animate);
+    }
+
+    function stop() {
+      running = false;
+      cancelAnimationFrame(rafId);
+    }
+
+    function onVisibility() {
+      if (document.hidden) stop();
+      else start();
+    }
+
+    document.addEventListener("visibilitychange", onVisibility);
+    start();
 
     return () => {
-      cancelAnimationFrame(rafId);
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
       canvas.removeEventListener("mouseleave", onMouseLeave);
