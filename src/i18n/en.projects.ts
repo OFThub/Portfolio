@@ -40,6 +40,48 @@ export const enProjects = {
     description:
       "A comprehensive digital library platform with user, author, and admin roles, featuring book uploading, approval mechanisms, category filtering, and interaction systems such as comments, likes, and ratings.",
   },
+  arnavutkoyLogistics: {
+    title: "Arnavutköy Logistics Hub",
+    category: "Data Visualisation",
+    description:
+      "A dashboard that asks one measurable question about the corridor around Istanbul Airport: which neighbourhoods carry the most people per bus stop, and how far are they from the jobs. Computed from 649 real OpenStreetMap bus stops and İBB population figures, it finds that 7 of 38 neighbourhoods are underserved while holding 48% of the district population — a 49-fold gap between best and worst. A simulated 24-hour flow layer sits alongside the measured data and is labelled as a simulation everywhere it appears, so model and measurement are never confused. Runs with no API keys at all.",
+  },
+  arnavutkoyGis: {
+    title: "Arnavutköy GIS",
+    category: "Full Stack Development",
+    description:
+      "A browser-based geographic information system built for Arnavutköy Municipality, joining zoning, cadastre, infrastructure, earthquake-scenario, city-service and topography data onto a single map across 35 layers. Role-based access serves both residents and municipal staff: visitors see public layers, staff see ownership and zoning. A second page scores all 38 neighbourhoods 0–100 on the indicators someone actually checks before moving — earthquake scenario, distance to daily needs, local services, expected infrastructure damage — with ranking and side-by-side comparison, no login required. It degrades to a public-only mode when the backend is unavailable rather than failing.",
+  },
+  akbilSis: {
+    title: "Arnavutköy Akbil — Transit Simulation",
+    category: "Full-Stack",
+    description:
+      "A three-part system that simulates the whole life of a transit card: a mobile app taps the card, a server applies the fare rules, and the municipality analyses line density. It covers the journey end to end — tap-in, fare calculation, balance, bus simulation, and an admin view with density colour coding.",
+  },
+  seyrek: {
+    title: "SEYREK — Voice Desktop Assistant",
+    category: "Artificial Intelligence",
+    description:
+      "A voice-driven, multilingual desktop assistant. Say the wake word to an on-screen energy orb and it listens in any language, acts through a Claude-based brain, and answers out loud. Two processes talk over a loopback-only, token-authenticated WebSocket: a Python backend (voice activity detection, wake word, faster-whisper speech-to-text, an event bus, a state-machine orchestrator, a skill catalogue behind a permission guard, edge-tts speech) and an Electron HUD rendering the WebGL orb, captions and approval cards. It also observes its own usage to propose improvements and, with approval, writes them into its own code.",
+  },
+  adgs: {
+    title: "ADGS — Traffic Video Analysis",
+    category: "Artificial Intelligence",
+    description:
+      "A decision-support tool that analyses traffic footage to detect road and infrastructure damage, accidents and traffic violations, built during a municipal internship. Its scope is drawn by law rather than by preference: a municipality cannot issue traffic fines, so the system produces maintenance work orders, black-spot planning data and evidence packages — never a penalty. The fault module deliberately outputs no percentages, following the logic of an official accident report instead. Number-plate and face blurring are on by default, and raw footage never enters the repository.",
+  },
+  oftAgents: {
+    title: "OFTagents — Claude Code Plugin Marketplace",
+    category: "Developer Tooling",
+    description:
+      "A plugin marketplace for Claude Code, built on one idea: a convention asks, a gate insists. Its plugins make it deterministically impossible to write code into an undocumented project. Three ship today — precode (the documentation gate), oncode (the token bill) and postcode (documentation quality) — backed by the skills that feed them, 237 passing tests and zero runtime dependencies. New plugins can be added without writing any code.",
+  },
+  stockPredictions: {
+    title: "Investment Tracking and Forecasting",
+    category: "Data Science",
+    description:
+      "A Streamlit application that compares roughly 60 assets on one screen in Turkish lira — crypto, currencies, precious metals, oil, BIST and US equities, world indices, housing price indices and Steam CS2 items. Each asset gets its historical chart, a Prophet forecast with an 80% confidence band, and 1/3/6/12-month targets. Every forecast carries an accuracy score: the last 90 days are hidden from the model, predicted, then compared against what actually happened (score = 100 − MAPE). Data comes from yfinance, TCMB EVDS and the Steam market, cached to Parquet so it still works offline.",
+  },
   dropSystem: {
     title: "Limited-Stock Product Drop System",
     category: "Full Stack Development / Backend Engineering",
