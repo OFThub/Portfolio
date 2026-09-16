@@ -421,7 +421,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "aiContentPlatform",
-    images: [],
+    images: ["/images/AIContentPlatform-1.jpg", "/images/AIContentPlatform-2.jpg", "/images/AIContentPlatform-3.jpg"],
     technologies: [
       "Next.js",
       "React",
@@ -457,7 +457,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "eventFlowCommerce",
-    images: [],
+    images: ["/images/EventFlowCommerce-1.jpg", "/images/EventFlowCommerce-2.jpg", "/images/EventFlowCommerce-3.jpg"],
     technologies: [
       "Node.js",
       "TypeScript",
@@ -493,7 +493,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "onlineLibrary",
-    images: [],
+    images: ["/images/OnlineLibrary-1.jpg", "/images/OnlineLibrary-2.jpg", "/images/OnlineLibrary-3.jpg"],
     technologies: [
       "Node.js",
       "Express",
@@ -528,7 +528,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "arnavutkoyLogistics",
-    images: [],
+    images: ["/images/ARN-1.jpg", "/images/ARN-2.jpg", "/images/ARN-3.jpg"],
     technologies: ["Next.js", "TypeScript", "deck.gl", "MapLibre GL", "Zustand", "Recharts", "Tailwind CSS", "OpenStreetMap"],
     github: "https://github.com/OFThub/ARN",
     live: "",
@@ -536,7 +536,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "arnavutkoyGis",
-    images: [],
+    images: ["/images/ArnavutkoyCBS-1.jpg", "/images/ArnavutkoyCBS-2.jpg", "/images/ArnavutkoyCBS-3.jpg"],
     technologies: ["React", "TypeScript", "MapLibre GL", "Supabase", "Mantine", "Turf.js", "Zustand", "d3-contour", "jsPDF"],
     github: "https://github.com/OFThub/ArnavutkoyCBS",
     live: "",
@@ -544,7 +544,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "akbilSis",
-    images: [],
+    images: ["/images/AkBilSis-1.jpg", "/images/AkBilSis-2.jpg", "/images/AkBilSis-3.jpg"],
     technologies: ["FastAPI", "PostgreSQL 16", "SQLAlchemy 2", "React Native 0.86", "Expo SDK 57", "TypeScript", "Python"],
     github: "https://github.com/OFThub/AkBilSis",
     live: "",
@@ -560,7 +560,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "adgs",
-    images: [],
+    images: ["/images/ADGS-1.jpg", "/images/ADGS-2.jpg", "/images/ADGS-3.jpg"],
     technologies: ["Python 3.12", "PyTorch", "YOLO", "CUDA", "RDD2022"],
     github: "https://github.com/OFThub/ADGS",
     live: "",
@@ -568,7 +568,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "oftAgents",
-    images: [],
+    images: ["/images/OFTagents-1.jpg", "/images/OFTagents-2.jpg", "/images/OFTagents-3.jpg"],
     technologies: ["JavaScript", "Node.js", "Claude Code Plugin API", "Zero dependencies"],
     github: "https://github.com/OFThub/OFTagents",
     live: "",
