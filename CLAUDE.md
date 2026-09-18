@@ -120,14 +120,13 @@ cover content, and do not narrow it to cover the code.
 
 ## Known gaps
 
-- 10 of the 14 projects have screenshots. The remaining four
-  (`documentSimplifier`, `dropSystem`, `seyrek`, `stockPredictions`) carry
-  `images: []` because their repositories have no `docs/screenshots` folder;
-  they render without a carousel until one exists. Screenshots are pulled from
-  each repository's `docs/screenshots/`, normalised to **1600x834** (the card's
-  own aspect ratio) and saved as `public/images/<Repo>-N.jpg`. Anything far off
-  that ratio — a phone capture, say — is letterboxed on `#0a0a0a` rather than
-  cropped, so nothing important is cut. `verifyReferencedImages` in
+- All 14 projects have screenshots (3 each, 42 files, 3.7 MB). They are pulled
+  from each repository's `docs/screenshots/`, normalised to **1600x834** — the
+  card's own aspect ratio — and saved as `public/images/<Repo>-N.jpg` at JPEG
+  q82. Captures within 25% of that ratio are scaled to fill and the overflow
+  cropped; anything further off (a phone capture, a square dashboard) is
+  letterboxed on `#0a0a0a` so nothing important is cut, because the card uses
+  `object-cover` and would otherwise show a sliver. `verifyReferencedImages` in
   `vite.config.ts` fails the build if a listed path has no file behind it.
 - `src/app/components/Blog.tsx` renders `<ComingSoon/>` because `blogPosts` is
   empty. `FeaturedCard` and `ArticleCard` are written and typed but unused until

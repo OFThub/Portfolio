@@ -476,7 +476,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "documentSimplifier",
-    images: [],
+    images: ["/images/AIDocumentSimplifier-1.jpg", "/images/AIDocumentSimplifier-2.jpg", "/images/AIDocumentSimplifier-3.jpg"],
     technologies: [
       "Python",
       "FastAPI",
@@ -510,7 +510,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "dropSystem",
-    images: [],
+    images: ["/images/DropSystem-1.jpg", "/images/DropSystem-2.jpg", "/images/DropSystem-3.jpg"],
     technologies: [
       "Node.js",
       "TypeScript",
@@ -552,7 +552,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "seyrek",
-    images: [],
+    images: ["/images/SEYREK-1.jpg", "/images/SEYREK-2.jpg", "/images/SEYREK-3.jpg"],
     technologies: ["Python", "Electron", "Claude Agent SDK", "faster-whisper", "edge-tts", "WebGL", "WebSocket"],
     github: "https://github.com/OFThub/SEYREK",
     live: "",
@@ -576,7 +576,7 @@ const RAW_PROJECTS: RawProject[] = [
   },
   {
     key: "stockPredictions",
-    images: [],
+    images: ["/images/StockPredictions-1.jpg", "/images/StockPredictions-2.jpg", "/images/StockPredictions-3.jpg"],
     technologies: ["Python", "Streamlit", "Prophet", "yfinance", "Plotly", "pandas", "Parquet"],
     github: "https://github.com/OFThub/StockPredictions",
     live: "",
